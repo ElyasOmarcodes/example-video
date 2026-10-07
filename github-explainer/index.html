@@ -1,0 +1,1175 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="lib/gsap.min.js"></script>
+    <script src="lib/icons.js"></script>
+    <style>
+      @font-face { font-family: "PlexAr"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-300-normal.woff2") format("woff2"); font-weight: 300; }
+      @font-face { font-family: "PlexAr"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2") format("woff2"); font-weight: 500; }
+      @font-face { font-family: "PlexAr"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: "InterX"; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "InterX"; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+      @font-face { font-family: "InterX"; src: url("assets/fonts/inter-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+      @font-face { font-family: "JBM"; src: url("assets/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "JBM"; src: url("assets/fonts/jetbrains-mono-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #05070a; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden;
+        background: #06080c; color: #e6edf3;
+        font-family: "InterX", "PlexAr", sans-serif;
+      }
+      .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+      .cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .abs { position: absolute; }
+      .ar { font-family: "PlexAr", "InterX", sans-serif; direction: rtl; }
+      .en { font-family: "InterX", "PlexAr", sans-serif; direction: ltr; }
+      .mono { font-family: "JBM", monospace; direction: ltr; }
+      .w { display: inline-block; white-space: pre; }
+      .tline { position: absolute; left: 60px; width: 960px; text-align: center; }
+      .glass {
+        background: linear-gradient(155deg, rgba(255,255,255,0.11), rgba(255,255,255,0.035) 42%, rgba(255,255,255,0.02));
+        border: 1.5px solid rgba(255,255,255,0.14);
+        border-radius: 28px;
+        box-shadow: 0 40px 90px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(255,255,255,0.04);
+      }
+      .glass-dark {
+        background: linear-gradient(160deg, rgba(22,27,34,0.92), rgba(13,17,23,0.88));
+        border: 1.5px solid rgba(240,246,252,0.12);
+        border-radius: 28px;
+        box-shadow: 0 50px 110px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10);
+      }
+      .grad { background: linear-gradient(180deg, #ffffff 25%, #a5ccff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .gradc { background: linear-gradient(180deg, #e9fbff 10%, #6fd8e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .gradv { background: linear-gradient(180deg, #f3ecff 10%, #b392f0 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .chip {
+        position: absolute; display: flex; align-items: center; justify-content: center; gap: 14px;
+        height: 76px; border-radius: 38px; padding: 0 30px;
+        background: linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+        border: 1.5px solid rgba(255,255,255,0.16);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.18);
+        font-size: 34px; color: #e6edf3; white-space: nowrap;
+      }
+      .pill {
+        position: absolute; display: flex; align-items: center; gap: 14px; height: 72px; border-radius: 18px; padding: 0 22px;
+        background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.025));
+        border: 1.5px solid rgba(255,255,255,0.13);
+        box-shadow: 0 16px 36px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+        font-size: 28px; white-space: nowrap;
+      }
+      .ico { display: block; flex: none; }
+      .muted { color: #8b949e; }
+      .avatar {
+        position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-family: "PlexAr", sans-serif; font-weight: 700; color: #fff;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.25);
+      }
+      .row { position: absolute; display: flex; align-items: center; }
+      .codeline { position: absolute; left: 0; height: 46px; line-height: 46px; display: block; font-size: 25px; white-space: pre; }
+      svg.lines { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      svg.lines path, svg.lines line { fill: none; }
+      #bg { overflow: hidden; }
+      .glow { position: absolute; width: 1500px; height: 1500px; border-radius: 50%; }
+      .gridplane {
+        position: absolute; left: -660px; width: 2400px; height: 1500px;
+        background-image:
+          linear-gradient(rgba(120,170,255,0.16) 2px, transparent 2px),
+          linear-gradient(90deg, rgba(120,170,255,0.16) 2px, transparent 2px);
+        background-size: 120px 120px;
+      }
+      #gridB { top: 1180px; transform: perspective(700px) rotateX(74deg); transform-origin: 50% 0%; }
+      #gridT { top: -760px; transform: perspective(700px) rotateX(-74deg); transform-origin: 50% 100%; opacity: 0.55; }
+      .frag { position: absolute; font-family: "JBM", monospace; white-space: pre; direction: ltr; }
+      .dot { position: absolute; border-radius: 50%; background: #cfe3ff; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="162.9">
+      <!-- Shared, always-on environment (not a clip) -->
+      <div id="bg" class="full">
+        <div id="bgBase" class="full" style="background: radial-gradient(120% 80% at 50% 45%, #0f1420 0%, #090c12 55%, #05070a 100%);"></div>
+        <div id="glowBlue" class="glow" style="left:-520px; top:-300px; background: radial-gradient(circle, rgba(47,129,247,0.38) 0%, rgba(47,129,247,0.10) 38%, rgba(47,129,247,0) 68%);"></div>
+        <div id="glowCyan" class="glow" style="left:240px; top:1000px; background: radial-gradient(circle, rgba(57,197,207,0.30) 0%, rgba(57,197,207,0.08) 40%, rgba(57,197,207,0) 68%);"></div>
+        <div id="glowViolet" class="glow" style="left:120px; top:240px; background: radial-gradient(circle, rgba(137,87,229,0.30) 0%, rgba(137,87,229,0.08) 40%, rgba(137,87,229,0) 68%);"></div>
+        <div id="glowGreen" class="glow" style="left:-210px; top:520px; opacity:0; background: radial-gradient(circle, rgba(63,185,80,0.26) 0%, rgba(63,185,80,0.06) 40%, rgba(63,185,80,0) 68%);"></div>
+        <div id="gridT" class="gridplane"></div>
+        <div id="gridB" class="gridplane"></div>
+        <div id="fragFar" class="full"></div>
+        <div id="fragMid" class="full"></div>
+        <div id="dots" class="full"></div>
+        <div id="fragNear" class="full"></div>
+        <div id="vignette" class="full" style="background: radial-gradient(110% 75% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%);"></div>
+      </div>
+
+      <section id="sA" class="clip scene" data-start="0" data-duration="25.7" data-track-index="1"><div class="cam" id="camA"></div></section>
+      <section id="sB" class="clip scene" data-start="25.0" data-duration="10.0" data-track-index="2"><div class="cam" id="camB"></div></section>
+      <section id="sC" class="clip scene" data-start="34.4" data-duration="26.1" data-track-index="1"><div class="cam" id="camC"></div></section>
+      <section id="sD" class="clip scene" data-start="59.7" data-duration="14.0" data-track-index="2"><div class="cam" id="camD"></div></section>
+      <section id="sE" class="clip scene" data-start="73.0" data-duration="18.5" data-track-index="1"><div class="cam" id="camE"></div></section>
+      <section id="sF" class="clip scene" data-start="90.8" data-duration="8.8" data-track-index="2"><div class="cam" id="camF"></div></section>
+      <section id="sG" class="clip scene" data-start="98.9" data-duration="9.8" data-track-index="1"><div class="cam" id="camG"></div></section>
+      <section id="sH" class="clip scene" data-start="108.0" data-duration="13.0" data-track-index="2"><div class="cam" id="camH"></div></section>
+      <section id="sI" class="clip scene" data-start="120.2" data-duration="16.9" data-track-index="1"><div class="cam" id="camI"></div></section>
+      <section id="sJ" class="clip scene" data-start="136.4" data-duration="13.3" data-track-index="2"><div class="cam" id="camJ"></div></section>
+      <section id="sK" class="clip scene" data-start="149.0" data-duration="13.9" data-track-index="1"><div class="cam" id="camK"></div></section>
+
+      <div id="fade" class="full" style="background:#000; opacity:0;"></div>
+
+      <audio id="vo" src="assets/audio/voiceover.mp3" data-start="0" data-duration="162.048" data-track-index="10" data-volume="1"></audio>
+      <audio id="music" src="assets/audio/music.m4a" data-start="0" data-duration="162.9" data-track-index="11" data-volume="0.7"></audio>
+      <audio id="sfx" src="assets/audio/sfx.m4a" data-start="0" data-duration="162.9" data-track-index="12" data-volume="1"></audio>
+    </div>
+
+    <script>
+      (function () {
+        // ---------- utilities ----------
+        const tl = gsap.timeline({ paused: true });
+        const EO = "power3.out", EI = "power2.in", IO = "power2.inOut", SO = "sine.inOut";
+        const $ = (id) => document.getElementById(id);
+        function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+        function mk(tag, cls, parent, css, html) {
+          const e = document.createElement(tag);
+          if (cls) e.className = cls;
+          if (css) for (const k in css) e.style[k] = typeof css[k] === "number" && !/opacity|zIndex|fontWeight|lineHeight/.test(k) ? css[k] + "px" : css[k];
+          if (html != null) e.innerHTML = html;
+          parent.appendChild(e);
+          return e;
+        }
+        function box(parent, x, y, w, h, cls, html, css) { return mk("div", "abs " + (cls || ""), parent, Object.assign({ left: x, top: y, width: w, height: h }, css || {}), html); }
+        function ico(name, size, color, extra) {
+          const i = window.ICONS[name];
+          return `<svg class="ico" width="${size}" height="${size}" viewBox="${i.vb}" fill="${color || "#e6edf3"}" style="${extra || ""}">${i.p}</svg>`;
+        }
+        // Arabic/English line split into word spans (never split letters: Arabic shaping stays intact)
+        function line(parent, text, top, size, cls, opt) {
+          opt = opt || {};
+          const gm = (cls || "").match(/\bgrad[cv]?\b/);
+          if (gm) { cls = cls.replace(gm[0], ""); opt.wcls = ((opt.wcls || "") + " " + gm[0]).trim(); }
+          const d = mk("div", "tline " + (cls || ""), parent, Object.assign({ top: top, fontSize: size, lineHeight: opt.lh || 1.55, fontWeight: opt.fw || 700 }, opt.css || {}));
+          const parts = text.split(" ");
+          const ws = parts.map((p, i) => {
+            const s = mk("span", "w " + (opt.wcls || ""), d, null, p);
+            if (i < parts.length - 1) d.appendChild(document.createTextNode(" "));
+            return s;
+          });
+          return { el: d, ws: ws };
+        }
+        function svgLayer(parent) {
+          const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          s.setAttribute("class", "lines abs"); s.setAttribute("viewBox", "0 0 1080 1920");
+          parent.appendChild(s); return s;
+        }
+        function path(svg, d, stroke, width, extra) {
+          const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          p.setAttribute("d", d); p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", width);
+          p.setAttribute("stroke-linecap", "round"); p.setAttribute("pathLength", "1");
+          p.setAttribute("stroke-dasharray", "1"); p.setAttribute("stroke-dashoffset", "1");
+          if (extra) for (const k in extra) p.setAttribute(k, extra[k]);
+          svg.appendChild(p); return p;
+        }
+        // ---------- animation vocabulary ----------
+        function inUp(t, target, d, dy, blur) { tl.fromTo(target, { opacity: 0, y: dy == null ? 40 : dy, filter: `blur(${blur == null ? 12 : blur}px)` }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d || 0.9, ease: EO }, t); }
+        function inScale(t, target, d, s0) { tl.fromTo(target, { opacity: 0, scale: s0 || 0.82, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: d || 0.8, ease: "back.out(1.4)" }, t); }
+        function pop(t, target, d) { tl.fromTo(target, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: d || 0.55, ease: "back.out(1.8)" }, t); }
+        function out(t, target, d, dy, blur) { tl.to(target, { opacity: 0, y: dy == null ? -24 : dy, filter: `blur(${blur == null ? 10 : blur}px)`, duration: d || 0.55, ease: EI }, t); }
+        function fade(t, target, to, d, ease) { tl.to(target, { opacity: to, duration: d || 0.5, ease: ease || SO }, t); }
+        function words(t0, ws, times, d) { ws.forEach((w, i) => { const t = times && times[i] != null ? times[i] : t0 + i * 0.14; tl.fromTo(w, { opacity: 0, y: 34, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d || 0.75, ease: EO }, t); }); }
+        // RTL mask reveal: the visible area grows from the right edge toward the left
+        function maskRTL(t, target, d) { tl.fromTo(target, { clipPath: "inset(-30% -4% -30% 100%)" }, { clipPath: "inset(-30% -4% -30% 0%)", duration: d || 1.0, ease: "power3.inOut" }, t); }
+        function maskLTR(t, target, d) { tl.fromTo(target, { clipPath: "inset(-30% 100% -30% -4%)" }, { clipPath: "inset(-30% 0% -30% -4%)", duration: d || 1.0, ease: "power3.inOut" }, t); }
+        function draw(t, p, d, ease) { tl.fromTo(p, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d || 0.8, ease: ease || IO }, t); }
+        function camIn(t, cam, d) { tl.fromTo(cam, { opacity: 0, scale: 1.06, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: d || 0.8, ease: EO }, t); }
+        function camOut(t, cam, d, s) { tl.to(cam, { opacity: 0, scale: s || 0.94, filter: "blur(14px)", duration: d || 0.7, ease: EI }, t); }
+        function drift(t, target, d, props) { tl.to(target, Object.assign({ duration: d, ease: "none" }, props), t); }
+        function glowTo(t, d, map) { for (const k in map) tl.to("#" + k, Object.assign({ duration: d, ease: SO }, map[k]), t); }
+        function shimmer(t, parent, x, y, w, h) {
+          const s = box(parent, x, y, w, h, "", "", { overflow: "hidden", borderRadius: 24, pointerEvents: "none" });
+          const b = box(s, -260, -40, 200, h + 80, "", "", { background: "linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)" });
+          tl.fromTo(b, { x: 0, rotation: 12 }, { x: w + 520, rotation: 12, duration: 1.1, ease: "power2.inOut" }, t);
+          return s;
+        }
+        // chips are anchored at their centre x via xPercent (no width measurement before fonts load)
+        function chip(parent, cx, y, html, cls, css) {
+          const c = mk("div", "chip " + (cls || ""), parent, Object.assign({ top: y, left: cx }, css || {}), html);
+          gsap.set(c, { xPercent: -50 });
+          return c;
+        }
+        function centerChips() {}
+        function avatar(parent, cx, cy, size, letter, c1, c2) {
+          return mk("div", "avatar", parent, { left: cx - size / 2, top: cy - size / 2, width: size, height: size, fontSize: Math.round(size * 0.44), background: `linear-gradient(140deg, ${c1}, ${c2})` }, letter);
+        }
+        const AV = [["س", "#1f5fc4", "#16707a"], ["ع", "#6e40c9", "#1f5fc4"], ["ل", "#146c72", "#1d7a33"], ["ي", "#8a5a02", "#b04a17"], ["م", "#a83f7a", "#6e40c9"]];
+
+        // ---------- shared environment ----------
+        (function buildBG() {
+          const R = rng(7);
+          const snippets = [
+            "git commit -m \"init\"", "git checkout -b feature/ui", "git push origin main", "const app = createApp();", "def deploy(env):", "<main class=\"app\">",
+            "git merge feature/search", "export default router;", "if (user) render(view);", "import { repo } from \"./git\"", "git log --oneline", "npm run build",
+            "for f in files:", "return response.json()", "git status", "jobs:\n  build:", "fetch('/api/issues')", "class Repo:", "git pull --rebase", "✓ tests passed",
+            "pull_request: [main]", "README.md", "src/components/", "git diff HEAD~1", "async function sync()", "on: push", "runs-on: ubuntu-latest", "git branch -a",
+          ];
+          const layers = [
+            ["fragFar", 34, 18, 0.10, 2.4, -240],
+            ["fragMid", 22, 22, 0.16, 1.0, -420],
+            ["fragNear", 9, 30, 0.13, 3.2, -700],
+          ];
+          layers.forEach(([id, n, fs, op, blur, dy], li) => {
+            const L = $(id);
+            for (let i = 0; i < n; i++) {
+              const txt = snippets[Math.floor(R() * snippets.length)];
+              const f = mk("div", "frag", L, { left: Math.round(R() * 1000 - 120), top: Math.round(R() * 2650 - 80), fontSize: fs, opacity: op * (0.6 + R() * 0.6), color: ["#79c0ff", "#a5d6ff", "#d2a8ff", "#7ee2e8", "#c9d1d9"][Math.floor(R() * 5)], filter: `blur(${blur}px)` }, txt);
+              f.setAttribute("data-layout-ignore", "");
+            }
+            drift(0, L, 162.9, { y: dy });
+          });
+          const D = $("dots");
+          for (let i = 0; i < 54; i++) {
+            const s = 2 + Math.round(R() * 4);
+            const d = mk("div", "dot", D, { left: Math.round(R() * 1080), top: Math.round(R() * 2200), width: s, height: s, opacity: 0.15 + R() * 0.45, boxShadow: `0 0 ${6 + s * 2}px rgba(150,200,255,0.8)` });
+            drift(0, d, 162.9, { y: -(160 + R() * 520), x: (R() - 0.5) * 120 });
+          }
+          tl.fromTo("#gridB", { backgroundPosition: "0px 0px" }, { backgroundPosition: "0px 1440px", duration: 162.9, ease: "none" }, 0);
+          tl.fromTo("#gridT", { backgroundPosition: "0px 0px" }, { backgroundPosition: "0px -960px", duration: 162.9, ease: "none" }, 0);
+          tl.fromTo("#bg", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: SO }, 0);
+          // glow choreography per chapter (restrained palette)
+          glowTo(0, 6, { glowBlue: { x: 120, y: 160 }, glowViolet: { x: -80, y: 120 }, glowCyan: { x: 60, y: -120 } });
+          glowTo(12.6, 2.5, { glowBlue: { x: 330, y: 260, opacity: 1.2 }, glowViolet: { opacity: 0.6 } });
+          glowTo(25.0, 4, { glowBlue: { x: 0, y: 600 }, glowViolet: { x: 220, y: -60, opacity: 1 }, glowCyan: { x: -200, y: -300 } });
+          glowTo(41.2, 1.2, { glowViolet: { opacity: 0.4 } });
+          glowTo(51.4, 2, { glowGreen: { opacity: 0.8, x: 300, y: 240 }, glowViolet: { opacity: 0.9 } });
+          glowTo(59.7, 3, { glowGreen: { opacity: 0 }, glowBlue: { x: 260, y: 160 }, glowCyan: { x: 200, y: -500 } });
+          glowTo(77.9, 4, { glowViolet: { x: -200, y: 500 }, glowCyan: { x: 360, y: -200 } });
+          glowTo(90.8, 3, { glowGreen: { opacity: 0.6, x: 380, y: 520 }, glowBlue: { x: 60, y: 0 } });
+          glowTo(98.9, 3, { glowGreen: { opacity: 0 }, glowViolet: { x: 300, y: 300 } });
+          glowTo(108.0, 3, { glowCyan: { x: 120, y: -420, opacity: 1.2 }, glowBlue: { x: 330, y: 700 } });
+          glowTo(120.2, 4, { glowBlue: { x: 330, y: 380, opacity: 1.3 }, glowViolet: { x: 0, y: 700 }, glowCyan: { x: 400, y: -700 } });
+          glowTo(136.4, 4, { glowViolet: { x: 210, y: 200, opacity: 1.1 }, glowCyan: { x: 0, y: -260 } });
+          glowTo(149.0, 4, { glowBlue: { x: 330, y: 330, opacity: 1.4 }, glowCyan: { x: 330, y: -300, opacity: 1 } });
+        })();
+
+        // =====================================================================
+        // A — 0.0 → 25.7  The question, GitHub reveal, the GitHub environment
+        // =====================================================================
+        (function sceneA() {
+          const cam = $("camA");
+          const world = box(cam, 0, 0, 1080, 1920);
+          tl.fromTo(world, { scale: 1.12 }, { scale: 1.0, duration: 12.6, ease: "power1.out" }, 0); // slow camera push
+          const svg = svgLayer(world);
+          // floating project pieces in depth
+          const pieces = [
+            ["file", "index.html", 110, 560, 1.0], ["file", "main.py", 760, 500, 0.92], ["folder", "src/", 210, 860, 1.05],
+            ["code", "", 640, 760, 1.0], ["folder", "assets/", 720, 1120, 0.95], ["code2", "", 260, 1200, 0.92],
+            ["file", "style.css", 80, 1500, 0.85], ["file", "README.md", 720, 1560, 1.0], ["file", "data.json", 410, 1720, 0.8],
+          ];
+          const nodes = [];
+          pieces.forEach(([kind, name, x, y, s], i) => {
+            let el;
+            if (kind === "file" || kind === "folder") {
+              el = box(world, x, y, 250, 86, "glass row", `<div style="display:flex;align-items:center;gap:16px;padding:0 22px;width:100%">${ico(kind === "folder" ? "folder" : "fileCode", 34, kind === "folder" ? "#79c0ff" : "#a5d6ff")}<span class="mono" style="font-size:26px;color:#e6edf3">${name}</span></div>`, { borderRadius: 20 });
+            } else {
+              const lines = kind === "code"
+                ? ['<span style="color:#ff7b72">def</span> <span style="color:#d2a8ff">save</span>(project):', '  repo.<span style="color:#79c0ff">add</span>(project.files)', '  repo.<span style="color:#79c0ff">commit</span>(<span style="color:#a5d6ff">"v1"</span>)']
+                : ['<span style="color:#ff7b72">const</span> team = [<span style="color:#a5d6ff">"sara"</span>, <span style="color:#a5d6ff">"omar"</span>];', 'team.<span style="color:#d2a8ff">forEach</span>(dev =&gt;', '  dev.<span style="color:#79c0ff">push</span>(changes));'];
+              el = box(world, x, y, 380, 190, "glass", `<div class="mono" style="padding:24px 26px;font-size:21px;line-height:1.75;color:#c9d1d9;white-space:pre">${lines.join("\n")}</div>`, { borderRadius: 22 });
+            }
+            el.style.transformOrigin = "50% 50%";
+            nodes.push(el);
+            tl.fromTo(el, { opacity: 0, scale: s * 0.7, y: 60, filter: "blur(16px)" }, { opacity: 1, scale: s, y: 0, filter: `blur(${s < 0.9 ? 1.5 : 0}px)`, duration: 1.2, ease: EO }, 0.15 + i * 0.38);
+            drift(1.3 + i * 0.38, el, 11, { y: -30 - (i % 3) * 14, x: (i % 2 ? 1 : -1) * (10 + i * 2), rotation: (i % 2 ? 1 : -1) * 2.5 });
+          });
+          // question 1 (word-synced: أين 0.8, يحفظ 2.0, المبرمجون 2.5, مشاريعهم 3.2)
+          const q1 = line(cam, "أَيْنَ يَحْفَظُ الْمُبَرْمِجُونَ مَشَارِيعَهُمْ؟", 250, 64, "ar");
+          words(0, q1.ws, [0.8, 2.0, 2.5, 3.2]);
+          out(4.0, q1.el, 0.6);
+          // question 2 (وكيف 4.1 يعمل 5.1 عدة 5.6 مطورين 5.9 على 6.7 مشروع 6.9 واحد 7.5)
+          const q2 = line(cam, "وَكَيْفَ يَعْمَلُ عِدَّةُ مُطَوِّرِينَ عَلَى مَشْرُوعٍ وَاحِدٍ؟", 230, 60, "ar", { css: { width: "960px" } });
+          words(0, q2.ws, [4.2, 5.1, 5.6, 5.9, 6.7, 6.9, 7.5]);
+          // developers
+          const devPos = [[175, 720], [905, 700], [170, 1380], [915, 1400]];
+          const devs = devPos.map(([x, y], i) => {
+            const g = box(world, x - 70, y - 70, 140, 140);
+            const ring = box(g, 0, 0, 140, 140, "", "", { borderRadius: "50%", border: "2px solid rgba(121,192,255,0.45)", boxShadow: "0 0 40px rgba(47,129,247,0.35)" });
+            avatar(g, 70, 70, 104, AV[i][0], AV[i][1], AV[i][2]);
+            pop(5.6 + i * 0.14, g, 0.7);
+            tl.fromTo(ring, { scale: 0.8, opacity: 0.2 }, { scale: 1.25, opacity: 0, duration: 1.6, ease: "sine.out", repeat: 4 }, 6.0 + i * 0.2);
+            return g;
+          });
+          // the single project core
+          const core = box(world, 430, 950, 220, 220, "glass", "", { borderRadius: 52, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 80px rgba(47,129,247,0.35), 0 40px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25)" });
+          const coreIcon = mk("div", "", core, { position: "absolute", left: 0, top: 0, width: 220, height: 220, display: "flex", alignItems: "center", justifyContent: "center" }, ico("repo", 104, "#cfe3ff"));
+          inScale(6.9, core, 0.9, 0.5);
+          // connection lines dev → core
+          const links = devPos.map(([x, y], i) => {
+            const p = path(svg, `M${x} ${y} Q ${(x + 540) / 2 + (i % 2 ? -80 : 80)} ${(y + 1060) / 2} 540 1060`, "url(#gA)", 3, { opacity: 0.9 });
+            draw(7.5 + i * 0.12, p, 0.9);
+            return p;
+          });
+          svg.insertAdjacentHTML("afterbegin", '<defs><linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#79c0ff"/><stop offset="1" stop-color="#39c5cf"/></linearGradient></defs>');
+          // pulses travelling along links
+          links.forEach((p, i) => {
+            const pulse = box(world, -9, -9, 18, 18, "", "", { borderRadius: "50%", background: "#bfe1ff", boxShadow: "0 0 18px #79c0ff" });
+            const [x0, y0] = devPos[i], cx = (x0 + 540) / 2 + (i % 2 ? -80 : 80), cy = (y0 + 1060) / 2;
+            const proxy = { v: 0 };
+            tl.fromTo(proxy, { v: 0 }, { v: 1, duration: 1.1, ease: "power1.inOut", repeat: 2, onUpdate: () => { const u = proxy.v, a = (1 - u) * (1 - u), b = 2 * (1 - u) * u, c = u * u; pulse.style.left = a * x0 + b * cx + c * 540 - 9 + "px"; pulse.style.top = a * y0 + b * cy + c * 1060 - 9 + "px"; } }, 8.3 + i * 0.25);
+            tl.fromTo(pulse, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 8.3 + i * 0.25);
+            fade(11.6, pulse, 0, 0.4);
+          });
+          // 8.2–12.4: lost files + mixed edits
+          out(8.6, q2.el, 0.6);
+          const warn1 = chip(cam, 540, 250, `${ico("alert", 32, "#d29922")}<span class="ar" style="font-weight:500">تَضِيعُ الْمَلَفَّاتُ؟</span>`);
+          const warn2 = chip(cam, 540, 350, `${ico("x", 32, "#f85149")}<span class="ar" style="font-weight:500">تَخْتَلِطُ التَّعْدِيلَاتُ؟</span>`);
+          centerChips(cam);
+          inUp(9.0, warn1, 0.7, 20);
+          inUp(11.0, warn2, 0.7, 20);
+          // lost: two files drift off and dim
+          tl.to(nodes[6], { x: -260, y: 120, rotation: -18, opacity: 0.0, filter: "blur(10px)", duration: 1.8, ease: "power2.in" }, 9.2);
+          tl.to(nodes[8], { x: 140, y: 260, rotation: 14, opacity: 0.0, filter: "blur(10px)", duration: 1.8, ease: "power2.in" }, 9.5);
+          // mixed edits: code cards collide, links turn amber/red (deliberate overlap)
+          [nodes[3], nodes[5]].forEach((n) => n.querySelectorAll("*").forEach((c) => c.setAttribute("data-layout-allow-overlap", "")));
+          tl.to(nodes[3], { x: -170, y: 210, rotation: -4, duration: 1.0, ease: IO }, 11.0);
+          tl.to(nodes[5], { x: 170, y: -160, rotation: 4, duration: 1.0, ease: IO }, 11.0);
+          tl.to([nodes[3], nodes[5]], { boxShadow: "0 0 0 2px rgba(248,81,73,0.6), 0 30px 80px rgba(248,81,73,0.25)", duration: 0.5 }, 11.4);
+          links.forEach((p) => tl.set(p, { attr: { stroke: "#f0883e" } }, 11.2));
+          const conflict = box(world, 330, 1040, 420, 96, "glass", `<div class="mono" style="padding:14px 22px;font-size:22px;line-height:1.5;color:#ffa198;white-space:pre">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\n=======  &gt;&gt;&gt;&gt;&gt;&gt;&gt;</div>`, { borderRadius: 18, border: "1.5px solid rgba(248,81,73,0.55)" });
+          conflict.querySelectorAll("*").forEach((c) => c.setAttribute("data-layout-allow-overlap", ""));
+          pop(11.7, conflict);
+          // 12.6 "هنا يأتي دور غتهب": everything converges into the core
+          out(12.5, [warn1, warn2], 0.5);
+          tl.to(conflict, { opacity: 0, scale: 0.4, duration: 0.5, ease: EI }, 12.6);
+          nodes.forEach((n, i) => {
+            tl.to(n, { x: 540 - (parseFloat(n.style.left) + parseFloat(n.style.width) / 2), y: 1060 - (parseFloat(n.style.top) + parseFloat(n.style.height) / 2), scale: 0.15, rotation: 0, opacity: 0, filter: "blur(6px)", duration: 1.2, ease: "power3.in" }, 12.6 + i * 0.06);
+          });
+          devs.forEach((g, i) => tl.to(g, { x: 540 - devPos[i][0], y: 1060 - devPos[i][1], scale: 0.2, opacity: 0, duration: 1.2, ease: "power3.in" }, 12.8 + i * 0.05));
+          links.forEach((p) => tl.to(p, { strokeDashoffset: 1, duration: 0.9, ease: EI }, 12.7));
+          tl.to(core, { scale: 1.12, boxShadow: "0 0 160px rgba(121,192,255,0.65), 0 40px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3)", duration: 1.3, ease: IO }, 12.8);
+          // GitHub mark emerges from the core at 14.3
+          const flash = box(world, 140, 660, 800, 800, "", "", { borderRadius: "50%", background: "radial-gradient(circle, rgba(200,225,255,0.55) 0%, rgba(121,192,255,0.15) 35%, rgba(0,0,0,0) 65%)" });
+          tl.fromTo(flash, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1.2, duration: 0.45, ease: "power2.out" }, 14.15);
+          tl.to(flash, { opacity: 0, scale: 1.6, duration: 1.2, ease: "power2.out" }, 14.6);
+          tl.to(core, { opacity: 0, scale: 1.6, filter: "blur(12px)", duration: 0.5, ease: EI }, 14.15);
+          const mark = box(cam, 480, 220, 120, 120, "", ico("mark", 120, "#ffffff", "filter: drop-shadow(0 0 30px rgba(121,192,255,0.65))"));
+          tl.fromTo(mark, { opacity: 0, y: 720, scale: 2.6, filter: "blur(16px)" }, { opacity: 1, y: 720, scale: 2.4, filter: "blur(0px)", duration: 0.7, ease: EO }, 14.3);
+          const ghWord = line(cam, "GitHub", 1240, 120, "en grad", { fw: 800, lh: 1.2, css: { letterSpacing: "-2px" } });
+          const ghAr = line(cam, "غِتْهَبْ", 1400, 76, "ar", { css: { color: "#cfe3ff" } });
+          tl.fromTo(ghWord.el, { opacity: 0, scale: 1.14, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.0, ease: EO }, 14.35);
+          maskRTL(14.55, ghAr.el, 0.9);
+          // lockup lifts into the header of the GitHub environment
+          tl.to(mark, { y: 0, scale: 1, duration: 1.0, ease: "power3.inOut" }, 15.2);
+          out(15.15, [ghWord.el, ghAr.el], 0.5, -60);
+          const topAr = line(cam, "غِتْهَبْ", 352, 52, "ar", { css: { color: "#cfe3ff" } });
+          inUp(15.8, topAr.el, 0.7, 16);
+          // repository window
+          const win = box(cam, 70, 500, 940, 960, "glass-dark");
+          tl.fromTo(win, { opacity: 0, y: 140, rotationX: 22, transformPerspective: 1600, filter: "blur(10px)" }, { opacity: 1, y: 0, rotationX: 6, transformPerspective: 1600, filter: "blur(0px)", duration: 1.1, ease: EO }, 15.7);
+          tl.to(win, { rotationX: 0, rotationY: -3, duration: 8, ease: SO }, 16.8);
+          box(win, 0, 0, 940, 96, "row", `<div style="display:flex;align-items:center;gap:18px;padding:0 34px;width:100%">${ico("repo", 34, "#8b949e")}<span class="en" style="font-size:30px;color:#79c0ff">elyas</span><span class="en muted" style="font-size:30px">/</span><span class="en" style="font-size:30px;font-weight:600;color:#79c0ff">my-project</span><span class="en" style="margin-left:14px;font-size:20px;color:#8b949e;border:1.5px solid #30363d;border-radius:20px;padding:4px 14px">Public</span></div>`, { borderBottom: "1.5px solid rgba(240,246,252,0.08)" });
+          const tabs = [["code", "Code"], ["issue", "Issues"], ["pr", "Pull requests"], ["play", "Actions"]];
+          box(win, 0, 96, 940, 70, "row", `<div style="display:flex;align-items:center;gap:34px;padding:0 34px;width:100%">${tabs.map(([i, t], k) => `<span style="display:flex;align-items:center;gap:10px;font-size:23px;color:${k === 0 ? "#e6edf3" : "#8b949e"};${k === 0 ? "border-bottom:3px solid #f78166;padding-bottom:6px" : ""}" class="en">${ico(i, 24, k === 0 ? "#e6edf3" : "#8b949e")}${t}</span>`).join("")}</div>`, { borderBottom: "1.5px solid rgba(240,246,252,0.08)" });
+          const sync = box(win, 30, 186, 880, 76, "row", `<div style="display:flex;align-items:center;gap:16px;padding:0 22px;width:100%">${'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,#2f81f7,#39c5cf)"></div>'}<span class="en" style="font-size:23px;font-weight:600">elyas</span><span class="en muted" style="font-size:23px">Add login screen</span><span class="mono muted" style="margin-left:auto;font-size:20px">a1b2c3d · 2 hours ago</span></div>`, { background: "rgba(56,139,253,0.08)", border: "1.5px solid rgba(56,139,253,0.25)", borderRadius: 14 });
+          const files = [
+            ["folder", ".github/", "Add CI workflow", "3 days"], ["folder", "assets/", "Add app icons", "5 days"], ["folder", "src/", "Add login screen", "2 hours"],
+            ["file", "README.md", "Update docs", "1 day"], ["file", "main.py", "Fix startup bug", "4 hours"], ["file", "package.json", "Bump version", "6 days"], ["file", "config.yml", "Initial commit", "2 weeks"],
+          ];
+          const rows = files.map(([k, n, m, t], i) => {
+            const r = box(win, 30, 284 + i * 92, 880, 84, "row", `<div style="display:flex;align-items:center;gap:18px;padding:0 22px;width:100%">${ico(k === "folder" ? "folder" : "file", 30, k === "folder" ? "#79c0ff" : "#8b949e")}<span class="en" style="font-size:25px;width:220px">${n}</span><span class="en muted" style="font-size:22px">${m}</span><span class="en muted" style="margin-left:auto;font-size:21px">${t}</span></div>`, { borderBottom: i < files.length - 1 ? "1.5px solid rgba(240,246,252,0.06)" : "none" });
+            tl.fromTo(r, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: EO }, 16.2 + i * 0.2);
+            return r;
+          });
+          tl.fromTo(sync, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 16.1);
+          // side layers for depth (parallax)
+          const readme = box(cam, 24, 1330, 430, 250, "glass", `<div style="padding:24px 28px"><div class="en" style="font-size:22px;color:#8b949e;display:flex;gap:10px;align-items:center">${ico("book", 22, "#8b949e")} README.md</div><div class="en" style="font-size:34px;font-weight:800;margin-top:16px">My Project</div><div style="margin-top:16px;height:12px;width:330px;border-radius:6px;background:rgba(255,255,255,0.12)"></div><div style="margin-top:12px;height:12px;width:260px;border-radius:6px;background:rgba(255,255,255,0.08)"></div></div>`);
+          const codeP = box(cam, 640, 420, 420, 220, "glass", `<div class="mono" style="padding:22px 26px;font-size:20px;line-height:1.8;white-space:pre;color:#c9d1d9"><span style="color:#ff7b72">from</span> app <span style="color:#ff7b72">import</span> login\n\n<span style="color:#ff7b72">def</span> <span style="color:#d2a8ff">main</span>():\n    login.<span style="color:#79c0ff">run</span>()</div>`);
+          [readme, codeP].forEach((p) => { p.style.zIndex = -1; p.setAttribute("data-layout-ignore", ""); p.querySelectorAll("*").forEach((c) => c.setAttribute("data-layout-ignore", "")); });
+          win.style.zIndex = 2;
+          tl.fromTo(readme, { opacity: 0, x: -80, rotation: -6, filter: "blur(8px)" }, { opacity: 0.85, x: 0, rotation: -5, filter: "blur(1.2px)", duration: 1.0, ease: EO }, 17.0);
+          tl.fromTo(codeP, { opacity: 0, x: 80, rotation: 6, filter: "blur(8px)" }, { opacity: 0.8, x: 0, rotation: 5, filter: "blur(1.2px)", duration: 1.0, ease: EO }, 17.3);
+          drift(18, readme, 7, { y: -40 });
+          drift(18.3, codeP, 7, { y: 40 });
+          // verbs: حفظ 18.7 / إدارة 21.0 / مشاركة 22.6
+          const vy = 1540;
+          const vSave = chip(cam, 830, vy, `${ico("upload", 30, "#79c0ff")}<span class="ar" style="font-weight:700">حِفْظٌ</span>`);
+          const vManage = chip(cam, 540, vy, `${ico("project", 30, "#d2a8ff")}<span class="ar" style="font-weight:700">إِدَارَةٌ</span>`);
+          const vShare = chip(cam, 250, vy, `${ico("share", 30, "#7ee2e8")}<span class="ar" style="font-weight:700">مُشَارَكَةٌ</span>`);
+          centerChips(cam);
+          [vSave, vManage, vShare].forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 30 }, { opacity: 0.35, y: 0, duration: 0.6, ease: EO }, 17.6 + i * 0.12));
+          const lit = (t, c, col) => { tl.to(c, { opacity: 1, scale: 1.08, borderColor: col, boxShadow: `0 0 44px ${col}55, 0 18px 40px rgba(0,0,0,0.45)`, duration: 0.5, ease: "back.out(2)" }, t); tl.to(c, { scale: 1, duration: 0.6, ease: SO }, t + 0.6); };
+          lit(18.7, vSave, "#79c0ff");
+          lit(21.0, vManage, "#d2a8ff");
+          lit(22.6, vShare, "#7ee2e8");
+          // save: file tokens fly up into the repo + progress bar
+          ["main.py", "app.js", "logo.svg"].forEach((n, i) => {
+            const tok = box(cam, 300 + i * 170, 1700, 170, 56, "glass row", `<div style="display:flex;align-items:center;gap:8px;padding:0 14px">${ico("file", 22, "#a5d6ff")}<span class="mono" style="font-size:19px">${n}</span></div>`, { borderRadius: 14, zIndex: 3 });
+            tl.fromTo(tok, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.35, ease: EO }, 18.7 + i * 0.15);
+            tl.to(tok, { y: -1050 + i * 30, x: (1 - i) * 120, scale: 0.5, opacity: 0, duration: 1.1, ease: "power2.in" }, 19.0 + i * 0.15);
+          });
+          const prog = box(win, 0, 93, 940, 4, "", "", { background: "linear-gradient(90deg,#2f81f7,#39c5cf)", transformOrigin: "0% 50%" });
+          tl.fromTo(prog, { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: 1.4, ease: IO }, 18.8);
+          fade(20.3, prog, 0, 0.4);
+          // manage: rows reorder + highlight sweep
+          tl.to(rows[2], { y: -184, backgroundColor: "rgba(137,87,229,0.12)", duration: 0.8, ease: IO }, 21.0);
+          tl.to([rows[0], rows[1]], { y: 92, duration: 0.8, ease: IO }, 21.0);
+          tl.to(rows[2], { backgroundColor: "rgba(137,87,229,0)", duration: 0.8 }, 22.0);
+          shimmer(21.3, win, 0, 270, 940, 680);
+          // share: collaborators connected over the internet
+          const shareSvg = svgLayer(cam);
+          shareSvg.style.zIndex = 1;
+          const sp = [[60, 760], [1020, 840], [60, 1250], [1020, 1300]];
+          sp.forEach(([x, y], i) => {
+            const a = avatar(cam, x, y, 74, AV[i + 1][0], AV[i + 1][1], AV[i + 1][2]);
+            a.style.zIndex = 3;
+            pop(22.7 + i * 0.12, a);
+            const p = path(shareSvg, `M540 980 Q ${(540 + x) / 2} ${y - 160} ${x} ${y}`, "#7ee2e8", 2.5, { opacity: 0.75 });
+            draw(22.8 + i * 0.12, p, 0.8);
+          });
+          const globe = box(win, 860, 18, 60, 60, "", ico("globe", 52, "#7ee2e8", "filter: drop-shadow(0 0 12px rgba(126,226,232,0.8))"));
+          pop(24.0, globe);
+          // exit
+          camOut(25.0, cam, 0.7, 0.92);
+        })();
+
+        // =====================================================================
+        // B — 25.0 → 35.0  Git records every change, step by step
+        // =====================================================================
+        (function sceneB() {
+          const cam = $("camB");
+          camIn(25.1, cam, 0.8);
+          tl.fromTo(cam, { y: 0 }, { y: -30, duration: 9.5, ease: SO }, 25.1);
+          // Git mark (diamond) + wordmark at 27.6
+          const lock = box(cam, 0, 210, 1080, 170, "row", "", { justifyContent: "center", gap: "34px" });
+          const dia = mk("div", "", lock, { width: 116, height: 116, borderRadius: 26, background: "linear-gradient(140deg,#f05033,#d2453a)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 50px rgba(240,80,51,0.45)" }, `<div style="transform:rotate(-45deg)">${ico("branch", 62, "#fff")}</div>`);
+          const gw = mk("div", "en", lock, { fontSize: 150, fontWeight: 800, letterSpacing: "-4px", lineHeight: 1 }, "Git");
+          tl.fromTo(dia, { opacity: 0, scale: 0.3, rotation: -45 }, { opacity: 1, scale: 1, rotation: 45, duration: 0.9, ease: "back.out(1.6)" }, 27.4);
+          tl.fromTo(gw, { opacity: 0, x: 60, filter: "blur(14px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.8, ease: EO }, 27.6);
+          const gAr = line(cam, "غِتْ", 400, 56, "ar", { css: { color: "#ffb4a3" } });
+          inUp(28.2, gAr.el, 0.6, 16);
+          out(29.5, gAr.el, 0.4);
+          const track = line(cam, "تَتَبُّعُ التَّغْيِيرَاتِ", 396, 56, "ar gradc");
+          maskRTL(29.8, track.el, 1.0);
+          // code editor
+          const ed = box(cam, 70, 540, 940, 470, "glass-dark");
+          tl.fromTo(ed, { opacity: 0, y: 80, rotationX: 16, transformPerspective: 1600 }, { opacity: 1, y: 0, rotationX: 0, transformPerspective: 1600, duration: 1.0, ease: EO }, 28.5);
+          box(ed, 0, 0, 940, 64, "row", `<div style="display:flex;gap:10px;padding:0 24px;align-items:center;width:100%"><span style="width:14px;height:14px;border-radius:50%;background:#f85149"></span><span style="width:14px;height:14px;border-radius:50%;background:#d29922"></span><span style="width:14px;height:14px;border-radius:50%;background:#3fb950"></span><span class="mono" style="margin-left:24px;font-size:21px;color:#c9d1d9;background:rgba(255,255,255,0.06);padding:6px 16px;border-radius:8px">app.py</span><span class="mono muted" style="margin-left:auto;font-size:19px">main</span></div>`, { borderBottom: "1.5px solid rgba(240,246,252,0.08)" });
+          const code = box(ed, 0, 80, 940, 380);
+          const L = [
+            ["", '<span style="color:#ff7b72">def</span> <span style="color:#d2a8ff">greet</span>(name):'],
+            ["-", '    message = <span style="color:#a5d6ff">"Hello"</span>'],
+            ["+", '    message = <span style="color:#a5d6ff">f"Hello, {name}!"</span>'],
+            ["", '    <span style="color:#ff7b72">return</span> message'],
+            ["", ""],
+            ["+", '<span style="color:#ff7b72">def</span> <span style="color:#d2a8ff">main</span>():'],
+            ["+", '    print(greet(<span style="color:#a5d6ff">"GitHub"</span>))'],
+          ];
+          const lineEls = L.map(([g, h], i) => {
+            const e = mk("div", "codeline mono", code, { top: i * 50, width: 940, paddingLeft: 26 }, `<span class="muted" style="width:44px;display:inline-block">${i + 1}</span><span style="width:30px;display:inline-block;color:${g === "+" ? "#3fb950" : g === "-" ? "#f85149" : "transparent"}">${g || " "}</span>${h}`);
+            return e;
+          });
+          // type the base version
+          [0, 1, 3].forEach((i, k) => maskLTR(28.8 + k * 0.28, lineEls[i], 0.5));
+          lineEls[4].style.opacity = 1;
+          // change 1: replace line 2 (removed red, added green) at 29.8 / 30.2
+          tl.to(lineEls[1], { backgroundColor: "rgba(248,81,73,0.16)", duration: 0.35 }, 29.8);
+          tl.to(lineEls[1], { opacity: 0.55, duration: 0.4 }, 30.1);
+          tl.fromTo(lineEls[2], { backgroundColor: "rgba(63,185,80,0.0)" }, { backgroundColor: "rgba(63,185,80,0.16)", duration: 0.3, immediateRender: false }, 30.2);
+          maskLTR(30.2, lineEls[2], 0.55);
+          // change 2: add main() at 31.1 / 31.5
+          [5, 6].forEach((i, k) => { maskLTR(31.1 + k * 0.35, lineEls[i], 0.55); tl.fromTo(lineEls[i], { backgroundColor: "rgba(63,185,80,0)" }, { backgroundColor: "rgba(63,185,80,0.16)", duration: 0.3, immediateRender: false }, 31.1 + k * 0.35); });
+          // change 3 at 32.9: clean the removed line out
+          tl.to(lineEls[1], { height: 0, opacity: 0, duration: 0.5, ease: IO }, 32.9);
+          tl.to(lineEls.slice(2), { y: -50, duration: 0.5, ease: IO }, 32.9);
+          // change 4 at 33.7: highlights settle
+          tl.to([lineEls[2], lineEls[5], lineEls[6]], { backgroundColor: "rgba(63,185,80,0.06)", duration: 0.6 }, 33.7);
+          // commit history: Commit 01 → 04 (vertical, step by step)
+          const svg = svgLayer(cam);
+          const ys = [1120, 1255, 1390, 1525];
+          const rail = path(svg, `M200 ${ys[0]} L200 ${ys[3]}`, "rgba(121,192,255,0.55)", 4);
+          const cmts = [["01", "a1f3c9e", "Create greet()", 29.8], ["02", "b7d204a", "Personalize message", 31.1], ["03", "c45e8f1", "Add main()", 32.9], ["04", "d9902bb", "Clean up", 33.7]];
+          tl.to(rail, { strokeDashoffset: 0.6667, duration: 0.5, ease: IO }, 31.1);
+          tl.to(rail, { strokeDashoffset: 0.3333, duration: 0.5, ease: IO }, 32.9);
+          tl.to(rail, { strokeDashoffset: 0, duration: 0.5, ease: IO }, 33.7);
+          const heads = [];
+          cmts.forEach(([n, h, m, t], i) => {
+            const node = box(cam, 200 - 30, ys[i] - 30, 60, 60, "", ico("commit", 60, "#79c0ff"), { borderRadius: "50%", background: "#0d1117", boxShadow: "0 0 30px rgba(47,129,247,0.55)" });
+            const lab = box(cam, 260, ys[i] - 52, 760, 104, "glass row", `<div style="display:flex;align-items:center;gap:20px;padding:0 26px;width:100%"><span class="en" style="font-size:30px;font-weight:800">Commit ${n}</span><span class="mono" style="font-size:22px;color:#79c0ff">${h}</span><span class="en muted" style="font-size:23px">${m}</span></div>`, { borderRadius: 20 });
+            pop(t, node, 0.5);
+            tl.fromTo(lab, { opacity: 0, x: 60, filter: "blur(8px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.6, ease: EO }, t + 0.08);
+            if (i > 0) tl.to(heads[i - 1], { opacity: 0.6, duration: 0.4 }, t);
+            heads.push(lab);
+            shimmer(t + 0.05, ed, 0, 0, 940, 470);
+          });
+          const headTag = box(cam, 880, ys[0] - 22, 110, 44, "row", `<span class="en" style="font-size:19px;font-weight:800;color:#0d1117;padding:0 14px">HEAD</span>`, { background: "#79c0ff", borderRadius: 10, justifyContent: "center" });
+          pop(29.95, headTag, 0.4);
+          [31.1, 32.9, 33.7].forEach((t, i) => tl.to(headTag, { y: ys[i + 1] - ys[0], duration: 0.45, ease: IO }, t + 0.05));
+          camOut(34.3, cam, 0.7);
+        })();
+
+        // =====================================================================
+        // C — 34.4 → 60.5  The app example: versions, a regression, going back
+        // =====================================================================
+        (function sceneC() {
+          const cam = $("camC");
+          camIn(34.4, cam, 0.8);
+          const PX = 360, PY = 400, PW = 360, PH = 720;
+          const phone = box(cam, PX, PY, PW, PH, "", "", { borderRadius: 58, background: "linear-gradient(160deg,#20262f,#0d1117)", border: "2px solid rgba(240,246,252,0.18)", boxShadow: "0 60px 120px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.2)" });
+          tl.fromTo(phone, { opacity: 0, y: 160, rotationY: -28, transformPerspective: 1600 }, { opacity: 1, y: 0, rotationY: -8, transformPerspective: 1600, duration: 1.3, ease: EO }, 34.6);
+          tl.to(phone, { rotationY: 6, duration: 12, ease: SO }, 36.0);
+          tl.to(phone, { rotationY: 0, duration: 6, ease: SO }, 48.0);
+          const screen = box(phone, 16, 16, PW - 32, PH - 32, "", "", { borderRadius: 44, overflow: "hidden", background: "#0b0f15" });
+          box(phone, PW / 2 - 50, 26, 100, 26, "", "", { borderRadius: 14, background: "#000" });
+          // four app versions (pure UI shapes — no text needed to read)
+          function ui(parent, v, scale) {
+            const s = scale || 1, W = (PW - 32) * s, H = (PH - 32) * s;
+            const root = box(parent, 0, 0, W, H, "", "", { overflow: "hidden" });
+            const C = [["#2f81f7", "#79c0ff"], ["#39c5cf", "#2f81f7"], ["#8957e5", "#db61a2"], ["#f0883e", "#8957e5"]][v];
+            box(root, 0, 0, W, 120 * s, "", "", { background: `linear-gradient(120deg, ${C[0]}, ${C[1]})` });
+            box(root, 24 * s, 66 * s, 140 * s, 18 * s, "", "", { borderRadius: 9 * s, background: "rgba(255,255,255,0.85)" });
+            if (v === 0) {
+              for (let i = 0; i < 4; i++) { box(root, 24 * s, (150 + i * 96) * s, W - 48 * s, 76 * s, "", "", { borderRadius: 16 * s, background: "rgba(255,255,255,0.07)" }); box(root, 44 * s, (176 + i * 96) * s, 160 * s, 14 * s, "", "", { borderRadius: 7 * s, background: "rgba(255,255,255,0.35)" }); }
+            } else if (v === 1) {
+              box(root, 24 * s, 150 * s, W - 48 * s, 210 * s, "", "", { borderRadius: 24 * s, background: `linear-gradient(140deg, ${C[0]}cc, ${C[1]}88)` });
+              box(root, 48 * s, 290 * s, 120 * s, 18 * s, "", "", { borderRadius: 9 * s, background: "rgba(255,255,255,0.9)" });
+              for (let i = 0; i < 2; i++) box(root, 24 * s, (390 + i * 92) * s, W - 48 * s, 74 * s, "", "", { borderRadius: 16 * s, background: "rgba(255,255,255,0.07)" });
+              box(root, 24 * s, (H / s - 100) * s, W - 48 * s, 64 * s, "", "", { borderRadius: 32 * s, background: C[0] });
+            } else if (v === 2) {
+              for (let i = 0; i < 6; i++) box(root, (24 + (i % 2) * 150) * s, (150 + Math.floor(i / 2) * 150) * s, 132 * s, 132 * s, "", "", { borderRadius: 22 * s, background: i % 3 === 0 ? `${C[0]}aa` : "rgba(255,255,255,0.08)" });
+              box(root, 24 * s, (H / s - 100) * s, W - 48 * s, 64 * s, "", "", { borderRadius: 32 * s, background: C[1] });
+            } else {
+              for (let i = 0; i < 9; i++) box(root, ((i * 53) % 190 + 10) * s, (140 + i * 58) * s, (120 + (i * 37) % 120) * s, 48 * s, "", "", { borderRadius: 10 * s, background: ["rgba(240,136,62,0.55)", "rgba(137,87,229,0.55)", "rgba(255,255,255,0.12)"][i % 3] });
+            }
+            return root;
+          }
+          const screens = [0, 1, 2, 3].map((v) => { const r = ui(screen, v); r.style.opacity = 0; return r; });
+          // build v1 while "تعمل على تطبيق" (36.5 → 37.2)
+          tl.fromTo(screens[0], { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: EO }, 36.4);
+          shimmer(37.2, phone, 0, 0, PW, PH);
+          const swap = (t, a, b) => { tl.to(screens[a], { opacity: 0, scale: 0.94, duration: 0.35, ease: EI }, t); tl.fromTo(screens[b], { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.45, ease: EO }, t + 0.2); };
+          swap(39.3, 0, 1); swap(40.1, 1, 2); swap(40.6, 2, 3);
+          // version pill above the phone
+          const vp = ["Version 1", "Version 2", "Version 3", "Version 4"].map((t) => { const c = chip(cam, 540, 268, `<span class="en" style="font-weight:600">${t}</span>`); return c; });
+          centerChips(cam);
+          inUp(37.0, vp[0], 0.6, 16);
+          [[39.3, 0, 1], [40.1, 1, 2], [40.6, 2, 3]].forEach(([t, a, b]) => { tl.to(vp[a], { opacity: 0, y: -16, duration: 0.25 }, t); tl.fromTo(vp[b], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: EO }, t + 0.12); });
+          // version thumbnails row
+          const TW = 170, TH = 300, TY = 1230;
+          const thumbs = [0, 1, 2, 3].map((v) => {
+            const x = 110 + v * 225;
+            const t = box(cam, x, TY, TW, TH, "", "", { borderRadius: 26, background: "#0b0f15", border: "2px solid rgba(240,246,252,0.16)", overflow: "hidden", boxShadow: "0 24px 50px rgba(0,0,0,0.55)" });
+            const inner = ui(t, v, TW / (PW - 32));
+            const lab = box(cam, x, TY + TH + 16, TW, 44, "row en", `<span style="font-size:24px;font-weight:600;width:100%;text-align:center">V${v + 1}</span>`);
+            return { t, lab, x };
+          });
+          const arrows = [0, 1, 2].map((i) => box(cam, 110 + i * 225 + TW + 6, TY + TH / 2 - 22, 44, 44, "", ico("arrowRight", 40, "#8b949e")));
+          [37.2, 39.3, 40.1, 40.6].forEach((t, i) => { tl.fromTo(thumbs[i].t, { opacity: 0, y: 50, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.5)" }, t + 0.25); inUp(t + 0.35, thumbs[i].lab, 0.5, 12); if (i > 0) inUp(t + 0.1, arrows[i - 1], 0.4, 0); });
+          // 41.6: the latest version breaks
+          const err = box(screen, 20, 520, PW - 72, 96, "row", `<div style="display:flex;align-items:center;gap:14px;padding:0 20px">${ico("alert", 34, "#fff")}<span class="en" style="font-size:24px;font-weight:700">Error</span></div>`, { borderRadius: 20, background: "linear-gradient(120deg,#da3633,#f85149)", boxShadow: "0 18px 40px rgba(248,81,73,0.45)" });
+          tl.fromTo(err, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(2)" }, 41.6);
+          tl.to(phone, { keyframes: { x: [0, -14, 12, -9, 6, -3, 0] }, duration: 0.6, ease: "none" }, 41.7);
+          tl.to(thumbs[3].t, { borderColor: "#f85149", boxShadow: "0 0 50px rgba(248,81,73,0.55)", duration: 0.4 }, 41.8);
+          const bad = box(cam, thumbs[3].x + TW - 30, TY - 26, 56, 56, "", ico("x", 56, "#f85149"), { borderRadius: "50%", background: "#0d1117" });
+          pop(41.9, bad);
+          // 43.2: the older version was better
+          tl.to([thumbs[0].t, thumbs[2].t, thumbs[3].t], { opacity: 0.35, duration: 0.6 }, 43.2);
+          tl.to(thumbs[1].t, { borderColor: "#3fb950", boxShadow: "0 0 60px rgba(63,185,80,0.55)", scale: 1.08, duration: 0.6, ease: "back.out(2)" }, 43.4);
+          const star = box(cam, thumbs[1].x + TW - 30, TY - 26, 56, 56, "", ico("star", 52, "#e3b341", "filter: drop-shadow(0 0 14px rgba(227,179,65,0.8))"));
+          pop(43.7, star);
+          // 45.5–48.3: start from zero? — no.
+          out(45.4, vp[3], 0.4);
+          const zero = chip(cam, 540, 268, `<span class="ar" style="font-weight:700">مِنَ الصِّفْرِ؟</span>`);
+          centerChips(cam);
+          inUp(46.9, zero, 0.5, 14);
+          const blank = box(screen, 0, 0, PW - 32, PH - 32, "row", `<div style="width:100%;text-align:center" class="en"><span style="font-size:150px;font-weight:800;color:rgba(255,255,255,0.12)">0</span></div>`, { background: "#0b0f15" });
+          tl.fromTo(blank, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 46.2);
+          const strike = box(zero, 18, 36, 0, 5, "", "", { background: "#f85149", borderRadius: 3 });
+          tl.to(strike, { width: 290, duration: 0.45, ease: IO }, 47.8);
+          tl.to(blank, { opacity: 0, duration: 0.5 }, 48.3);
+          out(48.6, zero, 0.4);
+          // 50.3 / 50.7: Git + GitHub
+          const gg = mk("div", "abs row", cam, { left: 0, top: 262, width: 1080, height: 90, justifyContent: "center", gap: "22px" }, "");
+          const gChip = mk("div", "chip", gg, { position: "relative" }, `<span style="width:30px;height:30px;border-radius:7px;background:#f05033;transform:rotate(45deg);display:block"></span><span class="en" style="font-weight:800">Git</span>`);
+          const plus = mk("div", "en", gg, { fontSize: 44, color: "#8b949e", fontWeight: 600 }, "+");
+          const hChip = mk("div", "chip", gg, { position: "relative" }, `${ico("mark", 34, "#fff")}<span class="en" style="font-weight:800">GitHub</span>`);
+          pop(50.3, gChip); pop(50.5, plus); pop(50.7, hChip);
+          out(51.3, gg, 0.4);
+          const back = line(cam, "الرُّجُوعُ إِلَى الْإِصْدَارَاتِ السَّابِقَةِ", 262, 50, "ar gradc");
+          maskRTL(51.4, back.el, 0.9);
+          // 51.4: thumbnails collapse into a version rail; playhead travels back v4 → v3 → v2
+          const RY = 1290;
+          const svg = svgLayer(cam);
+          const railP = path(svg, `M170 ${RY} L910 ${RY}`, "rgba(121,192,255,0.5)", 4);
+          thumbs.forEach((th, i) => {
+            tl.to(th.t, { scale: 0.18, y: RY - TY - TH / 2, opacity: 0, duration: 0.6, ease: "power3.in" }, 51.4 + i * 0.05);
+            tl.to(th.lab, { y: RY - (TY + TH + 16) + 34, duration: 0.6, ease: IO }, 51.4);
+          });
+          tl.to(arrows, { opacity: 0, duration: 0.3 }, 51.4);
+          tl.to([bad, star], { opacity: 0, duration: 0.3 }, 51.4);
+          draw(51.7, railP, 0.6);
+          const rnodes = [0, 1, 2, 3].map((i) => { const n = box(cam, 170 + i * 246 - 22, RY - 22, 44, 44, "", "", { borderRadius: "50%", background: "#0d1117", border: "4px solid #79c0ff", boxShadow: "0 0 24px rgba(121,192,255,0.6)" }); pop(51.8 + i * 0.08, n, 0.4); return n; });
+          tl.to(thumbs.map((t) => t.lab), { x: (i) => 170 + i * 246 - (thumbs[i].x + TW / 2), opacity: 1, duration: 0.6, ease: IO }, 51.6);
+          const ph = box(cam, 170 + 3 * 246 - 40, RY - 40, 80, 80, "", "", { borderRadius: "50%", border: "4px solid #7ee2e8", boxShadow: "0 0 40px rgba(126,226,232,0.8)" });
+          pop(52.1, ph, 0.4);
+          const trail = box(cam, 170 + 3 * 246, RY - 3, 0, 6, "", "", { background: "linear-gradient(90deg, rgba(126,226,232,0), #7ee2e8)", borderRadius: 3 });
+          tl.to(ph, { x: -246, duration: 0.55, ease: IO }, 52.4);
+          tl.to(ph, { x: -492, duration: 0.55, ease: IO }, 53.0);
+          tl.fromTo(trail, { width: 0, x: 0 }, { width: 492, x: -492, duration: 1.15, ease: IO }, 52.4);
+          tl.to(trail, { opacity: 0, duration: 0.6 }, 53.7);
+          // the phone rewinds with the playhead
+          const rew = box(screen, 0, 0, PW - 32, PH - 32, "", "", { background: "repeating-linear-gradient(0deg, rgba(126,226,232,0.10) 0 3px, rgba(0,0,0,0) 3px 14px)" });
+          tl.fromTo(rew, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 52.4);
+          tl.to(rew, { opacity: 0, duration: 0.3 }, 53.5);
+          tl.to(err, { opacity: 0, duration: 0.25 }, 52.4);
+          tl.to(screens[3], { opacity: 0, duration: 0.25 }, 52.45);
+          tl.to(screens[2], { opacity: 1, scale: 1, duration: 0.25 }, 52.55);
+          tl.to(screens[2], { opacity: 0, duration: 0.25 }, 53.05);
+          tl.to(screens[1], { opacity: 1, scale: 1, duration: 0.35 }, 53.15);
+          tl.to(rnodes[1], { borderColor: "#3fb950", boxShadow: "0 0 34px rgba(63,185,80,0.9)", scale: 1.25, duration: 0.4, ease: "back.out(2)" }, 53.3);
+          const ok = box(screen, 20, 560, PW - 72, 92, "row", `<div style="display:flex;align-items:center;gap:12px;padding:0 18px;direction:rtl">${ico("check", 32, "#fff")}<span class="ar" style="font-size:25px;font-weight:700">تَمَّتِ الِاسْتِعَادَةُ</span></div>`, { borderRadius: 20, background: "linear-gradient(120deg,#238636,#3fb950)", boxShadow: "0 18px 40px rgba(63,185,80,0.45)", justifyContent: "center" });
+          tl.fromTo(ok, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(2)" }, 53.4);
+          // 53.8–58.8: what changed / when / who
+          const card = box(cam, 70, 1390, 940, 330, "glass-dark");
+          inUp(53.9, card, 0.7, 40);
+          const det = [
+            ["مَا الَّذِي تَغَيَّرَ؟", `<span class="mono" style="font-size:25px"><span style="color:#3fb950">+12</span>&nbsp;&nbsp;<span style="color:#f85149">−4</span>&nbsp;&nbsp;<span style="color:#c9d1d9">app/theme.js</span></span>`, 55.1, "fileCode"],
+            ["مَتَى؟", `<span class="mono" style="font-size:25px;color:#c9d1d9">Oct 4 · 14:32</span>`, 56.2, "clock"],
+            ["مَنْ؟", `<span style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,#2f81f7,#39c5cf);display:flex;align-items:center;justify-content:center;font-family:PlexAr;font-weight:700;font-size:20px">س</span><span class="mono" style="font-size:25px;color:#c9d1d9">@sara</span></span>`, 57.5, "person"],
+          ];
+          det.forEach(([q, v, t, ic], i) => {
+            const r = box(card, 30, 26 + i * 98, 880, 86, "row", `<div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 22px"><div style="display:flex;align-items:center">${v}</div><div style="display:flex;align-items:center;gap:14px"><span class="ar" style="font-size:32px;font-weight:700">${q}</span>${ico(ic, 32, "#79c0ff")}</div></div>`, { borderRadius: 16, background: "rgba(255,255,255,0.03)" });
+            tl.fromTo(r, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.55, ease: EO }, t);
+            tl.fromTo(r, { backgroundColor: "rgba(121,192,255,0.16)" }, { backgroundColor: "rgba(255,255,255,0.03)", duration: 1.2, immediateRender: false }, t + 0.3);
+          });
+          camOut(59.8, cam, 0.7);
+        })();
+
+        // =====================================================================
+        // D — 59.7 → 73.7  Repository: everything in one place
+        // =====================================================================
+        (function sceneD() {
+          const cam = $("camD");
+          camIn(59.8, cam, 0.8);
+          // "+ New repository" — pressed at 61.4
+          const btn = box(cam, 290, 900, 500, 110, "row", `<div style="display:flex;align-items:center;justify-content:center;gap:16px;width:100%">${ico("repo", 40, "#fff")}<span class="en" style="font-size:34px;font-weight:700">New repository</span></div>`, { borderRadius: 26, background: "linear-gradient(180deg,#2ea043,#238636)", boxShadow: "0 0 60px rgba(46,160,67,0.4), 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.25)" });
+          inScale(60.4, btn, 0.7);
+          const cur = box(cam, 700, 1120, 54, 70, "", `<svg width="54" height="70" viewBox="0 0 27 35"><path d="M2 2 L2 28 L9 21 L14 32 L18 30 L13 19.5 L23 19.5 Z" fill="#fff" stroke="#0d1117" stroke-width="2" stroke-linejoin="round"/></svg>`);
+          tl.fromTo(cur, { opacity: 0, x: 160, y: 200 }, { opacity: 1, x: 0, y: 0, duration: 0.8, ease: EO }, 60.6);
+          tl.to(btn, { scale: 0.94, duration: 0.12, ease: "power2.out" }, 61.45);
+          tl.to(btn, { scale: 1, duration: 0.3, ease: "back.out(3)" }, 61.57);
+          const ripple = box(cam, 440, 855, 200, 200, "", "", { borderRadius: "50%", border: "3px solid rgba(126,231,135,0.8)" });
+          tl.fromTo(ripple, { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 2.4, duration: 0.8, ease: "power2.out" }, 61.5);
+          tl.to([btn, cur], { opacity: 0, scale: 0.6, y: -200, filter: "blur(10px)", duration: 0.6, ease: EI }, 62.1);
+          // titles
+          const t1 = line(cam, "Repository", 200, 122, "en grad", { fw: 800, lh: 1.2, css: { letterSpacing: "-3px" } });
+          tl.fromTo(t1.el, { opacity: 0, scale: 1.14, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.0, ease: EO }, 62.6);
+          const t2 = line(cam, "الْمُسْتَوْدَعُ", 370, 72, "ar gradc");
+          maskRTL(63.7, t2.el, 0.9);
+          // 3D file tree assembles
+          const tree = box(cam, 0, 0, 1080, 1920);
+          tl.fromTo(tree, { rotationY: -12, rotationX: 8, transformPerspective: 1800, transformOrigin: "50% 50%" }, { rotationY: 8, rotationX: 4, transformPerspective: 1800, duration: 9, ease: SO }, 64.0);
+          const tsvg = svgLayer(tree);
+          const items = [
+            ["repo", "my-project/", 130, 560, 0, "#cfe3ff"],
+            ["book", "README.md", 230, 660, 1, "#c9d1d9"],
+            ["folder", "src/", 230, 750, 1, "#79c0ff"],
+            ["fileCode", "main.py", 330, 840, 2, "#d2a8ff"],
+            ["fileCode", "main.dart", 330, 930, 2, "#d2a8ff"],
+            ["folder", "lib/", 230, 1020, 1, "#79c0ff"],
+            ["folder", "assets/", 230, 1110, 1, "#79c0ff"],
+            ["gear", "config.yml", 230, 1200, 1, "#c9d1d9"],
+            ["history", ".git/  commit history", 230, 1290, 1, "#7ee2e8"],
+          ];
+          const R = rng(42);
+          const tEls = items.map(([ic, n, x, y, lvl, col], i) => {
+            const w = lvl === 0 ? 400 : ic === "history" ? 440 : 330;
+            const e = box(tree, x, y, w, 72, "pill", `${ico(ic, 30, col)}<span class="${ic === "history" ? "mono" : "mono"}" style="font-size:25px;color:#e6edf3">${n}</span>`, { borderRadius: 18 });
+            const t = 64.5 + i * 0.2;
+            tl.fromTo(e, { opacity: 0, x: (R() - 0.5) * 900, y: (R() - 0.5) * 900, rotation: (R() - 0.5) * 60, scale: 0.6, filter: "blur(12px)" }, { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, filter: "blur(0px)", duration: 1.0, ease: "power3.out" }, t);
+            return e;
+          });
+          // tree connectors
+          const conn = (x, y1, y2s) => { const d = `M${x} ${y1} L${x} ${y2s[y2s.length - 1]}` + y2s.map((y) => ` M${x} ${y} L${x + 30} ${y}`).join(""); const p = path(tsvg, d, "rgba(121,192,255,0.45)", 3); return p; };
+          draw(66.2, conn(170, 632, [696, 786, 1056, 1146, 1236, 1326]), 1.0);
+          draw(66.5, conn(270, 822, [876, 966]), 0.6);
+          // labels synced to "ملفات مشروعك" 67.2 / "أكوادك" 68.7 / "سجل التعديلات" 70.1
+          const lbl = (y, txt, t, col) => { const c = box(tree, 640, y, 410, 72, "row ar", `<span style="font-size:32px;font-weight:700;color:${col};width:100%;text-align:right">${txt}</span>`); tl.fromTo(c, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.6, ease: EO }, t); return c; };
+          const glowItem = (els, t, col) => els.forEach((e) => { tl.to(e, { borderColor: col, boxShadow: `0 0 40px ${col}66, 0 16px 36px rgba(0,0,0,0.45)`, duration: 0.5 }, t); });
+          lbl(660, "مَلَفَّاتُ مَشْرُوعِكَ", 67.2, "#cfe3ff"); glowItem([tEls[1], tEls[6], tEls[7]], 67.2, "#79c0ff");
+          lbl(885, "أَكْوَادُكَ", 68.7, "#d2a8ff"); glowItem([tEls[3], tEls[4], tEls[5]], 68.7, "#d2a8ff");
+          lbl(1290, "", 70.1, "#7ee2e8"); glowItem([tEls[8]], 70.1, "#7ee2e8");
+          // commit history strip
+          const hs = box(cam, 90, 1462, 900, 110, "glass row", "", { borderRadius: 24 });
+          inUp(70.1, hs, 0.6, 30);
+          const hsvg = svgLayer(hs); hsvg.setAttribute("viewBox", "0 0 900 110"); hsvg.style.width = "900px"; hsvg.style.height = "110px";
+          const hl = path(hsvg, "M60 55 L840 55", "rgba(126,226,232,0.6)", 4); draw(70.3, hl, 0.8);
+          const hashes = ["e1a", "7c2", "b9f", "4d0", "a3e", "f52"];
+          hashes.forEach((h, i) => { const d = box(hs, 60 + i * 156 - 14, 41, 28, 28, "", "", { borderRadius: "50%", background: "#0d1117", border: "4px solid #7ee2e8" }); pop(70.4 + i * 0.12, d, 0.35); const tx = box(hs, 60 + i * 156 - 40, 74, 80, 30, "mono", `<span style="font-size:18px;color:#8b949e;display:block;text-align:center">${h}</span>`); inUp(70.5 + i * 0.12, tx, 0.4, 8); });
+          const histLbl = box(cam, 90, 1396, 900, 56, "row ar", `<span style="font-size:32px;font-weight:700;color:#7ee2e8;width:100%;text-align:center">سِجِلُّ التَّعْدِيلَاتِ</span>`);
+          inUp(70.1, histLbl, 0.6, 16);
+          // 71.4: "your project in one place" — tree consolidates
+          const one = line(cam, "مَشْرُوعُكَ فِي مَكَانٍ وَاحِدٍ", 1620, 62, "ar", { css: { color: "#f3f6fa" } });
+          words(71.3, one.ws, [71.3, 71.55, 71.8, 72.05]);
+          tl.to(tree, { scale: 0.9, opacity: 0.5, filter: "blur(2px)", duration: 1.2, ease: IO }, 72.0);
+          camOut(73.0, cam, 0.7, 0.9);
+        })();
+
+        // =====================================================================
+        // E — 73.0 → 91.5  More than storage → teamwork → independent branches
+        // =====================================================================
+        (function sceneE() {
+          const cam = $("camE");
+          camIn(73.0, cam, 0.8);
+          const CX = 540, CY = 980;
+          const svg = svgLayer(cam);
+          const repo = box(cam, CX - 110, CY - 110, 220, 220, "glass", "", { borderRadius: 54, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 90px rgba(47,129,247,0.4), 0 40px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25)" });
+          repo.innerHTML = ico("mark", 110, "#ffffff");
+          inScale(73.3, repo, 0.9, 0.6);
+          tl.to(repo, { boxShadow: "0 0 170px rgba(121,192,255,0.75), 0 40px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3)", duration: 0.6, ease: SO, yoyo: true, repeat: 1 }, 74.6);
+          [0, 1, 2].forEach((k) => { const ring = box(cam, CX - 150, CY - 150, 300, 300, "", "", { borderRadius: "50%", border: "2px solid rgba(121,192,255,0.6)" }); tl.fromTo(ring, { opacity: 0.8, scale: 0.7 }, { opacity: 0, scale: 3.2, duration: 2.2, ease: "power2.out" }, 75.6 + k * 0.45); });
+          const more = line(cam, "أَكْثَرُ مِنْ حِفْظِ الْمَلَفَّاتِ", 290, 64, "ar");
+          words(75.5, more.ws, [75.5, 76.1, 76.4, 76.9]);
+          out(77.8, more.el, 0.5);
+          // developers around the project
+          const names = ["سارة", "عمر", "لينا", "يوسف", "مايا"], roles = ["UI", "API", "Tests", "Docs", "Search"];
+          const ang = [-90, -18, 54, 126, 198].map((a) => (a * Math.PI) / 180);
+          const devs = ang.map((a, i) => {
+            const x = CX + Math.cos(a) * 380, y = CY + Math.sin(a) * 380;
+            const g = box(cam, x - 100, y - 95, 200, 190);
+            avatar(g, 100, 58, 104, AV[i][0], AV[i][1], AV[i][2]);
+            box(g, 0, 118, 200, 36, "row ar", `<span style="font-size:27px;font-weight:700;width:100%;text-align:center">${names[i]}</span>`);
+            box(g, 50, 156, 100, 32, "row en", `<span style="font-size:19px;color:#b1bac4;width:100%;text-align:center;border:1.5px solid #30363d;border-radius:12px;padding:3px 0">${roles[i]}</span>`);
+            pop(79.0 + i * 0.18, g, 0.6);
+            const p = path(svg, `M${x} ${y} L${CX} ${CY}`, "rgba(121,192,255,0.55)", 3);
+            draw(80.5 + i * 0.08, p, 0.6);
+            const pulse = box(cam, -8, -8, 16, 16, "", "", { borderRadius: "50%", background: "#bfe1ff", boxShadow: "0 0 16px #79c0ff" });
+            const pr = { v: 0 };
+            tl.fromTo(pr, { v: 0 }, { v: 1, duration: 0.9, ease: "power1.inOut", repeat: 1, onUpdate: () => { pulse.style.left = x + (CX - x) * pr.v - 8 + "px"; pulse.style.top = y + (CY - y) * pr.v - 8 + "px"; } }, 81.0 + i * 0.22);
+            tl.fromTo(pulse, { opacity: 0 }, { opacity: 1, duration: 0.15 }, 81.0 + i * 0.22);
+            fade(82.8, pulse, 0, 0.3);
+            const badge = box(cam, x + 40, y - 120, 90, 44, "row mono", `<span style="font-size:22px;font-weight:600;color:${i % 2 ? "#f85149" : "#3fb950"};width:100%;text-align:center">${i % 2 ? "−" + (i + 1) : "+" + (i + 3)}</span>`, { borderRadius: 12, background: "rgba(13,17,23,0.9)", border: "1.5px solid rgba(240,246,252,0.15)" });
+            pop(81.1 + i * 0.2, badge, 0.4);
+            tl.to(badge, { opacity: 0, y: -20, duration: 0.4 }, 82.4);
+            return { g, p, x, y };
+          });
+          const team = line(cam, "الْعَمَلُ الْجَمَاعِيُّ", 270, 74, "ar gradc");
+          maskRTL(80.5, team.el, 0.9);
+          // 82.6 → branches
+          out(82.5, team.el, 0.5);
+          devs.forEach((d, i) => { tl.to(d.g, { x: (d.x - CX) * 0.6, y: (d.y - CY) * 0.6, opacity: 0, scale: 0.6, duration: 0.7, ease: EI }, 82.6 + i * 0.04); tl.to(d.p, { opacity: 0, duration: 0.4 }, 82.6); });
+          tl.to(repo, { y: 560 - CY, scale: 0.45, duration: 0.9, ease: IO }, 82.7);
+          const t1 = line(cam, "Branches", 190, 96, "en grad", { fw: 800, lh: 1.2, css: { letterSpacing: "-2px" } });
+          tl.fromTo(t1.el, { opacity: 0, scale: 1.14, filter: "blur(12px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.9, ease: EO }, 83.7);
+          const t2 = line(cam, "فُرُوعٌ مُسْتَقِلَّةٌ", 318, 56, "ar", { css: { color: "#cfe3ff" } });
+          maskRTL(84.2, t2.el, 0.8);
+          // branch graph (slight 3D tilt)
+          const gwrap = box(cam, 0, 0, 1080, 1920);
+          tl.fromTo(gwrap, { rotationX: 14, transformPerspective: 1800, transformOrigin: "50% 60%" }, { rotationX: 4, transformPerspective: 1800, duration: 8, ease: SO }, 83.0);
+          const g = svgLayer(gwrap);
+          g.insertAdjacentHTML("afterbegin", '<defs><filter id="glw" filterUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1920"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>');
+          const main = path(g, "M540 640 L540 1640", "#79c0ff", 8, { filter: "url(#glw)" });
+          draw(82.8, main, 0.9, "power2.out");
+          const mainLbl = box(gwrap, 360, 660, 150, 56, "row mono", `<span style="font-size:26px;font-weight:600;color:#79c0ff;width:100%;text-align:center">main</span>`, { borderRadius: 14, background: "rgba(13,17,23,0.9)", border: "2px solid rgba(121,192,255,0.55)" });
+          pop(83.2, mainLbl, 0.45);
+          [760, 1000, 1240, 1480].forEach((y, i) => { const d = box(gwrap, 540 - 16, y - 16, 32, 32, "", "", { borderRadius: "50%", background: "#0d1117", border: "5px solid #79c0ff" }); pop(83.0 + i * 0.15, d, 0.35); });
+          const B = [
+            ["feature/new-ui", "#7ee2e8", "M540 690 C540 770 820 740 820 830 L820 1070", 820, 620, 83.7, [[900, 86.3], [1010, 87.6]]],
+            ["feature/search", "#d2a8ff", "M540 800 C540 880 255 860 255 960 L255 1420", 255, 735, 84.2, [[1080, 86.6], [1260, 88.2]]],
+            ["bugfix/login", "#e3b341", "M540 1200 C540 1280 820 1260 820 1360 L820 1600", 820, 1130, 85.7, [[1440, 87.0], [1540, 88.8]]],
+          ];
+          B.forEach(([name, col, d, lx, ly, t, cms]) => {
+            const p = path(g, d, col, 7, { filter: "url(#glw)" });
+            draw(t, p, 0.9, "power2.out");
+            const lb = box(gwrap, lx - 140, ly, 280, 56, "row mono", `<span style="font-size:24px;font-weight:600;color:${col};width:100%;text-align:center">${name}</span>`, { borderRadius: 14, background: "rgba(13,17,23,0.92)", border: `2px solid ${col}88` });
+            pop(t + 0.3, lb, 0.45);
+            cms.forEach(([y, tt]) => { const c = box(gwrap, lx - 16, y - 16, 32, 32, "", "", { borderRadius: "50%", background: "#0d1117", border: `5px solid ${col}`, boxShadow: `0 0 20px ${col}` }); pop(tt, c, 0.4); });
+          });
+          // 86.9–90.1: main stays stable
+          tl.to(main, { attr: { "stroke-width": 11 }, duration: 0.8, ease: SO, yoyo: true, repeat: 3 }, 86.9);
+          const stable = chip(cam, 540, 1690, `${ico("shield", 32, "#3fb950")}<span class="ar" style="font-weight:700">النُّسْخَةُ الْأَسَاسِيَّةُ</span><span class="en" style="font-size:26px;color:#3fb950;font-weight:700">main ✓</span>`);
+          centerChips(cam);
+          inUp(89.4, stable, 0.6, 20);
+          tl.fromTo(cam, { scale: 1 }, { scale: 1.035, duration: 7, ease: SO }, 83.5);
+          camOut(90.8, cam, 0.7);
+        })();
+
+        // =====================================================================
+        // F — 90.8 → 99.6  Pull Request: review, approve, merge
+        // =====================================================================
+        (function sceneF() {
+          const cam = $("camF");
+          camIn(90.9, cam, 0.7);
+          const k1 = line(cam, "مُرَاجَعَةٌ ثُمَّ دَمْجٌ", 230, 56, "ar", { css: { color: "#cfe3ff" } });
+          maskRTL(92.3, k1.el, 0.8);
+          out(97.4, k1.el, 0.4);
+          const t1 = line(cam, "Pull Request", 196, 104, "en grad", { fw: 800, lh: 1.2, css: { letterSpacing: "-2px" } });
+          tl.fromTo(t1.el, { opacity: 0, scale: 1.14, filter: "blur(12px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.8, ease: EO }, 97.6);
+          // PR panel
+          const P = box(cam, 60, 380, 960, 900, "glass-dark");
+          tl.fromTo(P, { opacity: 0, y: 160, rotationX: 18, transformPerspective: 1800 }, { opacity: 1, y: 0, rotationX: 0, transformPerspective: 1800, duration: 1.0, ease: EO }, 92.3);
+          const head = box(P, 34, 30, 892, 70, "row", `<div style="display:flex;align-items:center;gap:16px">${ico("pr", 40, "#3fb950")}<span class="en" style="font-size:36px;font-weight:700">Add new UI theme</span><span class="en muted" style="font-size:34px">#42</span></div>`);
+          const stOpen = box(P, 34, 112, 150, 48, "row", `<span class="en" style="font-size:22px;font-weight:700;display:flex;gap:8px;align-items:center;padding:0 16px">${ico("pr", 22, "#fff")}Open</span>`, { borderRadius: 24, background: "#238636" });
+          const stMerged = box(P, 34, 112, 180, 48, "row", `<span class="en" style="font-size:22px;font-weight:700;display:flex;gap:8px;align-items:center;padding:0 16px">${ico("merge", 22, "#fff")}Merged</span>`, { borderRadius: 24, background: "#8957e5", opacity: 0 });
+          box(P, 230, 112, 700, 48, "row", `<span class="en muted" style="font-size:21px">sara wants to merge into <span class="mono" style="color:#79c0ff">main</span> from <span class="mono" style="color:#7ee2e8">feature/new-ui</span></span>`);
+          box(P, 0, 186, 960, 64, "row", `<div style="display:flex;gap:30px;padding:0 34px" class="en"><span style="font-size:22px;color:#8b949e">Conversation</span><span style="font-size:22px;color:#8b949e">Commits 3</span><span style="font-size:22px;color:#e6edf3;border-bottom:3px solid #f78166;padding-bottom:8px">Files changed 2</span></div>`, { borderBottom: "1.5px solid rgba(240,246,252,0.08)" });
+          const diff = box(P, 34, 274, 892, 330, "", "", { borderRadius: 16, border: "1.5px solid rgba(240,246,252,0.1)", overflow: "hidden" });
+          box(diff, 0, 0, 892, 52, "row", `<span class="mono" style="font-size:20px;color:#c9d1d9;padding:0 20px">src/ui/theme.js</span><span class="mono" style="font-size:19px;padding:0 6px;color:#3fb950">+3</span><span class="mono" style="font-size:19px;color:#f85149">−2</span>`, { background: "rgba(255,255,255,0.04)", borderBottom: "1.5px solid rgba(240,246,252,0.08)" });
+          const DL = [["-", 'const theme = <span style="color:#a5d6ff">"light"</span>;'], ["-", "const radius = <span style=\"color:#79c0ff\">4</span>;"], ["+", 'const theme = <span style="color:#a5d6ff">"dark"</span>;'], ["+", "const radius = <span style=\"color:#79c0ff\">12</span>;"], ["+", "const glass = <span style=\"color:#79c0ff\">true</span>;"]];
+          const dls = DL.map(([g, h], i) => { const e = mk("div", "codeline mono", diff, { top: 58 + i * 52, width: 892, paddingLeft: 20, background: g === "+" ? "rgba(63,185,80,0.14)" : "rgba(248,81,73,0.14)", fontSize: 24 }, `<span style="width:36px;display:inline-block;color:${g === "+" ? "#3fb950" : "#f85149"}">${g}</span><span style="color:#c9d1d9">${h}</span>`); tl.fromTo(e, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: EO }, 93.0 + i * 0.16); return e; });
+          // reviewer comment (Arabic)
+          const cm = box(P, 34, 628, 892, 110, "row", `<div style="display:flex;align-items:center;gap:18px;padding:0 22px;width:100%;direction:rtl"><span style="width:58px;height:58px;border-radius:50%;background:linear-gradient(140deg,#8957e5,#2f81f7);display:flex;align-items:center;justify-content:center;font-family:PlexAr;font-weight:700;font-size:28px;flex:none">ع</span><span class="ar" style="font-size:31px;font-weight:500">عَمَلٌ رَائِعٌ، جَاهِزٌ لِلدَّمْجِ</span>${ico("comment", 30, "#8b949e", "margin-right:auto")}</div>`, { borderRadius: 18, background: "rgba(255,255,255,0.04)", border: "1.5px solid rgba(240,246,252,0.1)" });
+          inUp(94.7, cm, 0.6, 24);
+          // review cursor
+          const cur = box(cam, 860, 760, 46, 60, "", `<svg width="46" height="60" viewBox="0 0 27 35"><path d="M2 2 L2 28 L9 21 L14 32 L18 30 L13 19.5 L23 19.5 Z" fill="#fff" stroke="#0d1117" stroke-width="2" stroke-linejoin="round"/></svg>`);
+          cur.style.zIndex = 5;
+          tl.fromTo(cur, { opacity: 0, x: 120, y: 60 }, { opacity: 1, x: 0, y: 0, duration: 0.5, ease: EO }, 93.8);
+          tl.to(cur, { keyframes: [{ x: -380, y: 0, duration: 0.5 }, { x: -200, y: 52, duration: 0.35 }, { x: -440, y: 104, duration: 0.35 }, { x: -260, y: 156, duration: 0.35 }], ease: SO }, 94.0);
+          const hl = box(diff, 0, 58, 892, 52, "", "", { background: "rgba(121,192,255,0.12)", borderLeft: "4px solid #79c0ff" });
+          tl.fromTo(hl, { opacity: 0, y: 0 }, { opacity: 1, duration: 0.2 }, 94.0);
+          tl.to(hl, { keyframes: [{ y: 52, duration: 0.35 }, { y: 104, duration: 0.35 }, { y: 156, duration: 0.35 }, { y: 208, duration: 0.3 }], ease: SO }, 94.2);
+          tl.to(hl, { opacity: 0, duration: 0.3 }, 95.4);
+          // approve 95.5
+          const appr = box(P, 34, 762, 892, 92, "row", `<div style="display:flex;align-items:center;gap:16px;padding:0 24px;width:100%">${ico("check", 40, "#3fb950")}<span class="en" style="font-size:31px;font-weight:700;color:#3fb950">Approve ✓</span><span class="en muted" style="font-size:22px;margin-left:auto">omar approved these changes</span></div>`, { borderRadius: 18, background: "rgba(63,185,80,0.10)", border: "1.5px solid rgba(63,185,80,0.45)" });
+          tl.to(cur, { x: -180, y: 380, duration: 0.45, ease: IO }, 95.1);
+          tl.fromTo(appr, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 95.5);
+          // merge button 96.4 → click 96.8 → merged 97.3
+          const mb = box(cam, 230, 1300, 620, 104, "row", `<div style="display:flex;align-items:center;justify-content:center;gap:16px;width:100%">${ico("merge", 40, "#fff")}<span class="en" style="font-size:34px;font-weight:700">Merge pull request</span></div>`, { borderRadius: 24, background: "linear-gradient(180deg,#2ea043,#238636)", boxShadow: "0 0 60px rgba(46,160,67,0.45), 0 30px 60px rgba(0,0,0,0.5)" });
+          inScale(96.3, mb, 0.6);
+          tl.to(cur, { x: -300, y: 590, duration: 0.45, ease: IO }, 96.3);
+          tl.to(mb, { scale: 0.94, duration: 0.12 }, 96.85);
+          tl.to(mb, { scale: 1, background: "linear-gradient(180deg,#8957e5,#6e40c9)", boxShadow: "0 0 70px rgba(137,87,229,0.6), 0 30px 60px rgba(0,0,0,0.5)", duration: 0.4, ease: "back.out(2)" }, 96.97);
+          tl.to(stOpen, { opacity: 0, duration: 0.3 }, 97.3);
+          tl.to(stMerged, { opacity: 1, duration: 0.3 }, 97.3);
+          tl.to(head.querySelector("svg"), { fill: "#a371f7", duration: 0.3 }, 97.3);
+          tl.to(cur, { opacity: 0, duration: 0.3 }, 97.4);
+          // mini branch graph: feature reconnects into main
+          const g = svgLayer(cam);
+          const mainP = path(g, "M110 1560 L970 1560", "#79c0ff", 7);
+          const featP = path(g, "M220 1560 C300 1560 300 1470 380 1470 L640 1470", "#7ee2e8", 7);
+          const mergeP = path(g, "M640 1470 C720 1470 720 1560 800 1560", "#a371f7", 7);
+          draw(91.0, mainP, 0.8); draw(91.3, featP, 0.8);
+          const done = box(cam, 640 - 22, 1470 - 22, 44, 44, "", ico("check", 44, "#3fb950"), { borderRadius: "50%", background: "#0d1117" });
+          pop(92.0, done, 0.4);
+          box(cam, 120, 1590, 120, 40, "mono", `<span style="font-size:22px;color:#79c0ff">main</span>`);
+          box(cam, 360, 1410, 280, 40, "mono", `<span style="font-size:22px;color:#7ee2e8">feature/new-ui</span>`);
+          draw(97.2, mergeP, 0.7, "power2.inOut");
+          const mnode = box(cam, 800 - 26, 1560 - 26, 52, 52, "", ico("merge", 52, "#a371f7"), { borderRadius: "50%", background: "#0d1117", boxShadow: "0 0 40px rgba(163,113,247,0.9)" });
+          pop(97.8, mnode, 0.5);
+          const burst = box(cam, 800 - 90, 1560 - 90, 180, 180, "", "", { borderRadius: "50%", border: "3px solid rgba(163,113,247,0.8)" });
+          tl.fromTo(burst, { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 2.2, duration: 0.9, ease: "power2.out" }, 97.85);
+          camOut(98.9, cam, 0.7);
+        })();
+
+        // =====================================================================
+        // G — 98.9 → 108.7  Issues: tracking bugs, organizing the team
+        // =====================================================================
+        (function sceneG() {
+          const cam = $("camG");
+          camIn(99.0, cam, 0.7);
+          const head = box(cam, 0, 190, 1080, 130, "row", `<div style="display:flex;align-items:center;justify-content:center;gap:24px;width:100%">${ico("issue", 84, "#3fb950")}<span class="en grad" style="font-size:104px;font-weight:800;letter-spacing:-2px;line-height:1.2">Issues</span></div>`);
+          inUp(100.2, head, 0.8, 30);
+          const k = line(cam, "تَتَبُّعُ الْأَخْطَاءِ وَالْمُشْكِلَاتِ", 340, 50, "ar", { css: { color: "#cfe3ff" } });
+          words(102.0, k.ws, [102.0, 102.8, 103.4]);
+          const list = box(cam, 60, 470, 960, 600, "glass-dark");
+          inUp(101.3, list, 0.7, 50);
+          const IS = [["Login button not responding", "Bug", "#f85149", 102.0], ["Add dark mode", "Feature", "#2f81f7", 102.4], ["Update README", "Documentation", "#39c5cf", 102.8], ["Improve search speed", "Enhancement", "#a371f7", 103.2]];
+          const rows = IS.map(([t, l, c, at], i) => {
+            const r = box(list, 24, 24 + i * 140, 912, 124, "row", `<div style="display:flex;align-items:center;gap:20px;padding:0 24px;width:100%"><span class="ic">${ico("issue", 36, "#3fb950")}</span><div style="display:flex;flex-direction:column;gap:10px"><span class="en" style="font-size:28px;font-weight:600">${t}</span><span class="en" style="font-size:20px;font-weight:700;color:${c};border:1.5px solid ${c}99;background:${c}22;border-radius:14px;padding:3px 14px;align-self:flex-start">${l}</span></div><span class="mono muted" style="margin-left:auto;font-size:20px">#${17 + i * 3}</span></div>`, { borderRadius: 18, background: "rgba(255,255,255,0.03)", border: "1.5px solid rgba(240,246,252,0.06)" });
+            tl.fromTo(r, { opacity: 0, x: 80, filter: "blur(8px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.55, ease: EO }, at);
+            return r;
+          });
+          // 104.0: organize the team's work — the bug moves through a workflow
+          tl.to(rows[0], { borderColor: "rgba(248,81,73,0.7)", boxShadow: "0 0 40px rgba(248,81,73,0.3)", scale: 1.02, duration: 0.5, ease: "back.out(2)" }, 104.0);
+          tl.to(rows.slice(1), { opacity: 0.5, duration: 0.5 }, 104.0);
+          const steps = ["Open", "Assigned", "In Progress", "Closed"], times = [104.0, 105.6, 106.3, 106.9], cols = ["#3fb950", "#2f81f7", "#d29922", "#a371f7"];
+          const sw = box(cam, 60, 1130, 960, 90, "row", "", { justifyContent: "space-between" });
+          const sEls = steps.map((s, i) => { const e = mk("div", "en", sw, { position: "relative", height: 70, padding: "0 22px", borderRadius: 35, display: "flex", alignItems: "center", fontSize: 25, fontWeight: 700, color: "#8b949e", border: "2px solid rgba(240,246,252,0.14)", background: "rgba(255,255,255,0.04)" }, s); return e; });
+          inUp(103.9, sw, 0.6, 30);
+          sEls.forEach((e, i) => {
+            tl.to(e, { color: "#fff", borderColor: cols[i], backgroundColor: cols[i] + "33", boxShadow: `0 0 34px ${cols[i]}77`, scale: 1.08, duration: 0.35, ease: "back.out(2)" }, times[i]);
+            if (i < 3) tl.to(e, { scale: 1, boxShadow: "0 0 0 rgba(0,0,0,0)", backgroundColor: cols[i] + "18", duration: 0.3 }, times[i + 1]);
+          });
+          // team members; omar takes the bug at 105.6
+          const avs = [0, 1, 2].map((i) => { const a = avatar(cam, 400 + i * 140, 1340, 96, AV[i][0], AV[i][1], AV[i][2]); pop(104.3 + i * 0.12, a, 0.5); return a; });
+          const asg = box(rows[0], 760, 34, 56, 56, "", "", { borderRadius: "50%", background: "linear-gradient(140deg,#8957e5,#2f81f7)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "PlexAr", fontWeight: 700, fontSize: 26 });
+          asg.textContent = "ع";
+          tl.to(avs[1], { y: -60, scale: 1.15, duration: 0.35, ease: "back.out(2)" }, 105.5);
+          pop(105.75, asg, 0.45);
+          tl.to(avs[1], { y: 0, scale: 1, duration: 0.4 }, 106.0);
+          tl.to(rows[0].querySelector(".ic svg"), { fill: "#a371f7", duration: 0.3 }, 106.9);
+          tl.to(rows[0], { borderColor: "rgba(163,113,247,0.7)", boxShadow: "0 0 40px rgba(163,113,247,0.35)", duration: 0.4 }, 106.9);
+          const pm = line(cam, "إِدَارَةُ الْمَشَارِيعِ", 1480, 70, "ar gradv");
+          maskRTL(104.6, pm.el, 0.9);
+          camOut(108.0, cam, 0.7);
+        })();
+
+        // =====================================================================
+        // H — 108.0 → 121.0  GitHub Actions: automation
+        // =====================================================================
+        (function sceneH() {
+          const cam = $("camH");
+          camIn(108.4, cam, 0.7);
+          const head = box(cam, 0, 170, 1080, 130, "row", `<div style="display:flex;align-items:center;justify-content:center;gap:22px;width:100%">${ico("play", 80, "#79c0ff")}<span class="en grad" style="font-size:88px;font-weight:800;letter-spacing:-2px;line-height:1.2">GitHub Actions</span></div>`);
+          tl.fromTo(head, { opacity: 0, scale: 0.9, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.9, ease: EO }, 109.7);
+          const sub = line(cam, "أَتْمَتَةُ الْمَهَامِّ", 312, 62, "ar gradc");
+          maskRTL(112.2, sub.el, 0.9);
+          const stages = [["CODE", "code"], ["COMMIT", "commit"], ["BUILD", "package"], ["TEST", "beaker"], ["DEPLOY", "rocket"]];
+          const Y0 = 470, GAP = 222, X = 240, W = 600, H = 150;
+          const svg = svgLayer(cam);
+          const spine = path(svg, `M540 ${Y0 + H} L540 ${Y0 + 4 * GAP}`, "rgba(121,192,255,0.35)", 4);
+          draw(110.6, spine, 1.4);
+          const nodes = stages.map(([n, ic], i) => {
+            const y = Y0 + i * GAP;
+            const nd = box(cam, X, y, W, H, "glass row", "", { borderRadius: 30 });
+            nd.innerHTML = `<div style="display:flex;align-items:center;gap:26px;padding:0 34px;width:100%"><span style="width:84px;height:84px;border-radius:22px;background:rgba(121,192,255,0.12);display:flex;align-items:center;justify-content:center">${ico(ic, 46, "#cfe3ff")}</span><span class="en" style="font-size:38px;font-weight:800;letter-spacing:3px">${n}</span><span class="st" style="margin-left:auto;position:relative;width:170px;height:60px"></span></div>`;
+            const st = nd.querySelector(".st");
+            const pend = mk("div", "abs row en", st, { left: 0, top: 0, width: 170, height: 60, justifyContent: "flex-end", gap: "10px", fontSize: 22, color: "#8b949e" }, `<span style="width:16px;height:16px;border-radius:50%;border:3px solid #8b949e"></span>pending`);
+            const run = mk("div", "abs row en", st, { left: 0, top: 0, width: 170, height: 60, justifyContent: "flex-end", gap: "10px", fontSize: 22, color: "#e3b341", opacity: 0 }, `<span class="spin" style="width:22px;height:22px;border-radius:50%;border:3px solid #e3b341;border-top-color:transparent;display:block"></span>running`);
+            const okLbl = ["Done ✓", "Done ✓", "Build ✓", "Tests ✓", "Deploy ✓"][i];
+            const ok = mk("div", "abs row en", st, { left: 0, top: 0, width: 170, height: 60, justifyContent: "flex-end", gap: "10px", fontSize: 26, fontWeight: 700, color: "#3fb950", opacity: 0 }, okLbl);
+            tl.fromTo(nd, { opacity: 0, x: i % 2 ? 80 : -80, filter: "blur(8px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.6, ease: EO }, 110.4 + i * 0.16);
+            return { nd, pend, run, ok, spin: run.querySelector(".spin"), y };
+          });
+          const status = (t, i, s) => {
+            const n = nodes[i];
+            const show = { pending: n.pend, running: n.run, ok: n.ok }[s];
+            tl.to([n.pend, n.run, n.ok].filter((e) => e !== show), { opacity: 0, duration: 0.15 }, t);
+            tl.to(show, { opacity: 1, duration: 0.2 }, t + 0.05);
+            if (s === "running") tl.fromTo(n.spin, { rotation: 0 }, { rotation: 720, duration: 1.2, ease: "none", immediateRender: false }, t);
+            if (s === "ok") { tl.to(n.nd, { borderColor: "rgba(63,185,80,0.6)", boxShadow: "0 0 46px rgba(63,185,80,0.28), 0 40px 90px rgba(0,0,0,0.55)", duration: 0.3 }, t); }
+            if (s === "pending") { tl.to(n.nd, { borderColor: "rgba(255,255,255,0.14)", boxShadow: "0 40px 90px rgba(0,0,0,0.55)", duration: 0.2 }, t); }
+          };
+          const pulse = (t, i) => {
+            const d = box(cam, 540 - 12, 0, 24, 24, "", "", { borderRadius: "50%", background: "#bfe1ff", boxShadow: "0 0 24px #79c0ff, 0 0 60px #2f81f7" });
+            tl.fromTo(d, { y: Y0 + i * GAP + H - 12, opacity: 0 }, { y: Y0 + (i + 1) * GAP - 12, opacity: 1, duration: 0.45, ease: "power1.inOut" }, t);
+            tl.to(d, { opacity: 0, duration: 0.15 }, t + 0.45);
+          };
+          // first run
+          status(112.2, 0, "running"); status(112.8, 0, "ok"); pulse(112.85, 0);
+          status(113.0, 1, "running"); status(113.5, 1, "ok"); pulse(113.55, 1);
+          status(113.6, 2, "running"); status(114.3, 2, "ok"); pulse(114.35, 2);
+          status(114.7, 3, "running"); status(115.6, 3, "ok"); pulse(115.65, 3);
+          tl.to(nodes[2].nd, { scale: 1.05, duration: 0.3, ease: "back.out(2)", yoyo: true, repeat: 1 }, 116.5);
+          status(116.6, 4, "running"); status(117.4, 4, "ok");
+          // automatic, on every update
+          const auto = chip(cam, 540, 1600, `${ico("sync", 32, "#7ee2e8")}<span class="ar" style="font-weight:700">تِلْقَائِيًّا عِنْدَ كُلِّ تَحْدِيثٍ</span>`);
+          centerChips(cam);
+          inUp(117.0, auto, 0.6, 20);
+          tl.fromTo(auto.querySelector("svg"), { rotation: 0 }, { rotation: 360, duration: 1.4, ease: IO, repeat: 2 }, 117.2);
+          const upd = box(cam, 60, Y0 + 40, 170, 70, "row", `<span class="en" style="font-size:22px;font-weight:700;color:#7ee2e8;display:flex;gap:8px;align-items:center;padding:0 14px">${ico("plus", 22, "#7ee2e8")}update</span>`, { borderRadius: 18, border: "2px solid rgba(126,226,232,0.6)", background: "rgba(13,17,23,0.9)" });
+          tl.fromTo(upd, { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.5, ease: EO }, 118.5);
+          tl.to(upd, { x: 120, opacity: 0, scale: 0.6, duration: 0.4, ease: EI }, 119.0);
+          [0, 1, 2, 3, 4].forEach((i) => status(118.85, i, "pending"));
+          [0, 1, 2, 3, 4].forEach((i) => { status(119.05 + i * 0.25, i, "ok"); if (i < 4) pulse(119.1 + i * 0.25, i); });
+          tl.fromTo(cam, { y: 0 }, { y: -26, duration: 11, ease: SO }, 109.0);
+          // hand-off: pipeline collapses into a single point (becomes a node of the global network)
+          tl.to(cam, { scale: 0.18, opacity: 0, filter: "blur(6px)", duration: 1.0, ease: "power3.in" }, 120.1);
+        })();
+
+        // =====================================================================
+        // I — 120.2 → 137.1  Open source: a worldwide network (canvas globe)
+        // =====================================================================
+        (function sceneI() {
+          const cam = $("camI");
+          tl.fromTo(cam, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: SO }, 120.3);
+          const cv = mk("canvas", "abs", cam, { left: 0, top: 0, width: 1080, height: 1920 });
+          cv.width = 1080; cv.height = 1920;
+          const ctx = cv.getContext("2d");
+          const R = rng(2024), N = 900, pts = [];
+          for (let i = 0; i < N; i++) { const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = i * 2.399963; pts.push([Math.cos(th) * r, y, Math.sin(th) * r]); }
+          const devs = [], repos = [];
+          for (let i = 0; i < 70; i++) devs.push({ p: pts[Math.floor(R() * N)], t: 120.6 + R() * 3.6 });
+          for (let i = 0; i < 260; i++) repos.push({ p: pts[Math.floor(R() * N)], t: i < 60 ? 120.8 + R() * 2.4 : 123.9 + R() * 1.8 });
+          const arcs = [];
+          for (let i = 0; i < 46; i++) arcs.push({ a: devs[i % devs.length].p, b: repos[Math.floor(R() * 120)].p, t: 124.0 + R() * 2.2, sp: 0.35 + R() * 0.35, ph: R() });
+          for (let i = 0; i < 40; i++) arcs.push({ a: devs[(i * 7) % devs.length].p, b: repos[Math.floor(R() * 200)].p, t: 130.5 + R() * 1.2, sp: 0.5 + R() * 0.4, ph: R(), pr: true });
+          const st = { t: 120.2 };
+          const CX = 540, CY = 1000;
+          function zoomAt(t) { const u = Math.min(1, Math.max(0, (t - 120.3) / 3.4)); const e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; let s = 2.1 + (1 - 2.1) * e; if (t > 126.6) s *= 1 + Math.min(1, (t - 126.6) / 9) * 0.06; if (t > 136.3) s *= Math.max(0.05, 1 - (t - 136.3) / 0.8); return s; }
+          function proj(p, rot, tilt, Rr) {
+            const c = Math.cos(rot), s = Math.sin(rot); let x = p[0] * c + p[2] * s, z = -p[0] * s + p[2] * c, y = p[1];
+            const ct = Math.cos(tilt), stt = Math.sin(tilt); const y2 = y * ct - z * stt, z2 = y * stt + z * ct;
+            return [CX + x * Rr, CY - y2 * Rr, z2];
+          }
+          function drawGlobe() {
+            const t = st.t; const Rr = 400 * zoomAt(t); const rot = (t - 120) * 0.16, tilt = 0.38;
+            ctx.clearRect(0, 0, 1080, 1920);
+            const atm = ctx.createRadialGradient(CX, CY, Rr * 0.85, CX, CY, Rr * 1.35);
+            atm.addColorStop(0, "rgba(47,129,247,0.20)"); atm.addColorStop(1, "rgba(47,129,247,0)");
+            ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(CX, CY, Rr * 1.35, 0, Math.PI * 2); ctx.fill();
+            const body = ctx.createRadialGradient(CX - Rr * 0.35, CY - Rr * 0.4, Rr * 0.1, CX, CY, Rr);
+            body.addColorStop(0, "rgba(40,60,95,0.55)"); body.addColorStop(1, "rgba(8,12,20,0.85)");
+            ctx.fillStyle = body; ctx.beginPath(); ctx.arc(CX, CY, Rr, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "rgba(121,192,255,0.35)"; ctx.lineWidth = 2; ctx.stroke();
+            const ds = 3 * Math.sqrt(Rr / 400);
+            for (let i = 0; i < N; i++) { const q = proj(pts[i], rot, tilt, Rr); if (q[2] < -0.05) continue; const a = 0.14 + q[2] * 0.45; ctx.fillStyle = `rgba(165,214,255,${a})`; ctx.fillRect(q[0] - ds / 2, q[1] - ds / 2, ds, ds); }
+            repos.forEach((r) => { if (t < r.t) return; const q = proj(r.p, rot, tilt, Rr); if (q[2] < 0) return; const k = Math.min(1, (t - r.t) / 0.4); ctx.fillStyle = `rgba(210,168,255,${(0.35 + q[2] * 0.6) * k})`; const s = 5 * k; ctx.fillRect(q[0] - s / 2, q[1] - s / 2, s, s); });
+            arcs.forEach((A) => {
+              if (t < A.t) return; const a = proj(A.a, rot, tilt, Rr), b = proj(A.b, rot, tilt, Rr);
+              if (a[2] < 0.05 || b[2] < 0.05) return;
+              const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; const dx = mx - CX, dy = my - CY; const dl = Math.hypot(dx, dy) || 1; const lift = 0.25 * Math.hypot(a[0] - b[0], a[1] - b[1]);
+              const cx = mx + (dx / dl) * lift, cy = my + (dy / dl) * lift;
+              const k = Math.min(1, (t - A.t) / 0.8), al = Math.min(a[2], b[2]);
+              ctx.strokeStyle = A.pr ? `rgba(163,113,247,${0.55 * al * k})` : `rgba(126,226,232,${0.45 * al * k})`; ctx.lineWidth = 2;
+              ctx.beginPath(); ctx.moveTo(a[0], a[1]);
+              const steps = 24, end = Math.ceil(steps * k);
+              for (let j = 1; j <= end; j++) { const u = j / steps; ctx.lineTo((1 - u) * (1 - u) * a[0] + 2 * (1 - u) * u * cx + u * u * b[0], (1 - u) * (1 - u) * a[1] + 2 * (1 - u) * u * cy + u * u * b[1]); }
+              ctx.stroke();
+              if (k >= 1) { const u = ((t - A.t) * A.sp + A.ph) % 1; const px = (1 - u) * (1 - u) * a[0] + 2 * (1 - u) * u * cx + u * u * b[0], py = (1 - u) * (1 - u) * a[1] + 2 * (1 - u) * u * cy + u * u * b[1]; ctx.fillStyle = A.pr ? "rgba(214,190,255,0.95)" : "rgba(220,250,255,0.95)"; ctx.beginPath(); ctx.arc(px, py, A.pr ? 5 : 4, 0, Math.PI * 2); ctx.fill(); }
+            });
+            devs.forEach((d) => { if (t < d.t) return; const q = proj(d.p, rot, tilt, Rr); if (q[2] < 0) return; const k = Math.min(1, (t - d.t) / 0.5); const g = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], 16 * k); g.addColorStop(0, `rgba(126,226,232,${0.9 * q[2]})`); g.addColorStop(1, "rgba(126,226,232,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(q[0], q[1], 16 * k, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = `rgba(255,255,255,${0.95 * q[2]})`; ctx.beginPath(); ctx.arc(q[0], q[1], 3.2 * k, 0, Math.PI * 2); ctx.fill(); });
+          }
+          tl.fromTo(st, { t: 120.2 }, { t: 137.1, duration: 16.9, ease: "none", onUpdate: drawGlobe }, 120.2);
+          // texts
+          const mil = line(cam, "مَلَايِينُ الْمَشَارِيعِ", 230, 66, "ar", { css: { color: "#f3f6fa" } });
+          words(123.9, mil.ws, [123.9, 124.6]);
+          out(125.2, mil.el, 0.4);
+          const os = line(cam, "Open Source", 190, 112, "en grad", { fw: 800, lh: 1.2, css: { letterSpacing: "-3px" } });
+          tl.fromTo(os.el, { opacity: 0, scale: 1.14, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.0, ease: EO }, 125.4);
+          const osAr = line(cam, "الْمَصْدَرُ الْمَفْتُوحُ", 336, 58, "ar gradc");
+          maskRTL(126.1, osAr.el, 0.9);
+          // read their code
+          const card = box(cam, 70, 1440, 560, 250, "glass-dark");
+          inUp(126.7, card, 0.6, 40);
+          const cls = ['<span style="color:#ff7b72">import</span> { Router } <span style="color:#ff7b72">from</span> <span style="color:#a5d6ff">"oss-lib"</span>', '<span style="color:#ff7b72">const</span> r = <span style="color:#ff7b72">new</span> <span style="color:#d2a8ff">Router</span>();', 'r.<span style="color:#79c0ff">use</span>(auth());', 'r.<span style="color:#79c0ff">listen</span>(<span style="color:#79c0ff">3000</span>);'];
+          cls.forEach((h, i) => mk("div", "codeline mono", card, { top: 26 + i * 50, width: 560, paddingLeft: 26, fontSize: 22, color: "#c9d1d9" }, h));
+          const scan = box(card, 0, 26, 560, 50, "", "", { background: "rgba(121,192,255,0.14)", borderLeft: "4px solid #79c0ff" });
+          tl.fromTo(scan, { y: 0, opacity: 0 }, { opacity: 1, duration: 0.2 }, 127.0);
+          tl.to(scan, { keyframes: [{ y: 50, duration: 0.45 }, { y: 100, duration: 0.45 }, { y: 150, duration: 0.45 }], ease: SO }, 127.25);
+          const eye = box(cam, 650, 1520, 80, 80, "", ico("eye", 64, "#79c0ff", "filter: drop-shadow(0 0 14px rgba(121,192,255,0.8))"));
+          pop(127.2, eye);
+          tl.to([card, eye], { opacity: 0, y: 40, filter: "blur(8px)", duration: 0.5, ease: EI }, 128.8);
+          // learn • share • contribute
+          const tri = mk("div", "abs row ar", cam, { left: 0, top: 1530, width: 1080, height: 110, justifyContent: "center", gap: "26px", direction: "rtl" }, "");
+          const tw = ["تَعَلَّمْ", "•", "شَارِكْ", "•", "سَاهِمْ"].map((s, i) => mk("span", i % 2 ? "en" : "", tri, { fontSize: i % 2 ? 40 : 66, fontWeight: 700, color: i % 2 ? "#8b949e" : "#f3f6fa" }, s));
+          [129.3, 129.6, 130.0, 130.25, 130.5].forEach((t, i) => tl.fromTo(tw[i], { opacity: 0, y: 30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: EO }, t));
+          tl.to(tw[4], { color: "#d2a8ff", duration: 0.4 }, 130.6);
+          // licenses
+          tl.to(tri, { opacity: 0, y: 30, duration: 0.5, ease: EI }, 133.6);
+          const lic = [["MIT", 170, 760], ["Apache-2.0", 890, 790], ["GPL-3.0", 175, 1290], ["BSD-3", 900, 1320]];
+          lic.forEach(([n, x, y], i) => { const c = chip(cam, x, y, `${ico("law", 28, "#e3b341")}<span class="en" style="font-weight:700;font-size:28px">${n}</span>`); c.style.height = "64px"; });
+          centerChips(cam);
+          const licEls = Array.from(cam.querySelectorAll(".chip")).slice(-4);
+          licEls.forEach((c, i) => pop(134.4 + i * 0.18, c, 0.5));
+          const licAr = line(cam, "وَفْقًا لِتَرْخِيصِ كُلِّ مَشْرُوعٍ", 1560, 48, "ar", { fw: 500, css: { color: "#e3d3a8" } });
+          words(134.1, licAr.ws, [134.1, 134.9, 135.6, 135.9]);
+          tl.to([os.el, osAr.el, licAr.el].concat(licEls), { opacity: 0, filter: "blur(10px)", duration: 0.6, ease: EI }, 136.3);
+        })();
+
+        // =====================================================================
+        // J — 136.4 → 149.7  Not just a code host — an integrated environment
+        // =====================================================================
+        (function sceneJ() {
+          const cam = $("camJ");
+          tl.fromTo(cam, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: SO }, 136.5);
+          const CX = 540, CY = 1080;
+          const svg = svgLayer(cam);
+          const center = box(cam, CX - 120, CY - 120, 240, 240, "glass", ico("mark", 130, "#fff"), { borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 120px rgba(121,192,255,0.45), 0 40px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3)" });
+          inScale(136.6, center, 1.0, 0.3);
+          const orbit = box(cam, CX - 420, CY - 180, 840, 360, "", "", { borderRadius: "50%", border: "2px solid rgba(121,192,255,0.25)" });
+          tl.fromTo(orbit, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 1.2, ease: EO }, 137.0);
+          const IC = [["repo", "#cfe3ff", ""], ["branch", "#7ee2e8", ""], ["commit", "#79c0ff", ""], ["people", "#d2a8ff", "تَعَاوُنٌ"], ["pr", "#3fb950", ""], ["play", "#79c0ff", "بِنَاءٌ"], ["issue", "#a371f7", "إِدَارَةٌ"]];
+          const els = IC.map(([ic, col, lab], i) => {
+            const e = box(cam, 0, 0, 120, 120, "glass", ico(ic, 56, col), { borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" });
+            if (lab) box(e, -40, 128, 200, 50, "row ar", `<span style="font-size:30px;font-weight:700;color:${col};width:100%;text-align:center">${lab}</span>`);
+            return e;
+          });
+          const lines = els.map(() => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line"); l.setAttribute("stroke", "rgba(121,192,255,0.5)"); l.setAttribute("stroke-width", "2.5"); l.style.opacity = 0; svg.appendChild(l); return l; });
+          const S = { a: 0, k: 0 };
+          const place = () => {
+            els.forEach((e, i) => {
+              const th = S.a + (i / els.length) * Math.PI * 2;
+              const r = 420 * (0.25 + 0.75 * S.k), x = CX + Math.cos(th) * r, y = CY + Math.sin(th) * 180 * (0.25 + 0.75 * S.k) + (1 - S.k) * (i % 2 ? -900 : 900);
+              const depth = (Math.sin(th) + 1) / 2;
+              const sc = 0.78 + depth * 0.4;
+              e.style.left = x - 60 + "px"; e.style.top = y - 60 + "px"; e.style.transform = `scale(${sc})`; e.style.zIndex = depth > 0.5 ? 3 : 1;
+              lines[i].setAttribute("x1", CX); lines[i].setAttribute("y1", CY); lines[i].setAttribute("x2", x); lines[i].setAttribute("y2", y);
+            });
+            center.style.zIndex = 2;
+          };
+          tl.fromTo(S, { a: 0 }, { a: Math.PI * 0.9, duration: 13.3, ease: "none", onUpdate: place, immediateRender: false }, 136.4);
+          tl.fromTo(S, { k: 0 }, { k: 1, duration: 1.8, ease: "power3.out", onUpdate: place, immediateRender: false }, 136.6);
+          place();
+          els.forEach((e, i) => tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 136.6 + i * 0.12));
+          // statement 1 (word-synced)
+          const s1a = line(cam, "غِتْهَبْ لَيْسَ مُجَرَّدَ", 190, 66, "ar");
+          const s1b = line(cam, "مَوْقِعٍ لِحِفْظِ الْأَكْوَادِ", 300, 66, "ar", { css: { color: "#cfe3ff" } });
+          words(138.6, s1a.ws, [138.6, 139.9, 140.2]);
+          words(140.8, s1b.ws, [140.8, 141.4, 141.8]);
+          tl.to(s1a.ws[1], { color: "#f0883e", duration: 0.3 }, 139.9);
+          out(142.7, [s1a.el, s1b.el], 0.5, -30);
+          // statement 2
+          const s2a = line(cam, "بِيئَةٌ مُتَكَامِلَةٌ", 170, 96, "ar grad");
+          const s2b = line(cam, "لِبِنَاءِ الْبَرْمَجِيَّاتِ وَالتَّعَاوُنِ", 330, 52, "ar", { fw: 500, css: { color: "#cfe3ff" } });
+          words(143.3, s2a.ws, [143.4, 143.9]);
+          words(144.7, s2b.ws, [144.7, 145.4, 146.3]);
+          // integration: spokes connect at "متكاملة"
+          lines.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.5 }, 143.9 + i * 0.06));
+          tl.to(orbit, { borderColor: "rgba(121,192,255,0.7)", boxShadow: "0 0 60px rgba(121,192,255,0.35)", duration: 0.6 }, 143.9);
+          const hi = (t, i, col) => tl.to(els[i], { boxShadow: `0 0 60px ${col}aa, 0 30px 60px rgba(0,0,0,0.5)`, borderColor: col, duration: 0.5, ease: SO }, t);
+          hi(144.7, 5, "#79c0ff"); hi(144.7, 0, "#cfe3ff"); hi(146.3, 3, "#d2a8ff"); hi(147.4, 6, "#a371f7");
+          tl.to(center, { boxShadow: "0 0 200px rgba(121,192,255,0.75), 0 40px 90px rgba(0,0,0,0.6)", duration: 0.8, ease: SO, yoyo: true, repeat: 1 }, 143.9);
+          // push into the center → next chapter
+          tl.to(cam, { scale: 2.4, opacity: 0, filter: "blur(10px)", duration: 1.0, ease: "power3.in", transformOrigin: "50% 56%" }, 148.8);
+        })();
+
+        // =====================================================================
+        // K — 149.0 → 162.9  Learn Git + GitHub — the closing
+        // =====================================================================
+        (function sceneK() {
+          const cam = $("camK");
+          tl.fromTo(cam, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 1.4, ease: EO }, 149.1);
+          // light tunnel of code streaks (entering the world of programming)
+          const R = rng(99);
+          const tun = box(cam, 0, 0, 1080, 1920);
+          for (let i = 0; i < 46; i++) {
+            const a = R() * Math.PI * 2, len = 60 + R() * 160;
+            const s = box(tun, 540, 900, len, 3, "", "", { background: `linear-gradient(90deg, rgba(121,192,255,0), ${["#79c0ff", "#7ee2e8", "#d2a8ff"][i % 3]})`, transformOrigin: "0% 50%", borderRadius: 2, opacity: 0 });
+            const d0 = 40 + R() * 200, d1 = 900 + R() * 400, t0 = 149.2 + R() * 3, dur = 2.2 + R() * 1.6;
+            const cnt = Math.max(0, Math.floor((161.5 - t0) / dur) - 1);
+            tl.fromTo(s, { x: Math.cos(a) * d0, y: Math.sin(a) * d0, rotation: (a * 180) / Math.PI }, { x: Math.cos(a) * d1, y: Math.sin(a) * d1, rotation: (a * 180) / Math.PI, duration: dur, ease: "power2.in", repeat: cnt }, t0);
+            tl.fromTo(s, { opacity: 0 }, { opacity: 0.8, duration: dur / 2, ease: "sine.inOut", yoyo: true, repeat: cnt * 2 + 1 }, t0);
+          }
+          const world = line(cam, "عَالَمُ الْبَرْمَجَةِ", 560, 74, "ar", { css: { color: "#e6edf3" } });
+          words(151.8, world.ws, [151.8, 152.2]);
+          const pro = line(cam, "بِاحْتِرَافِيَّةٍ", 690, 46, "ar", { fw: 300, css: { color: "#8b949e" } });
+          inUp(153.3, pro.el, 0.7, 14);
+          out(154.4, [world.el, pro.el], 0.5, -40);
+          // Git + GitHub lockup at 155.4 / 155.9
+          const icons = mk("div", "abs row", cam, { left: 0, top: 620, width: 1080, height: 170, justifyContent: "center", gap: "70px" }, "");
+          const gi = mk("div", "", icons, { width: 120, height: 120, borderRadius: 28, background: "linear-gradient(140deg,#f05033,#d2453a)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 60px rgba(240,80,51,0.5)" }, `<div style="transform:rotate(-45deg)">${ico("branch", 64, "#fff")}</div>`);
+          const hi = mk("div", "", icons, { width: 150, height: 150, display: "flex", alignItems: "center", justifyContent: "center" }, ico("mark", 150, "#fff", "filter: drop-shadow(0 0 30px rgba(121,192,255,0.7))"));
+          tl.fromTo(gi, { opacity: 0, scale: 0.3, rotation: -45 }, { opacity: 1, scale: 1, rotation: 45, duration: 0.8, ease: "back.out(1.6)" }, 155.3);
+          tl.fromTo(hi, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.6)" }, 155.8);
+          const lock = mk("div", "abs row en", cam, { left: 0, top: 830, width: 1080, height: 170, justifyContent: "center", gap: "26px", fontSize: 136, fontWeight: 800, letterSpacing: "-3px" }, "");
+          const lG = mk("span", "grad", lock, null, "Git");
+          const lP = mk("span", "", lock, { color: "#79c0ff", fontWeight: 600 }, "+");
+          const lH = mk("span", "grad", lock, null, "GitHub");
+          tl.fromTo(lG, { opacity: 0, y: 40, filter: "blur(14px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: EO }, 155.4);
+          tl.fromTo(lP, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 155.7);
+          tl.fromTo(lH, { opacity: 0, y: 40, filter: "blur(14px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: EO }, 155.9);
+          const sk = line(cam, "مِنْ أَهَمِّ مَهَارَاتِ الْمُبَرْمِجِ", 1080, 70, "ar gradc");
+          words(157.5, sk.ws, [157.5, 157.8, 158.2, 158.7]);
+          const ul = box(cam, 290, 1230, 500, 4, "", "", { background: "linear-gradient(90deg, rgba(126,226,232,0), #7ee2e8, rgba(126,226,232,0))", borderRadius: 2 });
+          tl.fromTo(ul, { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: 1.0, ease: IO }, 158.6);
+          tl.to(lock, { scale: 1.03, duration: 0.7, ease: SO, yoyo: true, repeat: 1 }, 159.3);
+          tl.to(hi, { filter: "drop-shadow(0 0 40px rgba(165,214,255,0.9))", duration: 0.7, ease: SO, yoyo: true, repeat: 1 }, 159.3);
+          // orbiting ring behind the lockup
+          const ring = box(cam, 140, 520, 800, 800, "", "", { borderRadius: "50%", border: "2px solid rgba(121,192,255,0.22)", boxShadow: "0 0 80px rgba(47,129,247,0.18), inset 0 0 80px rgba(47,129,247,0.12)" });
+          ring.style.zIndex = -1;
+          tl.fromTo(ring, { opacity: 0, scale: 0.5, rotation: 0 }, { opacity: 1, scale: 1, rotation: 60, duration: 12, ease: SO }, 149.4);
+          // after the final spoken word (~161.4): settle, bloom, gentle push, fade
+          const bloom = box(cam, -60, 300, 1200, 1200, "", "", { borderRadius: "50%", background: "radial-gradient(circle, rgba(165,214,255,0.32) 0%, rgba(121,192,255,0.08) 40%, rgba(0,0,0,0) 70%)" });
+          tl.fromTo(bloom, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1.1, duration: 1.4, ease: SO }, 161.3);
+          tl.to(cam, { scale: 1.05, duration: 1.6, ease: "power1.inOut" }, 161.3);
+          tl.to("#fade", { opacity: 1, duration: 0.85, ease: "power1.in" }, 162.05);
+        })();
+
+        document.fonts.ready.then(() => {
+          window.__timelines["main"] = tl;
+          if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+        });
+      })();
+    </script>
+  </body>
+</html>
