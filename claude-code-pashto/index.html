@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ps">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="lib/gsap.min.js"></script>
+    <script src="lib/icons.js"></script>
+    <style>
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Medium.woff2") format("woff2"); font-weight: 500; }
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Bold.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-ExtraBold.woff2") format("woff2"); font-weight: 800; }
+      @font-face { font-family: "InterX"; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "InterX"; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+      @font-face { font-family: "InterX"; src: url("assets/fonts/inter-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+      @font-face { font-family: "JBM"; src: url("assets/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "JBM"; src: url("assets/fonts/jetbrains-mono-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #ffffff; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #ffffff; color: #111318; font-family: "Vazir", "InterX", sans-serif; }
+      .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+      .cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .abs { position: absolute; }
+      .ps { font-family: "Vazir", "InterX", sans-serif; direction: rtl; }
+      .en { font-family: "InterX", "Vazir", sans-serif; direction: ltr; }
+      .mono { font-family: "JBM", monospace; direction: ltr; }
+      .w { display: inline-block; white-space: pre; }
+      .tline { position: absolute; left: 50px; width: 980px; text-align: center; }
+      .ico { display: block; flex: none; }
+      .row { position: absolute; display: flex; align-items: center; }
+      .surface { background: #ffffff; border-radius: 44px; box-shadow: 0 0 0 1.5px #eceef2, 0 40px 90px rgba(17,19,24,0.08); }
+      .soft { background: #f5f6f8; border-radius: 28px; }
+      .codeline { position: absolute; left: 0; height: 56px; line-height: 56px; font-size: 30px; white-space: pre; color: #3b3f48; }
+      svg.lines { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      svg.lines path { fill: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="76.8">
+      <!-- one quiet, breathing light field — nothing else in the background -->
+      <div id="bg" class="full">
+        <div class="full" style="background: #ffffff;"></div>
+        <div id="halo" class="abs" style="left:-260px; top:260px; width:1600px; height:1600px; border-radius:50%; background: radial-gradient(circle, rgba(232,240,255,0.95) 0%, rgba(240,246,255,0.55) 38%, rgba(255,255,255,0) 68%);"></div>
+        <div id="warm" class="abs" style="left:-160px; top:360px; width:1400px; height:1400px; border-radius:50%; opacity:0; background: radial-gradient(circle, rgba(250,224,212,0.85) 0%, rgba(252,238,231,0.45) 38%, rgba(255,255,255,0) 68%);"></div>
+        <div class="full" style="background: linear-gradient(180deg, rgba(246,248,251,0.9) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(246,248,251,0.9) 100%);"></div>
+      </div>
+
+      <section id="s1" class="clip scene" data-start="0" data-duration="11.3" data-track-index="1"><div class="cam" id="c1"></div></section>
+      <section id="s2" class="clip scene" data-start="10.9" data-duration="13.1" data-track-index="2"><div class="cam" id="c2"></div></section>
+      <section id="s3" class="clip scene" data-start="23.5" data-duration="19.2" data-track-index="1"><div class="cam" id="c3"></div></section>
+      <section id="s4" class="clip scene" data-start="42.1" data-duration="12.6" data-track-index="2"><div class="cam" id="c4"></div></section>
+      <section id="s5" class="clip scene" data-start="54.3" data-duration="13.2" data-track-index="1"><div class="cam" id="c5"></div></section>
+      <section id="s6" class="clip scene" data-start="67.0" data-duration="9.8" data-track-index="2"><div class="cam" id="c6"></div></section>
+
+      <div id="fade" class="full" style="background:#ffffff; opacity:0;"></div>
+
+      <audio id="vo" src="assets/audio/voiceover.mp3" data-start="0" data-duration="76.032" data-track-index="10" data-volume="1"></audio>
+      <audio id="music" src="assets/audio/music-ducked.m4a" data-start="0" data-duration="76.8" data-track-index="11" data-volume="1"></audio>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const OUT = "expo.out", IN = "power3.in", IO = "power3.inOut", SO = "sine.inOut", SPR = "back.out(1.25)";
+        const INK = "#111318", MUTED = "#6b7280", LINE = "#eceef2", CORAL = "#d97757", BLUE = "#3b6fe0", GREEN = "#1f9d55", RED = "#d64545";
+        const $ = (id) => document.getElementById(id);
+        function mk(tag, cls, parent, css, html) {
+          const e = document.createElement(tag); if (cls) e.className = cls;
+          if (css) for (const k in css) e.style[k] = typeof css[k] === "number" && !/opacity|zIndex|fontWeight|lineHeight/.test(k) ? css[k] + "px" : css[k];
+          if (html != null) e.innerHTML = html; parent.appendChild(e); return e;
+        }
+        function box(parent, x, y, w, h, cls, html, css) { return mk("div", "abs " + (cls || ""), parent, Object.assign({ left: x, top: y, width: w, height: h }, css || {}), html); }
+        function ico(name, size, color, extra) { const i = window.ICONS[name]; return `<svg class="ico" width="${size}" height="${size}" viewBox="${i.vb}" fill="${color || INK}" style="${extra || ""}">${i.p}</svg>`; }
+        function spark(size, color) { let r = ""; for (let i = 0; i < 12; i++) { const l = i % 2 ? 36 : 46; r += `<rect class="ray" x="47" y="${50 - l}" width="6" height="${l}" rx="3" fill="${color || CORAL}" transform="rotate(${i * 30} 50 50)"/>`; } return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 100 100">${r}<circle cx="50" cy="50" r="9" fill="${color || CORAL}"/></svg>`; }
+        function line(parent, text, top, size, cls, opt) {
+          opt = opt || {};
+          const d = mk("div", "tline " + (cls || ""), parent, Object.assign({ top: top, fontSize: size, lineHeight: opt.lh || 1.5, fontWeight: opt.fw || 800, color: opt.color || INK }, opt.css || {}));
+          const parts = text.split(" ");
+          const ws = parts.map((p, i) => { const s = mk("span", "w", d, null, p); if (i < parts.length - 1) d.appendChild(document.createTextNode(" ")); return s; });
+          return { el: d, ws };
+        }
+        function svgLayer(parent) { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("class", "lines abs"); s.setAttribute("viewBox", "0 0 1080 1920"); parent.appendChild(s); return s; }
+        function path(svg, d, stroke, width) { const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("d", d); p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", width); p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round"); p.setAttribute("pathLength", "1"); p.setAttribute("stroke-dasharray", "1"); p.setAttribute("stroke-dashoffset", "1"); svg.appendChild(p); return p; }
+        // motion vocabulary — few verbs, used consistently
+        function rise(t, el, d, dy) { tl.fromTo(el, { opacity: 0, y: dy == null ? 50 : dy }, { opacity: 1, y: 0, duration: d || 1.0, ease: OUT }, t); }
+        function popIn(t, el, d, s0) { tl.fromTo(el, { opacity: 0, scale: s0 || 0.6 }, { opacity: 1, scale: 1, duration: d || 0.8, ease: SPR }, t); }
+        function leave(t, el, d, dy) { tl.to(el, { opacity: 0, y: dy == null ? -40 : dy, duration: d || 0.5, ease: IN }, t); }
+        function shrink(t, el, d) { tl.to(el, { opacity: 0, scale: 0.85, duration: d || 0.5, ease: IN }, t); }
+        function words(ws, times, d) { ws.forEach((w, i) => { tl.fromTo(w, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: d || 0.8, ease: OUT }, times[Math.min(i, times.length - 1)] + (i >= times.length ? 0.1 * (i - times.length + 1) : 0)); }); }
+        function draw(t, p, d, ease) { tl.fromTo(p, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d || 0.9, ease: ease || IO }, t); }
+        function sceneIn(t, c) { tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: SO }, t); }
+        function sceneOut(t, c) { tl.to(c, { opacity: 0, duration: 0.4, ease: SO }, t); }
+        function circleIcon(parent, cx, cy, size, icon, bg, fg) { return box(parent, cx - size / 2, cy - size / 2, size, size, "", ico(icon, Math.round(size * 0.46), fg), { borderRadius: "50%", background: bg, display: "flex", alignItems: "center", justifyContent: "center" }); }
+
+        // background: only a slow breathing light
+        tl.fromTo("#halo", { scale: 1, x: 0 }, { scale: 1.12, x: 80, duration: 38.4, ease: SO, yoyo: true, repeat: 1 }, 0);
+        tl.to("#warm", { opacity: 1, duration: 1.4, ease: SO }, 11.3);
+        tl.to("#warm", { opacity: 0, duration: 2.0, ease: SO }, 15.0);
+        tl.to("#warm", { opacity: 1, duration: 1.6, ease: SO }, 73.6);
+
+        // ============ 1 · 0.0–11.3  more than answers — like a programmer ============
+        (function () {
+          const c = $("c1"); sceneIn(0, c);
+          const t1 = line(c, "مصنوعي ځيرکتيا", 640, 118, "ps");
+          words(t1.ws, [1.85, 2.48]);
+          // two quiet chat bubbles = "answering questions"
+          const q = box(c, 470, 930, 470, 120, "", "", { borderRadius: "60px 60px 14px 60px", background: BLUE });
+          const qa = box(q, 50, 46, 300, 26, "", "", { borderRadius: 13, background: "rgba(255,255,255,0.85)" });
+          const a = box(c, 140, 1100, 560, 170, "soft", "", { borderRadius: "60px 60px 60px 14px" });
+          [0, 1].forEach((i) => box(a, 50, 50 + i * 46, [440, 300][i], 24, "", "", { borderRadius: 12, background: "#d9dde4" }));
+          rise(4.04, q, 0.9, 40);
+          rise(5.14, a, 0.9, 40);
+          // «نه» — not only that
+          tl.to([q, a], { opacity: 0, scale: 0.9, y: 30, duration: 0.55, ease: IN, stagger: 0.06 }, 7.0);
+          tl.to(t1.el, { y: -290, duration: 1.0, ease: IO }, 7.4);
+          // «بلکې … د حقيقي پروګرامر په څير»
+          const code = circleIcon(c, 540, 960, 300, "code", "#111318", "#ffffff");
+          popIn(7.75, code, 0.9, 0.4);
+          const t2 = line(c, "د حقيقي پروګرامر په څير", 1210, 70, "ps", { fw: 700, color: MUTED });
+          words(t2.ws, [8.08, 8.46, 8.92, 9.62, 9.85]);
+          tl.to(t2.ws[2], { color: INK, duration: 0.4 }, 9.1);
+          tl.fromTo(code, { rotation: 0 }, { rotation: 8, duration: 1.4, ease: SO, yoyo: true, repeat: 1, immediateRender: false }, 8.8);
+          sceneOut(10.85, c);
+        })();
+
+        // ============ 2 · 10.9–24.0  This is Claude Code ============
+        (function () {
+          const c = $("c2"); sceneIn(10.95, c);
+          const logo = box(c, 410, 620, 260, 260, "", spark(260));
+          tl.fromTo(logo, { opacity: 0, scale: 0.2, rotation: -90 }, { opacity: 1, scale: 1, rotation: 0, duration: 1.3, ease: "back.out(1.4)" }, 11.49);
+          tl.fromTo(logo.querySelectorAll(".ray"), { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.7, ease: OUT, stagger: 0.035 }, 11.55);
+          const name = line(c, "کلاوډ کوډ", 950, 150, "ps", { lh: 1.35 });
+          words(name.ws, [12.09, 12.43]);
+          const en = line(c, "Claude Code", 1170, 54, "en", { fw: 600, color: MUTED, lh: 1.2 });
+          rise(12.7, en.el, 0.9, 20);
+          // lockup lifts; one line of context; then four abilities, one at a time
+          tl.to(logo, { y: -430, scale: 0.42, duration: 1.0, ease: IO }, 13.5);
+          tl.to(name.el, { y: -600, scale: 0.55, duration: 1.0, ease: IO }, 13.55);
+          tl.to(en.el, { opacity: 0, y: -620, duration: 0.6, ease: IO }, 13.55);
+          tl.to(logo, { rotation: 45, duration: 10, ease: "none" }, 14.5);
+          const by = line(c, "د انتروپيک ځيرکه برنامه", 520, 46, "ps", { fw: 500, color: MUTED });
+          words(by.ws, [14.55, 14.7, 15.7, 16.16]);
+          const caps = [["eye", "لوستل", 18.83], ["bulb", "پوهېدل", 19.68], ["tools", "سمول", 20.16], ["pencil", "ليکل", 22.35]];
+          caps.forEach(([ic, lab, t], i) => {
+            const y = 740 + i * 240;
+            const r = box(c, 140, y, 800, 190, "surface row", `<div style="display:flex;align-items:center;gap:40px;padding:0 50px;width:100%;direction:rtl"><span style="width:110px;height:110px;border-radius:50%;background:${i === 3 ? "#fbeee8" : "#eef3fd"};display:flex;align-items:center;justify-content:center">${ico(ic, 54, i === 3 ? CORAL : BLUE)}</span><span class="ps" style="font-size:72px;font-weight:800;color:${INK};line-height:1.3">${lab}</span></div>`, { borderRadius: 95 });
+            tl.fromTo(r, { opacity: 0, y: 60, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: OUT }, t);
+          });
+          sceneOut(23.45, c);
+        })();
+
+        // ============ 3 · 23.5–42.7  give it the project — find & fix ============
+        (function () {
+          const c = $("c3"); sceneIn(23.55, c);
+          // one terminal surface for the whole scene
+          const term = box(c, 90, 300, 900, 1320, "surface");
+          rise(23.7, term, 1.0, 60);
+          box(term, 0, 0, 900, 110, "row", `<div style="display:flex;align-items:center;gap:16px;padding:0 44px;width:100%">${spark(44)}<span class="en" style="font-size:30px;font-weight:600;color:${INK}">Claude Code</span><span class="mono" style="margin-left:auto;font-size:24px;color:#6b7280">~/my-app</span></div>`, { borderBottom: `1.5px solid ${LINE}` });
+          // «خپله پروژه ورکړئ»
+          const proj = box(term, 50, 150, 360, 96, "soft row", `<span style="display:flex;align-items:center;gap:16px;padding:0 26px">${ico("folder", 40, "#7aa2f7")}<span class="mono" style="font-size:30px;font-weight:600;color:${INK}">my-app/</span></span>`, { borderRadius: 48 });
+          popIn(25.0, proj, 0.8, 0.5);
+          // «ورته وواياست: دا ستونزه پيدا او حل يې کړه» — the request, word by word
+          const req = box(term, 50, 290, 800, 130, "row", "", { borderRadius: 34, background: "#111318" });
+          const rr = mk("div", "row ps", req, { position: "relative", width: 800, height: 130, padding: "0 44px", gap: "18px", direction: "rtl", fontSize: 46, fontWeight: 800, color: "#fff", whiteSpace: "nowrap" }, "");
+          mk("span", "mono", rr, { fontSize: 40, color: CORAL, fontWeight: 600 }, "&lt;");
+          const rw = ["دا", "ستونزه", "پيدا", "او", "حل", "يې", "کړه"].map((w) => mk("span", "w", rr, null, w));
+          rise(26.4, req, 0.7, 30);
+          words(rw, [27.38, 27.68, 28.38, 28.87, 29.17, 29.47, 29.77], 0.5);
+          tl.to(rw[1], { color: "#ff9a8a", duration: 0.3 }, 27.9);
+          tl.to(rw[4], { color: "#8fe3ad", duration: 0.3 }, 29.3);
+          // «مختلف فايلونه وګوري» — three files, scanned
+          const files = ["auth.js", "db.js", "routes.js"];
+          const fy = [520, 660, 800];
+          const frows = files.map((n, i) => {
+            const r = box(term, 50, fy[i], 800, 110, "soft row", `<div style="display:flex;align-items:center;gap:22px;padding:0 34px;width:100%">${ico("fileCode", 40, i === 0 ? RED : "#9aa1ad")}<span class="mono" style="font-size:32px;color:${INK}">src/${n}</span><span class="ok" style="margin-left:auto;opacity:0">${ico("check", 40, GREEN)}</span></div>`, { borderRadius: 55 });
+            rise(32.9 + i * 0.25, r, 0.8, 30);
+            tl.to(r.querySelector(".ok"), { opacity: 1, duration: 0.3 }, 34.3 + i * 0.5);
+            tl.fromTo(r, { backgroundColor: "#f5f6f8" }, { backgroundColor: "#eef3fd", duration: 0.25, yoyo: true, repeat: 1, immediateRender: false }, 34.1 + i * 0.5);
+            return r;
+          });
+          const ph1 = line(c, "د کوډ لوستل", 1680, 56, "ps", { fw: 800, color: BLUE });
+          rise(33.9, ph1.el, 0.7, 20); leave(36.5, ph1.el, 0.35, -16);
+          // «د کوډ ترمنځ اړيکې درک کړي» — connections between the files
+          const sv = svgLayer(term); sv.setAttribute("viewBox", "0 0 900 1320"); sv.style.width = "900px"; sv.style.height = "1320px";
+          const cy = (i) => fy[i] + 55;
+          const links = [[0, 1], [1, 2], [0, 2]].map(([a, b], k) => { const p = path(sv, `M50 ${cy(a)} C ${-10 - k * 26} ${cy(a)} ${-10 - k * 26} ${cy(b)} 50 ${cy(b)}`, BLUE, 5); draw(36.8 + k * 0.35, p, 0.8); return p; });
+          const ph2 = line(c, "د پروژې پوهه", 1680, 56, "ps", { fw: 800, color: BLUE });
+          rise(37.5, ph2.el, 0.7, 20); leave(40.1, ph2.el, 0.35, -16);
+          // «مناسب بدلونونه پکې راولي» — one line changes, then a calm check
+          const diff = box(term, 50, 960, 800, 200, "row", "", { borderRadius: 34, background: "#f5f6f8", overflow: "hidden" });
+          const minus = box(diff, 0, 24, 800, 72, "row mono", `<span style="padding:0 34px;font-size:28px;color:${RED}">−&nbsp;&nbsp;if (user.token = null)</span>`, { background: "#fcecec" });
+          const plus = box(diff, 0, 104, 800, 72, "row mono", `<span style="padding:0 34px;font-size:28px;color:${GREEN}">+&nbsp;&nbsp;if (!user?.token)</span>`, { background: "#e8f6ee" });
+          rise(40.2, diff, 0.6, 30);
+          tl.fromTo(plus, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: OUT }, 40.7);
+          tl.to(frows[0].querySelector("svg"), { fill: GREEN, duration: 0.3 }, 41.1);
+          const ok = circleIcon(term, 450, 1250, 110, "checkMark", GREEN, "#fff");
+          popIn(41.0, ok, 0.7, 0.4);
+          const ph3 = line(c, "د ستونزو حل", 1680, 56, "ps", { fw: 800, color: GREEN });
+          rise(40.4, ph3.el, 0.7, 20);
+          sceneOut(42.15, c);
+        })();
+
+        // ============ 4 · 42.1–54.7  what it does — one feature at a time ============
+        (function () {
+          const c = $("c4"); sceneIn(42.15, c);
+          const F = [["mark", "د ګيټ هب پروژې", "#111318", "#f1f2f4", 43.62], ["bug", "د بګ اصلاح", RED, "#fcecec", 47.1], ["sparkle", "نوي فيچرونه", BLUE, "#eef3fd", 48.08], ["graph", "د کوډ تحليل", "#7a5af5", "#f2effe", 50.04]];
+          // big single hero per feature …
+          const heroes = F.map(([ic, lab, fg, bg, t], i) => {
+            const g = box(c, 0, 0, 1080, 1920);
+            const ci = circleIcon(g, 540, 820, 380, ic, bg, fg);
+            const l = line(g, lab, 1110, 92, "ps");
+            tl.fromTo(ci, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.8, ease: SPR }, t);
+            tl.fromTo(l.el, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8, ease: OUT }, t + 0.1);
+            return { g, ci, l };
+          });
+          const swaps = [47.0, 47.98, 49.94];
+          swaps.forEach((t, i) => { tl.to(heroes[i].ci, { opacity: 0, scale: 0.7, x: 260, duration: 0.45, ease: IN }, t); tl.to(heroes[i].l.el, { opacity: 0, y: -30, duration: 0.4, ease: IN }, t); });
+          // … then all four together as one calm grid («د هغه له مهمو کارونو»)
+          tl.to(heroes[3].ci, { opacity: 0, scale: 0.7, duration: 0.45, ease: IN }, 51.5);
+          tl.to(heroes[3].l.el, { opacity: 0, y: -30, duration: 0.4, ease: IN }, 51.5);
+          F.forEach(([ic, lab, fg, bg], i) => {
+            const x = i % 2 === 0 ? 560 : 140, y = 560 + Math.floor(i / 2) * 470;
+            const card = box(c, x, y, 380, 420, "surface", `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;height:100%"><span style="width:170px;height:170px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center">${ico(ic, 82, fg)}</span><span class="ps" style="font-size:40px;font-weight:800;color:${INK};text-align:center;line-height:1.35;padding:0 24px">${lab}</span></div>`, { borderRadius: 54 });
+            tl.fromTo(card, { opacity: 0, scale: 0.85, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: OUT }, 51.75 + i * 0.12);
+          });
+          const head = box(c, 0, 300, 1080, 130, "row", `<div style="display:flex;align-items:center;justify-content:center;gap:24px;width:100%;direction:rtl">${spark(70)}<span class="ps" style="font-size:72px;font-weight:800;line-height:1.4">کلاوډ کوډ</span></div>`);
+          rise(51.6, head, 0.8, 20);
+          sceneOut(54.3, c);
+        })();
+
+        // ============ 5 · 54.3–67.5  not just showing code — working with you ============
+        (function () {
+          const c = $("c5"); sceneIn(54.35, c);
+          const snip = box(c, 120, 640, 840, 420, "surface");
+          ['<span style="color:#7a5af5">const</span> total = items', '  .<span style="color:#3b6fe0">map</span>(i =&gt; i.price)', '  .<span style="color:#3b6fe0">reduce</span>((a, b) =&gt; a + b);'].forEach((h, i) => mk("div", "codeline mono", snip, { top: 110 + i * 72, width: 840, paddingLeft: 64 }, h));
+          rise(55.9, snip, 1.0, 60);
+          const t0 = line(c, "يوازې کوډ؟", 1200, 76, "ps", { color: MUTED, fw: 700 });
+          words(t0.ws, [56.98, 58.3]);
+          // «بلکې … له تاسو سره» — two circles meet
+          tl.to(snip, { opacity: 0, scale: 0.9, y: -40, duration: 0.6, ease: IN }, 59.6);
+          leave(59.6, t0.el, 0.45, -20);
+          const you = box(c, 600, 640, 300, 300, "", ico("person", 140, BLUE), { borderRadius: "50%", background: "#eef3fd", display: "flex", alignItems: "center", justifyContent: "center" });
+          const cc = box(c, 180, 640, 300, 300, "", spark(150), { borderRadius: "50%", background: "#fbeee8", display: "flex", alignItems: "center", justifyContent: "center" });
+          tl.fromTo(you, { opacity: 0, x: 220, scale: 0.7 }, { opacity: 1, x: 0, scale: 1, duration: 1.0, ease: OUT }, 60.2);
+          tl.fromTo(cc, { opacity: 0, x: -220, scale: 0.7 }, { opacity: 1, x: 0, scale: 1, duration: 1.0, ease: OUT }, 60.4);
+          const plus = box(c, 500, 750, 80, 80, "", ico("plus", 62, MUTED), { display: "flex", alignItems: "center", justifyContent: "center" });
+          popIn(61.1, plus, 0.6, 0.3);
+          box(c, 600, 965, 300, 60, "row ps", `<span style="width:100%;text-align:center;font-size:40px;font-weight:700;color:${MUTED}">تاسو</span>`).style.opacity = 0;
+          const lab1 = c.lastChild; rise(60.6, lab1, 0.7, 16);
+          const lab2 = box(c, 180, 965, 300, 60, "row ps", `<span style="width:100%;text-align:center;font-size:40px;font-weight:700;color:${MUTED}">کلاوډ کوډ</span>`);
+          rise(60.8, lab2, 0.7, 16);
+          const t1 = line(c, "د پروګرامر ځيرک ملګری", 1110, 84, "ps");
+          words(t1.ws, [62.21, 62.78, 63.25, 63.5]);
+          tl.to(t1.ws[2], { color: CORAL, duration: 0.4 }, 62.95);
+          // «په پروژه کې کار وکړي» — three tasks quietly checked
+          const tasks = ["Search API", "Login fix", "Tests"];
+          tasks.forEach((tx, i) => {
+            const r = box(c, 240, 1340 + i * 120, 600, 96, "soft row", `<div style="display:flex;align-items:center;gap:22px;padding:0 30px;width:100%"><span class="bx" style="position:relative;width:46px;height:46px;border-radius:50%;box-shadow:inset 0 0 0 3px #d4d8df;display:block"></span><span class="en" style="font-size:32px;font-weight:600;color:${INK}">${tx}</span></div>`, { borderRadius: 48 });
+            rise(64.4 + i * 0.12, r, 0.7, 24);
+            const ck = box(r.querySelector(".bx"), 0, 0, 46, 46, "", ico("checkMark", 30, "#fff"), { borderRadius: "50%", background: GREEN, display: "flex", alignItems: "center", justifyContent: "center" });
+            popIn(65.06 + i * 0.42, ck, 0.5, 0.3);
+          });
+          sceneOut(66.95, c);
+        })();
+
+        // ============ 6 · 67.0–76.8  it changes the way you work — close ============
+        (function () {
+          const c = $("c6"); sceneIn(67.05, c);
+          const q = line(c, "که تاسو پروګرامر ياست", 520, 82, "ps", { color: MUTED, fw: 700 });
+          words(q.ws, [67.57, 67.89, 68.41, 69.36]);
+          tl.to(q.ws[2], { color: INK, duration: 0.4 }, 68.6);
+          leave(70.0, q.el, 0.45, -30);
+          const t = line(c, "ستاسو د کار طريقه", 520, 104, "ps");
+          words(t.ws, [71.74, 72.26, 72.43, 72.77]);
+          // one tangled line becomes one calm line («په بشپړه توګه بدله کړي»)
+          const sv = svgLayer(c);
+          const messy = path(sv, "M160 1060 C 300 760, 380 1360, 470 1020 S 640 760, 610 1220 S 860 1300, 780 900 S 960 880, 920 1180", "#c9cdd4", 9);
+          const calm = path(sv, "M160 1120 C 420 1120, 660 1000, 920 960", BLUE, 12);
+          draw(70.3, messy, 1.4, "power1.inOut");
+          tl.to(messy, { opacity: 0, duration: 0.6, ease: SO }, 73.3);
+          draw(73.4, calm, 1.0, IO);
+          const done = circleIcon(c, 920, 960, 96, "checkMark", GREEN, "#fff");
+          popIn(74.2, done, 0.6, 0.3);
+          // final lockup after the last word (≈75.36)
+          tl.to([t.el, sv, done], { opacity: 0, y: -40, duration: 0.55, ease: IN }, 74.95);
+          const logo = box(c, 430, 640, 220, 220, "", spark(220));
+          tl.fromTo(logo, { opacity: 0, scale: 0.3, rotation: -90 }, { opacity: 1, scale: 1, rotation: 0, duration: 1.1, ease: "back.out(1.4)" }, 75.15);
+          const name = line(c, "کلاوډ کوډ", 920, 140, "ps", { lh: 1.35 });
+          tl.fromTo(name.el, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.9, ease: OUT }, 75.3);
+          const tag = line(c, "د پروګرامر ځيرک ملګری", 1130, 54, "ps", { fw: 700, color: MUTED });
+          tl.fromTo(tag.el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: OUT }, 75.5);
+          tl.to(c, { scale: 1.03, duration: 1.4, ease: SO }, 75.4);
+          tl.to("#fade", { opacity: 1, duration: 0.6, ease: "power1.in" }, 76.2);
+        })();
+
+        document.fonts.ready.then(() => {
+          window.__timelines["main"] = tl;
+          if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+        });
+      })();
+    </script>
+  </body>
+</html>
