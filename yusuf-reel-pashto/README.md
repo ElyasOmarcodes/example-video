@@ -2,7 +2,7 @@
 
 A Pashto Islamic-reminder reel in motion graphics. Editor: **الیاس عمر**.
 
-- **Output:** `renders/yusuf-reel-pashto.mp4` at 1080×1920, 30 fps, 64.5 s, H.264/AAC.
+- **Output:** `premiere/yusuf-reel-pashto.mp4` at 1080×1920, 30 fps, 64.5 s, H.264/AAC.
 - **Premiere package:** the `premiere/` folder holds the importable XML project plus its media (see `premiere/README.md`).
 - **Font:** IBM Plex Sans Arabic, weights 100–700, shipped locally in `assets/fonts`.
 - **Audio:** the user-supplied «آهات حزينة» track. The intro (the first 8.25 s, up to the first natural breath gap) is cut, with a 0.6 s fade-in and a 2.9 s fade-out. No speech is present anywhere in the track; it is vocal humming in a ~19.2 s loop.
