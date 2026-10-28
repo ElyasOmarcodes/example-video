@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ps">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="lib/gsap.min.js"></script>
+    <script src="lib/icons.js"></script>
+    <style>
+      /* IBM Plex Sans Arabic (100–700), shipped locally */
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-100-normal.woff2") format("woff2"); font-weight: 100; }
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-200-normal.woff2") format("woff2"); font-weight: 200; }
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-300-normal.woff2") format("woff2"); font-weight: 300; }
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2") format("woff2"); font-weight: 500; }
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2") format("woff2"); font-weight: 600; }
+      @font-face { font-family: "Plex"; src: url("assets/fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: "PlexL"; src: url("assets/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "PlexL"; src: url("assets/fonts/ibm-plex-sans-arabic-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0c111c; font-family: "Plex", "PlexL", sans-serif; }
+      .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+      .cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .abs { position: absolute; }
+      .ps { font-family: "Plex", "PlexL", sans-serif; direction: rtl; }
+      .tline { position: absolute; left: 60px; width: 960px; text-align: center; direction: rtl; }
+      .w { display: inline-block; white-space: pre; }
+      .hl { position: relative; display: inline-block; isolation: isolate; white-space: pre; }
+      .hl .mk { position: absolute; left: -10px; right: -10px; bottom: 14%; height: 34%; border-radius: 10px; z-index: -1; transform-origin: 100% 50%; }
+      .ico { display: block; flex: none; }
+      svg.art { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      .paper { background-color: #e7e2d9; }
+      .grain {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 0 0.15  0 0 0 0.55 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>");
+        background-size: 300px 300px; opacity: 0.22; mix-blend-mode: multiply;
+      }
+      .weave {
+        background-image: repeating-linear-gradient(45deg, rgba(90,70,50,0.035) 0 2px, transparent 2px 7px), repeating-linear-gradient(-45deg, rgba(90,70,50,0.035) 0 2px, transparent 2px 7px);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="64.5">
+      <section id="sA" class="clip scene" data-start="0" data-duration="16.7" data-track-index="1"><div class="cam" id="cA"></div></section>
+      <section id="sB" class="clip scene" data-start="16.0" data-duration="15.0" data-track-index="2"><div class="cam" id="cB"></div></section>
+      <section id="sC" class="clip scene" data-start="30.4" data-duration="14.4" data-track-index="1"><div class="cam" id="cC"></div></section>
+      <section id="sD" class="clip scene" data-start="44.2" data-duration="15.1" data-track-index="2"><div class="cam" id="cD"></div></section>
+      <section id="sE" class="clip scene" data-start="58.6" data-duration="5.9" data-track-index="1"><div class="cam" id="cE"></div></section>
+
+      <!-- editor watermark, always on (like a channel mark) -->
+      <div id="wm" class="abs ps" style="left:54px; top:70px; width:300px; text-align:left; font-size:32px; font-weight:700; color:#cdb994;">الیاس عمر</div>
+      <div id="fade" class="full" style="background:#000; opacity:0;"></div>
+
+      <audio id="nasheed" src="assets/audio/nasheed-trimmed.wav" data-start="0" data-duration="64.5" data-track-index="10" data-volume="1"></audio>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const OUT = "power3.out", IN = "power2.in", IO = "power2.inOut", SO = "sine.inOut";
+        const GOLD = "#d8a64a", GOLD2 = "#f0cf8a", INK = "#3a2416", MAROON = "#8a2b1c", CREAM = "#f6efe2";
+        const $ = (id) => document.getElementById(id);
+        const NS = "http://www.w3.org/2000/svg";
+        function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+        function mk(tag, cls, parent, css, html) {
+          const e = document.createElement(tag); if (cls) e.className = cls;
+          if (css) for (const k in css) e.style[k] = typeof css[k] === "number" && !/opacity|zIndex|fontWeight|lineHeight/.test(k) ? css[k] + "px" : css[k];
+          if (html != null) e.innerHTML = html; parent.appendChild(e); return e;
+        }
+        function box(parent, x, y, w, h, cls, html, css) { return mk("div", "abs " + (cls || ""), parent, Object.assign({ left: x, top: y, width: w, height: h }, css || {}), html); }
+        function ico(name, size, color) { const i = window.ICONS[name]; return `<svg class="ico" width="${size}" height="${size}" viewBox="${i.vb}" fill="${color}">${i.p}</svg>`; }
+        function svg(parent, inner) { const s = document.createElementNS(NS, "svg"); s.setAttribute("class", "art"); s.setAttribute("viewBox", "0 0 1080 1920"); s.innerHTML = inner || ""; parent.appendChild(s); return s; }
+        // a line of Pashto; {…} marks a highlighted phrase (gold marker sweeps right→left behind it)
+        function tline(parent, spec, top, size, opt) {
+          opt = opt || {};
+          const d = mk("div", "tline ps", parent, Object.assign({ top: top, fontSize: size, lineHeight: opt.lh || 1.65, fontWeight: opt.fw || 600, color: opt.color || INK }, opt.css || {}));
+          const ws = [], hls = [];
+          spec.split(/(\{[^}]*\})/).filter(Boolean).forEach((chunk) => {
+            if (chunk[0] === "{") {
+              const h = mk("span", "hl", d, { color: opt.hc || MAROON, fontWeight: opt.hw || 700 }, "");
+              const m = mk("span", "mk", h, { background: opt.mc || "rgba(216,166,74,0.42)" }, "");
+              mk("span", "", h, null, chunk.slice(1, -1));
+              ws.push(h); hls.push(m); d.appendChild(document.createTextNode(" "));
+            } else {
+              if (/^[،.!؟؛]/.test(chunk) && d.lastChild && d.lastChild.nodeType === 3) d.removeChild(d.lastChild);
+              chunk.trim().split(/\s+/).filter(Boolean).forEach((w) => { ws.push(mk("span", "w", d, null, w)); d.appendChild(document.createTextNode(" ")); });
+            }
+          });
+          return { el: d, ws, hls };
+        }
+        function wordsIn(L, t0, step, d) {
+          L.ws.forEach((w, i) => tl.fromTo(w, { opacity: 0, y: 34, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d || 0.7, ease: OUT }, t0 + i * (step == null ? 0.16 : step)));
+          L.hls.forEach((m) => tl.fromTo(m, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: IO }, t0 + L.ws.length * (step == null ? 0.16 : step) + 0.15));
+        }
+        function lineOut(t, el, d) { tl.to(el, { opacity: 0, y: -26, filter: "blur(8px)", duration: d || 0.45, ease: IN }, t); }
+        function popIn(t, el, d, s0) { tl.fromTo(el, { opacity: 0, scale: s0 || 0.6 }, { opacity: 1, scale: 1, duration: d || 0.8, ease: "back.out(1.5)" }, t); }
+        function rise(t, el, d, dy) { tl.fromTo(el, { opacity: 0, y: dy == null ? 60 : dy }, { opacity: 1, y: 0, duration: d || 0.9, ease: OUT }, t); }
+        function sceneIn(t, c, d) { tl.fromTo(c, { opacity: 0, scale: 1.04, filter: "blur(12px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: d || 0.9, ease: OUT }, t); }
+        function sceneOut(t, c, d) { tl.to(c, { opacity: 0, scale: 0.98, filter: "blur(12px)", duration: d || 0.6, ease: IN }, t); }
+        function drift(t, el, d, to) { tl.to(el, Object.assign({ duration: d, ease: "none" }, to), t); }
+        // paper background with grain + soft gold bokeh leaves (reference look, all procedural)
+        function paperBG(c, seed) {
+          box(c, 0, 0, 1080, 1920, "paper", "", { background: "radial-gradient(120% 80% at 50% 42%, #efebe4 0%, #e3ddd2 55%, #c9c1b3 100%)" });
+          box(c, 0, 0, 1080, 1920, "weave");
+          box(c, 0, 0, 1080, 1920, "grain");
+          const R = rng(seed || 3), leaves = [];
+          [[-60, 1560, 1], [980, -40, 0.8]].forEach(([cx, cy, k]) => {
+            for (let i = 0; i < 9; i++) {
+              const s = (40 + R() * 70) * k;
+              const e = box(c, cx + (R() - 0.5) * 300, cy + (R() - 0.5) * 300, s, s * 0.7, "", "", { borderRadius: "50%", background: ["#a3743a", "#7d5427", "#c2914e"][i % 3], opacity: 0.5 + R() * 0.3, filter: `blur(${6 + R() * 10}px)` });
+              gsap.set(e, { rotation: R() * 180 });
+              leaves.push(e);
+            }
+          });
+          leaves.forEach((e, i) => tl.fromTo(e, { y: 0 }, { y: (i % 2 ? -1 : 1) * 30, duration: 9, ease: SO, yoyo: true, repeat: 3 }, 0));
+          box(c, 0, 0, 1080, 1920, "", "", { background: "radial-gradient(120% 75% at 50% 45%, rgba(0,0,0,0) 60%, rgba(60,40,20,0.22) 100%)" });
+        }
+        function stars(c, n, seed) {
+          const R = rng(seed);
+          for (let i = 0; i < n; i++) {
+            const s = 2 + R() * 3, e = box(c, R() * 1080, R() * 900, s, s, "", "", { borderRadius: "50%", background: "#fff", boxShadow: `0 0 ${4 + s * 2}px rgba(255,240,210,0.9)`, opacity: 0.3 + R() * 0.6 });
+            tl.fromTo(e, { opacity: 0.25 }, { opacity: 0.9, duration: 1.2 + R() * 1.6, ease: SO, yoyo: true, repeat: 5 + Math.floor(R() * 4) }, R() * 2);
+          }
+        }
+
+        // =====================================================================
+        // A · 0.0–16.7  Yusuf (AS): released from prison by a king's dream
+        // =====================================================================
+        (function A() {
+          const c = $("cA");
+          sceneIn(0, c, 1.2);
+          box(c, 0, 0, 1080, 1920, "", "", { background: "linear-gradient(180deg, #070b16 0%, #101a2c 45%, #1b2436 100%)" });
+          stars(c, 70, 11);
+          // crescent moon
+          svg(c, `<defs><mask id="mA"><rect width="1080" height="1920" fill="#fff"/><circle cx="902" cy="232" r="78" fill="#000"/></mask><radialGradient id="mg"><stop offset="0" stop-color="#fff3d6"/><stop offset="1" stop-color="#e9c77d"/></radialGradient></defs><circle cx="870" cy="250" r="86" fill="url(#mg)" mask="url(#mA)"/>`);
+          const mglow = box(c, 700, 80, 340, 340, "", "", { borderRadius: "50%", background: "radial-gradient(circle, rgba(240,207,138,0.35) 0%, rgba(240,207,138,0) 65%)" });
+          // prison wall + arched doorway
+          const R = rng(5); let bricks = "";
+          for (let row = 0; row < 15; row++) for (let col = -1; col < 9; col++) {
+            const x = col * 140 + (row % 2) * 70, y = 960 + row * 66, sh = 34 + Math.floor(R() * 14);
+            bricks += `<rect x="${x + 3}" y="${y + 3}" width="134" height="60" rx="6" fill="rgb(${sh},${sh + 4},${sh + 14})"/>`;
+          }
+          const wall = svg(c, `<g>${bricks}</g><rect x="0" y="960" width="1080" height="960" fill="url(#wallShade)"/><defs><linearGradient id="wallShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b16" stop-opacity="0.65"/><stop offset="0.3" stop-color="#070b16" stop-opacity="0"/></linearGradient></defs>`);
+          const light = box(c, 140, 900, 800, 900, "", "", { background: "radial-gradient(50% 55% at 50% 60%, rgba(255,226,160,0.95) 0%, rgba(255,200,120,0.45) 35%, rgba(255,190,110,0) 70%)", opacity: 0 });
+          const arch = svg(c, `<path d="M340 1660 L340 1240 Q340 1060 540 1060 Q740 1060 740 1240 L740 1660 Z" fill="#05070d"/><path d="M340 1660 L340 1240 Q340 1060 540 1060 Q740 1060 740 1240 L740 1660" fill="none" stroke="#4b5366" stroke-width="14"/>`);
+          // the door (swings open on its left hinge)
+          const door = box(c, 352, 1072, 376, 588, "", `<svg width="376" height="588" viewBox="0 0 376 588"><defs><linearGradient id="wd" x1="0" x2="1"><stop offset="0" stop-color="#4a3020"/><stop offset="1" stop-color="#2e1d12"/></linearGradient></defs><path d="M0 588 L0 178 Q0 0 188 0 Q376 0 376 178 L376 588 Z" fill="url(#wd)"/>${[0, 1, 2, 3, 4].map((i) => `<rect x="${24 + i * 70}" y="60" width="16" height="520" rx="6" fill="#1b120b" opacity="0.6"/>`).join("")}<rect x="0" y="230" width="376" height="18" fill="#6b6f78"/><rect x="0" y="430" width="376" height="18" fill="#6b6f78"/><circle cx="330" cy="330" r="14" fill="#c9a24e"/></svg>`, { transformOrigin: "0% 50%" });
+          // texts
+          const name = tline(c, "{یوسف}", 300, 170, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.0)", lh: 1.3, fw: 700 });
+          const hon = tline(c, "عليه السلام", 530, 54, { color: GOLD, fw: 500 });
+          tl.fromTo(name.ws[0], { opacity: 0, scale: 0.8, filter: "blur(18px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.4, ease: OUT }, 0.4);
+          tl.fromTo(hon.el, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0, ease: OUT }, 1.2);
+          tl.to(name.el, { y: -120, scale: 0.6, duration: 0.9, ease: IO }, 3.0);
+          tl.to(hon.el, { y: -165, scale: 0.7, opacity: 0.85, duration: 0.9, ease: IO }, 3.0);
+          // the king's dream
+          const L2 = tline(c, "د پاچا د لیدلي {یوه خوب} له برکته", 490, 66, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)" });
+          wordsIn(L2, 3.4, 0.17);
+          const dream = box(c, 330, 690, 420, 260, "", `<svg width="420" height="260" viewBox="0 0 420 260"><g fill="rgba(240,230,210,0.16)" stroke="rgba(240,207,138,0.55)" stroke-width="3"><path d="M70 200 Q20 200 30 150 Q20 90 90 95 Q110 35 180 55 Q230 10 290 50 Q370 40 375 110 Q420 140 385 190 Q380 230 320 215 Q270 250 210 220 Q150 250 110 215 Q75 230 70 200 Z"/></g><g transform="translate(150,90)" fill="#f0cf8a"><path d="M0 70 L10 15 L40 45 L60 0 L80 45 L110 15 L120 70 Z"/><rect x="0" y="74" width="120" height="14" rx="4"/></g></svg>`);
+          popIn(4.4, dream, 1.0, 0.5);
+          drift(5.4, dream, 2.0, { y: -16 });
+          lineOut(6.4, L2.el); tl.to(dream, { opacity: 0, scale: 0.8, duration: 0.5, ease: IN }, 6.4);
+          // released from prison
+          const L3 = tline(c, "{له زندانه راووت}،", 510, 96, { color: CREAM, hc: "#fff4dc", mc: "rgba(216,166,74,0.45)", fw: 700 });
+          wordsIn(L3, 6.9, 0.2);
+          tl.fromTo(door, { rotationY: 0, transformPerspective: 1200 }, { rotationY: -78, transformPerspective: 1200, duration: 1.8, ease: "power2.inOut" }, 7.1);
+          tl.to(light, { opacity: 1, duration: 1.6, ease: SO }, 7.4);
+          const rays = svg(c, [0, 1, 2, 3, 4, 5, 6].map((i) => `<polygon points="540,1180 ${300 + i * 80},1920 ${340 + i * 80},1920" fill="rgba(255,226,170,0.10)"/>`).join(""));
+          tl.fromTo(rays, { opacity: 0 }, { opacity: 1, duration: 1.5, ease: SO }, 7.8);
+          lineOut(9.8, L3.el);
+          // no thunderbolt broke the gates
+          const L4a = tline(c, "د زندان په دروازو", 480, 62, { color: CREAM });
+          const L4b = tline(c, "کومه {اسماني ټکه} نه وه راپرېوتې", 590, 62, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)" });
+          wordsIn(L4a, 10.1, 0.17); wordsIn(L4b, 10.8, 0.17);
+          const bolt = svg(c, `<path id="boltP" d="M640 720 L570 860 L640 860 L560 1030" fill="none" stroke="#ffe6a3" stroke-width="12" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 16px rgba(255,230,163,0.9))"/>`);
+          const bp = bolt.querySelector("path");
+          tl.fromTo(bp, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.5, ease: "power2.in" }, 11.6);
+          const no = box(c, 480, 770, 200, 200, "", `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="86" fill="none" stroke="#e0533d" stroke-width="14"/><line x1="40" y1="160" x2="160" y2="40" stroke="#e0533d" stroke-width="14" stroke-linecap="round"/></svg>`);
+          popIn(12.4, no, 0.6, 0.4);
+          tl.to(bp, { opacity: 0.35, duration: 0.5 }, 12.5);
+          lineOut(13.4, [L4a.el, L4b.el]);
+          tl.to([no, bolt], { opacity: 0, duration: 0.5 }, 13.4);
+          const L4c = tline(c, "چې {ماتې یې کړې}.", 520, 84, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)", fw: 700 });
+          wordsIn(L4c, 13.7, 0.2);
+          tl.fromTo(c, { y: 0 }, { y: -30, duration: 16, ease: SO }, 0.5);
+          sceneOut(16.0, c, 0.7);
+        })();
+
+        // =====================================================================
+        // B · 16.0–31.0  Nimrod — destroyed by a mosquito, not by an army
+        // =====================================================================
+        (function B() {
+          const c = $("cB");
+          sceneIn(16.05, c, 0.9);
+          box(c, 0, 0, 1080, 1920, "", "", { background: "radial-gradient(100% 70% at 50% 45%, #3a2817 0%, #20160d 55%, #120c07 100%)" });
+          box(c, 0, 0, 1080, 1920, "grain", "", { opacity: 0.35 });
+          // faint 8-point star pattern
+          let pat = ""; for (let y = 0; y < 2000; y += 180) for (let x = (y / 180) % 2 ? 90 : 0; x < 1180; x += 180) pat += `<g transform="translate(${x},${y})" fill="none" stroke="rgba(216,166,74,0.07)" stroke-width="2"><rect x="-40" y="-40" width="80" height="80"/><rect x="-40" y="-40" width="80" height="80" transform="rotate(45)"/></g>`;
+          svg(c, pat);
+          // throne + crown
+          const throne = box(c, 290, 760, 500, 620, "", `<svg width="500" height="620" viewBox="0 0 500 620"><defs><linearGradient id="tg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5a3a1e"/><stop offset="1" stop-color="#2a1a0c"/></linearGradient></defs><path d="M60 620 L60 140 Q60 40 250 30 Q440 40 440 140 L440 620 L380 620 L380 420 L120 420 L120 620 Z" fill="url(#tg)" stroke="#8a6230" stroke-width="6"/><rect x="40" y="400" width="420" height="60" rx="12" fill="#6b4520" stroke="#a87b3d" stroke-width="5"/></svg>`);
+          const crown = box(c, 380, 640, 320, 220, "", `<svg width="320" height="220" viewBox="0 0 320 220"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffe7a8"/><stop offset="1" stop-color="#c8902e"/></linearGradient></defs><path d="M20 190 L40 40 L110 110 L160 10 L210 110 L280 40 L300 190 Z" fill="url(#cg)" stroke="#8a5a1a" stroke-width="5"/><rect x="16" y="186" width="288" height="30" rx="8" fill="#c8902e"/><circle cx="160" cy="150" r="16" fill="#b5321f"/><circle cx="90" cy="160" r="11" fill="#2d6fb3"/><circle cx="230" cy="160" r="11" fill="#2d6fb3"/></svg>`, { transformOrigin: "50% 100%" });
+          rise(16.4, throne, 1.1, 80);
+          tl.fromTo(crown, { opacity: 0, y: -120, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: "back.out(1.4)" }, 16.9);
+          const glow = box(c, 240, 520, 600, 460, "", "", { background: "radial-gradient(circle, rgba(240,207,138,0.35) 0%, rgba(240,207,138,0) 65%)" });
+          glow.style.zIndex = -1; tl.fromTo(glow, { opacity: 0 }, { opacity: 1, duration: 1.4 }, 17.1);
+          const L5 = tline(c, "دغه راز {نمروړ}", 300, 92, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)", fw: 700 });
+          wordsIn(L5, 16.4, 0.22);
+          lineOut(19.1, L5.el);
+          // a mosquito flies in — the crown falls
+          const L6 = tline(c, "په داسې {ماشي} هلاک شو،", 300, 82, { color: CREAM, hc: "#ffdf9a", mc: "rgba(181,50,31,0.55)", fw: 700 });
+          wordsIn(L6, 19.4, 0.2);
+          const mos = box(c, 0, 0, 90, 70, "", `<svg width="90" height="70" viewBox="0 0 90 70"><g stroke="#e9e1d2" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M44 40 L20 62 M48 40 L30 66 M52 40 L62 66 M56 40 L74 62"/><path d="M58 34 L84 22"/></g><ellipse class="wg" cx="38" cy="22" rx="20" ry="9" fill="rgba(220,230,240,0.55)" transform="rotate(-25 38 22)"/><ellipse class="wg" cx="56" cy="20" rx="20" ry="9" fill="rgba(220,230,240,0.55)" transform="rotate(20 56 20)"/><ellipse cx="44" cy="36" rx="20" ry="7" fill="#e9e1d2"/><circle cx="62" cy="33" r="7" fill="#e9e1d2"/></svg>`);
+          const mp = { u: 0 };
+          const MX = (u) => 1100 - u * 560 + Math.sin(u * 9) * 40, MY = (u) => 1500 - u * 780 + Math.cos(u * 7) * 60;
+          tl.fromTo(mp, { u: 0 }, { u: 1, duration: 2.4, ease: "sine.inOut", onUpdate: () => { mos.style.left = MX(mp.u) - 45 + "px"; mos.style.top = MY(mp.u) - 35 + "px"; } }, 19.6);
+          tl.fromTo(mos.querySelectorAll(".wg"), { scaleY: 1, transformOrigin: "50% 50%" }, { scaleY: 0.3, duration: 0.05, ease: "none", yoyo: true, repeat: 230, immediateRender: false }, 19.6);
+          tl.to(crown, { rotation: 32, y: 520, x: 140, opacity: 0.45, duration: 1.2, ease: "power2.in" }, 22.0);
+          tl.to(glow, { opacity: 0.2, duration: 1.0 }, 22.0);
+          tl.to(throne, { filter: "brightness(0.55)", duration: 1.0 }, 22.0);
+          lineOut(22.6, L6.el);
+          // so small the eye may not even see it
+          const L7a = tline(c, "چې بنایي په سترګو هم", 260, 66, { color: CREAM });
+          const L7b = tline(c, "{ونه لیدل شي}،", 370, 80, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)", fw: 700 });
+          wordsIn(L7a, 22.9, 0.16); wordsIn(L7b, 23.7, 0.2);
+          const lens = box(c, 300, 560, 360, 360, "", "", { borderRadius: "50%", border: "14px solid #c8a060", background: "radial-gradient(circle, rgba(255,250,235,0.18) 0%, rgba(255,250,235,0.05) 70%)", boxShadow: "0 30px 60px rgba(0,0,0,0.5), inset 0 0 40px rgba(255,255,255,0.15)", overflow: "hidden" });
+          const big = box(lens, 30, 70, 300, 233, "", mos.innerHTML);
+          big.firstChild.setAttribute("width", "300"); big.firstChild.setAttribute("height", "233");
+          const handle = box(c, 600, 880, 40, 200, "", "", { borderRadius: 20, background: "linear-gradient(90deg,#7a5126,#a8783a)", transformOrigin: "50% 0%" });
+          gsap.set(handle, { rotation: -40 });
+          popIn(24.0, lens, 0.8, 0.4); tl.fromTo(handle, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 24.3);
+          tl.to(mos, { opacity: 0, duration: 0.3 }, 24.0);
+          lineOut(25.9, [L7a.el, L7b.el]); tl.to([lens, handle], { opacity: 0, scale: 0.8, duration: 0.45, ease: IN }, 25.9);
+          // not by a huge armed army
+          const L8a = tline(c, "کوم لوی او په وسلو سمبال لښکر", 250, 64, { color: CREAM });
+          const L8b = tline(c, "{نه دی وژلی!}", 370, 92, { color: CREAM, hc: "#ffdf9a", mc: "rgba(181,50,31,0.55)", fw: 700 });
+          wordsIn(L8a, 26.2, 0.15); wordsIn(L8b, 27.7, 0.22);
+          const army = box(c, 0, 1240, 1080, 560);
+          let sold = "";
+          for (let r = 0; r < 3; r++) for (let i = 0; i < 11; i++) {
+            const x = 20 + i * 98 + (r % 2) * 49, y = 80 + r * 150, sc = 0.9 + r * 0.15;
+            sold += `<g transform="translate(${x},${y}) scale(${sc})" fill="#0d0805"><circle cx="30" cy="20" r="16"/><path d="M8 140 L12 50 Q30 34 48 50 L52 140 Z"/><rect x="58" y="-40" width="5" height="180" rx="2"/><path d="M60 -56 L52 -36 L68 -36 Z"/><ellipse cx="6" cy="80" rx="16" ry="30" fill="#2a1a0e" stroke="#5a3a1e" stroke-width="3"/></g>`;
+          }
+          army.innerHTML = `<svg width="1080" height="560" viewBox="0 0 1080 560">${sold}</svg>`;
+          rise(26.4, army, 1.2, 120);
+          const xmark = box(c, 140, 1290, 800, 460, "", `<svg width="800" height="460" viewBox="0 0 800 460"><line x1="40" y1="40" x2="760" y2="420" stroke="#d24a35" stroke-width="16" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><line x1="760" y1="40" x2="40" y2="420" stroke="#d24a35" stroke-width="16" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>`);
+          xmark.querySelectorAll("line").forEach((l, i) => tl.fromTo(l, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.45, ease: IO }, 28.3 + i * 0.25));
+          tl.to(army, { opacity: 0.45, duration: 0.6 }, 28.4);
+          tl.fromTo(c, { scale: 1 }, { scale: 1.04, duration: 14, ease: SO }, 16.5);
+          sceneOut(30.4, c, 0.7);
+        })();
+
+        // =====================================================================
+        // C · 30.4–44.8  Don't wonder how you'll be safe from people — please your Lord
+        // =====================================================================
+        (function C() {
+          const c = $("cC");
+          sceneIn(30.45, c, 0.9);
+          paperBG(c, 21);
+          // a person (ink silhouette)
+          const person = box(c, 390, 560, 300, 460, "", `<svg width="300" height="460" viewBox="0 0 300 460"><circle cx="150" cy="110" r="78" fill="#4a2f1d"/><path d="M20 460 Q20 240 150 220 Q280 240 280 460 Z" fill="#4a2f1d"/></svg>`);
+          rise(30.7, person, 1.0, 50);
+          const L9 = tline(c, "نو دې ته دومره {حیرت مه وهه}", 1180, 74, { fw: 600 });
+          wordsIn(L9, 30.9, 0.18);
+          lineOut(33.9, L9.el);
+          // people's talk around them
+          const L10 = tline(c, "چې د خلکو له خولو ته شړه شوې،", 1180, 66, {});
+          wordsIn(L10, 34.2, 0.15);
+          const bub = [[150, 420, -8], [720, 400, 10], [90, 760, -4], [800, 760, 6], [210, 1000, 8], [740, 1010, -8]].map(([x, y, r], i) => {
+            const b = box(c, x, y, 190, 120, "", `<svg width="190" height="120" viewBox="0 0 190 120"><path d="M20 10 H170 Q185 10 185 25 V75 Q185 90 170 90 H${i % 2 ? 140 : 70} L${i % 2 ? 160 : 40} 115 L${i % 2 ? 120 : 90} 90 H20 Q5 90 5 75 V25 Q5 10 20 10 Z" fill="#fbf7f0" stroke="#7a2a1d" stroke-width="4"/><path d="M30 50 q12 -16 24 0 t24 0 t24 0 t24 0 t24 0" fill="none" stroke="#7a2a1d" stroke-width="5" stroke-linecap="round"/></svg>`, { transformOrigin: i % 2 ? "80% 100%" : "20% 100%" });
+            gsap.set(b, { rotation: r });
+            popIn(34.6 + i * 0.22, b, 0.6, 0.3);
+            tl.to(b, { y: -10, duration: 0.6, ease: SO, yoyo: true, repeat: 2 }, 35.4 + i * 0.1);
+            return b;
+          });
+          lineOut(37.5, L10.el);
+          // how will you stay safe? — a shield; the talk bounces away
+          const L11 = tline(c, "{څنګه خوندي شي}،", 1180, 86, { fw: 700 });
+          wordsIn(L11, 37.8, 0.22);
+          const shield = box(c, 360, 540, 360, 440, "", `<svg width="360" height="440" viewBox="0 0 360 440"><defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#c79a52"/><stop offset="1" stop-color="#8a5a24"/></linearGradient></defs><path d="M180 10 L340 70 Q340 300 180 430 Q20 300 20 70 Z" fill="url(#sg)" stroke="#5e3a16" stroke-width="8" opacity="0.92"/><path d="M110 220 L165 275 L260 170" fill="none" stroke="#fbf3e2" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+          popIn(38.3, shield, 0.8, 0.5);
+          bub.forEach((b, i) => tl.to(b, { x: (i % 2 ? 1 : -1) * 260, opacity: 0, rotation: (i % 2 ? 30 : -30), duration: 0.8, ease: IN }, 38.9 + i * 0.06));
+          lineOut(40.3, L11.el);
+          // think how to please the Creator
+          tl.to([person, shield], { opacity: 0, y: 40, duration: 0.6, ease: IN }, 40.3);
+          const raysUp = box(c, 140, 120, 800, 1000, "", "", { background: "conic-gradient(from 160deg at 50% 0%, rgba(255,240,200,0) 0deg, rgba(255,236,190,0.55) 12deg, rgba(255,240,200,0) 22deg, rgba(255,236,190,0.45) 30deg, rgba(255,240,200,0) 40deg)", transformOrigin: "50% 0%" });
+          tl.fromTo(raysUp, { opacity: 0, scaleY: 0.6 }, { opacity: 1, scaleY: 1, duration: 1.4, ease: OUT }, 40.6);
+          const hands = box(c, 310, 620, 460, 420, "", `<svg width="460" height="420" viewBox="0 0 460 420"><g fill="#4a2f1d"><path d="M215 400 Q120 400 90 300 L40 140 Q30 105 60 100 Q85 96 92 130 L110 210 L100 80 Q98 48 126 46 Q152 46 154 80 L162 200 L160 60 Q160 28 188 28 Q214 30 214 62 L214 300 Q214 370 215 400 Z"/><path d="M245 400 Q340 400 370 300 L420 140 Q430 105 400 100 Q375 96 368 130 L350 210 L360 80 Q362 48 334 46 Q308 46 306 80 L298 200 L300 60 Q300 28 272 28 Q246 30 246 62 L246 300 Q246 370 245 400 Z"/></g></svg>`);
+          rise(40.9, hands, 1.1, 80);
+          const L12a = tline(c, "په دې فکر کې اوسه", 1160, 70, {});
+          const L12b = tline(c, "چې د {خالق رب} څنګه {رضا} کړم،", 1280, 76, { fw: 700 });
+          wordsIn(L12a, 40.7, 0.18); wordsIn(L12b, 41.7, 0.2);
+          sceneOut(44.2, c, 0.6);
+        })();
+
+        // =====================================================================
+        // D · 44.2–59.3  When He is pleased — what He gives you (blessing card)
+        // =====================================================================
+        (function D() {
+          const c = $("cD");
+          sceneIn(44.25, c, 0.9);
+          paperBG(c, 37);
+          const L13 = tline(c, "ځکه هغه چې کله {راضي شي}،", 300, 76, { fw: 700 });
+          wordsIn(L13, 44.7, 0.2);
+          const card = box(c, 80, 520, 920, 1080, "", "", { borderRadius: 54, background: "linear-gradient(160deg, #5a3a1c 0%, #3e2612 60%, #2f1c0d 100%)", boxShadow: "0 50px 100px rgba(60,35,15,0.45), inset 0 2px 0 rgba(255,220,160,0.18)" });
+          box(card, 0, 0, 920, 1080, "grain", "", { opacity: 0.25, borderRadius: 54 });
+          rise(46.6, card, 1.0, 90);
+          const items = [["درته {بس} هم دی،", "check", 48.0], ["{ساتی} دی هم،", "shield", 49.9], ["{خلاصون} هم درکوي،", "unlock", 51.8], ["{درکمه} هم کوي", "gift", 53.7], ["او {خوشحالوي} دې هم!", "smile", 55.6]];
+          items.forEach(([spec, ic, t], i) => {
+            const y = 70 + i * 196;
+            const row = box(card, 50, y, 820, 168, "", "", { borderRadius: 34, background: "rgba(255,236,200,0.06)", boxShadow: "inset 0 0 0 2px rgba(240,207,138,0.16)" });
+            const ib = box(row, 680, 24, 120, 120, "", ico(ic, 62, "#3e2612"), { borderRadius: "50%", background: "linear-gradient(140deg,#f0cf8a,#c8902e)", display: "flex", alignItems: "center", justifyContent: "center" });
+            const L = tline(row, spec, 22, 64, { color: "#f4e8d2", hc: "#ffe3a3", mc: "rgba(216,166,74,0.35)", fw: 600, css: { left: "30px", width: "630px", textAlign: "right" } });
+            tl.fromTo(row, { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.6, ease: OUT }, t);
+            popIn(t + 0.1, ib, 0.6, 0.4);
+            wordsIn(L, t + 0.15, 0.14, 0.6);
+            tl.to(row, { background: "rgba(255,236,200,0.14)", duration: 0.4, ease: SO, yoyo: true, repeat: 1 }, t + 0.6);
+          });
+          // the card breathes with a soft gold glow at the end
+          tl.to(card, { boxShadow: "0 50px 100px rgba(60,35,15,0.45), 0 0 90px rgba(216,166,74,0.55), inset 0 2px 0 rgba(255,220,160,0.25)", duration: 1.2, ease: SO }, 57.0);
+          tl.fromTo(c, { y: 0 }, { y: -24, duration: 14, ease: SO }, 45);
+          sceneOut(58.6, c, 0.7);
+        })();
+
+        // =====================================================================
+        // E · 58.6–64.5  Editor signature
+        // =====================================================================
+        (function E() {
+          const c = $("cE");
+          sceneIn(58.65, c, 1.0);
+          paperBG(c, 53);
+          const orn = box(c, 440, 650, 200, 200, "", `<svg width="200" height="200" viewBox="0 0 200 200"><g fill="none" stroke="#8a5a24" stroke-width="5"><rect x="45" y="45" width="110" height="110"/><rect x="45" y="45" width="110" height="110" transform="rotate(45 100 100)"/><circle cx="100" cy="100" r="30"/></g><circle cx="100" cy="100" r="10" fill="#8a2b1c"/></svg>`);
+          tl.fromTo(orn, { opacity: 0, rotation: -90, scale: 0.5 }, { opacity: 1, rotation: 0, scale: 1, duration: 1.4, ease: "back.out(1.3)" }, 59.0);
+          tl.to(orn, { rotation: 45, duration: 4, ease: "none" }, 60.4);
+          const by = tline(c, "اډیټ", 930, 46, { color: "#8a6a48", fw: 400 });
+          rise(59.6, by.el, 0.8, 20);
+          const nm = tline(c, "الیاس عمر", 1010, 128, { color: INK, fw: 700, lh: 1.35 });
+          tl.fromTo(nm.el, { opacity: 0, clipPath: "inset(-30% -4% -30% 100%)" }, { opacity: 1, clipPath: "inset(-30% -4% -30% 0%)", duration: 1.3, ease: "power3.inOut" }, 59.9);
+          const fl = box(c, 240, 1230, 600, 30, "", `<svg width="600" height="30" viewBox="0 0 600 30"><path d="M10 15 Q150 0 290 15 Q300 25 310 15 Q450 0 590 15" fill="none" stroke="#8a5a24" stroke-width="4" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><rect x="294" y="9" width="12" height="12" transform="rotate(45 300 15)" fill="#8a2b1c"/></svg>`);
+          tl.fromTo(fl.querySelector("path"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, ease: IO }, 60.6);
+          tl.fromTo(fl.querySelector("rect"), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 61.2);
+          tl.to("#wm", { opacity: 0, duration: 0.6 }, 58.8);
+          tl.to("#fade", { opacity: 1, duration: 1.2, ease: "power1.in" }, 63.3);
+        })();
+
+        // watermark: light on the night scenes, warm brown on the paper scenes
+        tl.to("#wm", { color: "#6b5136", duration: 0.6, ease: SO }, 30.4);
+        document.fonts.ready.then(() => {
+          window.__timelines["main"] = tl;
+          if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+        });
+      })();
+    </script>
+  </body>
+</html>
