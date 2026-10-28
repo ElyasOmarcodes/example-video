@@ -205,7 +205,7 @@
           tl.fromTo(crown, { opacity: 0, y: -120, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: "back.out(1.4)" }, 16.9);
           const glow = box(c, 240, 520, 600, 460, "", "", { background: "radial-gradient(circle, rgba(240,207,138,0.35) 0%, rgba(240,207,138,0) 65%)" });
           glow.style.zIndex = -1; tl.fromTo(glow, { opacity: 0 }, { opacity: 1, duration: 1.4 }, 17.1);
-          const L5 = tline(c, "دغه راز {نمروړ}", 300, 92, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)", fw: 700 });
+          const L5 = tline(c, "دغه راز {نمرود}", 300, 92, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)", fw: 700 });
           wordsIn(L5, 16.4, 0.22);
           lineOut(19.1, L5.el);
           // a mosquito flies in — the crown falls
@@ -221,7 +221,7 @@
           tl.to(throne, { filter: "brightness(0.55)", duration: 1.0 }, 22.0);
           lineOut(22.6, L6.el);
           // so small the eye may not even see it
-          const L7a = tline(c, "چې بنایي په سترګو هم", 260, 66, { color: CREAM });
+          const L7a = tline(c, "چې ښایي په سترګو هم", 260, 66, { color: CREAM });
           const L7b = tline(c, "{ونه لیدل شي}،", 370, 80, { color: CREAM, hc: GOLD2, mc: "rgba(216,166,74,0.35)", fw: 700 });
           wordsIn(L7a, 22.9, 0.16); wordsIn(L7b, 23.7, 0.2);
           const lens = box(c, 300, 560, 360, 360, "", "", { borderRadius: "50%", border: "14px solid #c8a060", background: "radial-gradient(circle, rgba(255,250,235,0.18) 0%, rgba(255,250,235,0.05) 70%)", boxShadow: "0 30px 60px rgba(0,0,0,0.5), inset 0 0 40px rgba(255,255,255,0.15)", overflow: "hidden" });
@@ -261,11 +261,11 @@
           // a person (ink silhouette)
           const person = box(c, 390, 560, 300, 460, "", `<svg width="300" height="460" viewBox="0 0 300 460"><circle cx="150" cy="110" r="78" fill="#4a2f1d"/><path d="M20 460 Q20 240 150 220 Q280 240 280 460 Z" fill="#4a2f1d"/></svg>`);
           rise(30.7, person, 1.0, 50);
-          const L9 = tline(c, "نو دې ته دومره {حیرت مه وهه}", 1180, 74, { fw: 600 });
+          const L9 = tline(c, "نو دې ته دومره {چورت مه وهه}", 1180, 74, { fw: 600 });
           wordsIn(L9, 30.9, 0.18);
           lineOut(33.9, L9.el);
           // people's talk around them
-          const L10 = tline(c, "چې د خلکو له خولو ته شړه شوې،", 1180, 66, {});
+          const L10 = tline(c, "چې د خلکو له {شره} به", 1180, 66, {});
           wordsIn(L10, 34.2, 0.15);
           const bub = [[150, 420, -8], [720, 400, 10], [90, 760, -4], [800, 760, 6], [210, 1000, 8], [740, 1010, -8]].map(([x, y, r], i) => {
             const b = box(c, x, y, 190, 120, "", `<svg width="190" height="120" viewBox="0 0 190 120"><path d="M20 10 H170 Q185 10 185 25 V75 Q185 90 170 90 H${i % 2 ? 140 : 70} L${i % 2 ? 160 : 40} 115 L${i % 2 ? 120 : 90} 90 H20 Q5 90 5 75 V25 Q5 10 20 10 Z" fill="#fbf7f0" stroke="#7a2a1d" stroke-width="4"/><path d="M30 50 q12 -16 24 0 t24 0 t24 0 t24 0 t24 0" fill="none" stroke="#7a2a1d" stroke-width="5" stroke-linecap="round"/></svg>`, { transformOrigin: i % 2 ? "80% 100%" : "20% 100%" });
@@ -276,7 +276,7 @@
           });
           lineOut(37.5, L10.el);
           // how will you stay safe? — a shield; the talk bounces away
-          const L11 = tline(c, "{څنګه خوندي شي}،", 1180, 86, { fw: 700 });
+          const L11 = tline(c, "{څنګه خوندي شې}،", 1180, 86, { fw: 700 });
           wordsIn(L11, 37.8, 0.22);
           const shield = box(c, 360, 540, 360, 440, "", `<svg width="360" height="440" viewBox="0 0 360 440"><defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#c79a52"/><stop offset="1" stop-color="#8a5a24"/></linearGradient></defs><path d="M180 10 L340 70 Q340 300 180 430 Q20 300 20 70 Z" fill="url(#sg)" stroke="#5e3a16" stroke-width="8" opacity="0.92"/><path d="M110 220 L165 275 L260 170" fill="none" stroke="#fbf3e2" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
           popIn(38.3, shield, 0.8, 0.5);
@@ -289,7 +289,7 @@
           const hands = box(c, 310, 620, 460, 420, "", `<svg width="460" height="420" viewBox="0 0 460 420"><g fill="#4a2f1d"><path d="M215 400 Q120 400 90 300 L40 140 Q30 105 60 100 Q85 96 92 130 L110 210 L100 80 Q98 48 126 46 Q152 46 154 80 L162 200 L160 60 Q160 28 188 28 Q214 30 214 62 L214 300 Q214 370 215 400 Z"/><path d="M245 400 Q340 400 370 300 L420 140 Q430 105 400 100 Q375 96 368 130 L350 210 L360 80 Q362 48 334 46 Q308 46 306 80 L298 200 L300 60 Q300 28 272 28 Q246 30 246 62 L246 300 Q246 370 245 400 Z"/></g></svg>`);
           rise(40.9, hands, 1.1, 80);
           const L12a = tline(c, "په دې فکر کې اوسه", 1160, 70, {});
-          const L12b = tline(c, "چې د {خالق رب} څنګه {رضا} کړم،", 1280, 76, { fw: 700 });
+          const L12b = tline(c, "چې د {خلکو رب} څنګه {رضا} کړم،", 1280, 76, { fw: 700 });
           wordsIn(L12a, 40.7, 0.18); wordsIn(L12b, 41.7, 0.2);
           sceneOut(44.2, c, 0.6);
         })();
@@ -306,7 +306,7 @@
           const card = box(c, 80, 520, 920, 1080, "", "", { borderRadius: 54, background: "linear-gradient(160deg, #5a3a1c 0%, #3e2612 60%, #2f1c0d 100%)", boxShadow: "0 50px 100px rgba(60,35,15,0.45), inset 0 2px 0 rgba(255,220,160,0.18)" });
           box(card, 0, 0, 920, 1080, "grain", "", { opacity: 0.25, borderRadius: 54 });
           rise(46.6, card, 1.0, 90);
-          const items = [["درته {بس} هم دی،", "check", 48.0], ["{ساتی} دی هم،", "shield", 49.9], ["{خلاصون} هم درکوي،", "unlock", 51.8], ["{درکمه} هم کوي", "gift", 53.7], ["او {خوشحالوي} دې هم!", "smile", 55.6]];
+          const items = [["درته {بس} هم دی،", "check", 48.0], ["{ساتی} دی هم،", "shield", 49.9], ["{خلاصون} هم درکوي،", "unlock", 51.8], ["{درکړه} هم کوي", "gift", 53.7], ["او {خوشحالوي} دې هم!", "smile", 55.6]];
           items.forEach(([spec, ic, t], i) => {
             const y = 70 + i * 196;
             const row = box(card, 50, y, 820, 168, "", "", { borderRadius: 34, background: "rgba(255,236,200,0.06)", boxShadow: "inset 0 0 0 2px rgba(240,207,138,0.16)" });

@@ -15,4 +15,4 @@ A Pashto Islamic-reminder reel in motion graphics. Editor: **الیاس عمر**
 | 44.2–59.3 | The brown blessing card: بس · ساتی · خلاصون · درکمه · خوشحالوي                  |
 | 58.6–64.5 | Editor signature «الیاس عمر»                                                      |
 
-Text edits relative to the brief (spelling only): خنګه→څنګه, خکه→ځکه, ماضي→ماشي, خلو→خولو.
+Text edits relative to the brief (spelling only): خنګه→څنګه, خکه→ځکه, ماضي→ماشي, خلو→خولو. Second pass (user corrections): نمروړ→نمرود، بنایي→ښایي، حیرت→چورت، «له شره به څنګه خوندي شې»، خالق رب→خلکو رب، درکمه→درکړه.
