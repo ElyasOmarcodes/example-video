@@ -99,6 +99,15 @@
         }
         function popIn(t, el, d, s0) { tl.fromTo(el, { opacity: 0, scale: s0 == null ? 0.5 : s0 }, { opacity: 1, scale: 1, duration: d || 0.8, ease: POP }, t); }
         function floatY(t, el, d, amp) { tl.fromTo(el, { y: 0 }, { y: -(amp || 14), duration: d, ease: SO, yoyo: true, repeat: 1, immediateRender: false }, t); }
+        // real photo sticker (B&W cut-out with white outline, or framed photo) with soft drop shadow
+        function photo(p, src, x, y, w, h, rot) {
+          const d = box(p, x, y, w, h, "", "", { filter: "drop-shadow(0 22px 26px rgba(0,0,12,0.6))" });
+          const im = mk("img", "", d, { display: "block", width: w, height: h }); im.src = src;
+          gsap.set(d, { rotation: rot || 0 });
+          return d;
+        }
+        function photoIn(t, d, rot) { tl.fromTo(d, { opacity: 0, scale: 0.55, rotation: (rot || 0) - 12, filter: "drop-shadow(0 22px 26px rgba(0,0,12,0.6)) blur(10px)" }, { opacity: 1, scale: 1, rotation: rot || 0, filter: "drop-shadow(0 22px 26px rgba(0,0,12,0.6)) blur(0px)", duration: 0.9, ease: POP }, t); }
+        function photoDanger(t, d) { tl.to(d, { filter: "drop-shadow(0 0 26px rgba(255,90,30,0.85)) blur(0px)", duration: 0.6, ease: SO }, t); }
         // section number on a red brush stroke
         function badge(p, num, t, top) {
           const g = box(p, 760, top, 230, 150);
@@ -145,9 +154,12 @@
           sceneIn(0.05, c); push(0, c, 3.2);
           const T = title(c, ["{۶} عـــادت", "که {تمرکز} شما رو", "کاهش می‌ده"], 300, 104);
           wordsIn(T, [0.2, 0.5, 0.9, 1.2, 1.5, 1.8, 2.3, 2.6]);
-          const b = brain(c, 230, 920, 1.18);
-          drawOn(0.6, b, 1.6);
-          tl.fromTo(b, { rotationY: -20, transformPerspective: 1400 }, { rotationY: 20, transformPerspective: 1400, duration: 3.2, ease: SO }, 0.2);
+          const b = brain(c, 150, 840, 1.5);
+          drawOn(0.4, b, 1.6);
+          tl.fromTo(b, { rotationY: -20, transformPerspective: 1400, opacity: 0.75 }, { rotationY: 20, transformPerspective: 1400, opacity: 0.75, duration: 3.2, ease: SO }, 0.2);
+          const rb = photo(c, "assets/img/cut-brain.png", 330, 880, 420, 490, 0);
+          photoIn(0.9, rb, 0);
+          floatY(1.8, rb, 1.6, 12);
           const scan = box(c, 200, 920, 680, 6, "", "", { background: `linear-gradient(90deg, rgba(54,227,255,0), ${CYAN}, rgba(54,227,255,0))`, boxShadow: `0 0 22px ${CYAN}` });
           tl.fromTo(scan, { y: 0, opacity: 0 }, { y: 480, opacity: 1, duration: 1.6, ease: IO, repeat: 1, yoyo: true }, 0.9);
           sceneOut(3.35, c);
@@ -160,21 +172,21 @@
           badge(c, "۱", 3.45, 250);
           const T = title(c, ["انجام {چند کار}", "هم‌زمان"], 420, 100);
           wordsIn(T, [3.6, 3.75, 4.3, 5.2]);
-          const b = brain(c, 330, 860, 0.8);
-          popIn(4.9, b, 0.9, 0.4);
+          const b = photo(c, "assets/img/photo-multitask.jpg", 250, 900, 580, 487, -3);
+          photoIn(4.9, b, -3);
           // four neon icons pulling the brain apart
           const ic = [
             ["laptop", 110, 790, `<rect x="20" y="16" width="120" height="78" rx="8"/><path d="M6 108 H154"/>`],
             ["phone", 830, 780, `<rect x="45" y="6" width="70" height="120" rx="14"/><path d="M70 110 H90"/>`],
-            ["mail", 100, 1240, `<rect x="16" y="26" width="128" height="88" rx="8"/><path d="M16 30 L80 78 L144 30"/>`],
-            ["chat", 840, 1250, `<path d="M20 22 H140 V96 H70 L40 122 V96 H20 Z"/>`],
+            ["mail", 90, 1230, `<rect x="16" y="26" width="128" height="88" rx="8"/><path d="M16 30 L80 78 L144 30"/>`],
+            ["chat", 840, 1240, `<path d="M20 22 H140 V96 H70 L40 122 V96 H20 Z"/>`],
           ].map(([n, x, y, d], i) => { const e = svgEl(c, x, y, 160, 140, `<g class="neon">${d}</g>`); popIn(5.6 + i * 0.25, e, 0.7); return e; });
-          const arrows = svgEl(c, 0, 0, 1080, 1920, [[540, 1020, 260, 870], [540, 1020, 900, 860], [540, 1020, 250, 1300], [540, 1020, 910, 1310]].map(([a, b2, x, y]) => `<path class="neonA" stroke-width="6" d="M${a} ${b2} L${x} ${y}"/><path class="neonA" stroke-width="6" d="M${x} ${y} l ${a > x ? 30 : -30} ${b2 > y ? 6 : -6} M${x} ${y} l ${a > x ? 8 : -8} ${b2 > y ? 30 : -30}"/>`).join(""));
+          const arrows = svgEl(c, 0, 0, 1080, 1920, [[540, 1140, 260, 870], [540, 1140, 900, 860], [540, 1140, 240, 1290], [540, 1140, 910, 1300]].map(([a, b2, x, y]) => `<path class="neonA" stroke-width="6" d="M${a} ${b2} L${x} ${y}"/><path class="neonA" stroke-width="6" d="M${x} ${y} l ${a > x ? 30 : -30} ${b2 > y ? 6 : -6} M${x} ${y} l ${a > x ? 8 : -8} ${b2 > y ? 30 : -30}"/>`).join(""));
           arrows.querySelectorAll("path").forEach((p) => p.setAttribute("stroke", AMBER));
           drawOn(6.6, arrows, 0.9);
           // «مغز گیج می‌شه» — the brain turns amber and jitters
-          tl.to(b.querySelectorAll(".holo"), { stroke: AMBER, duration: 0.6 }, 8.6);
-          tl.to(b, { keyframes: { x: [0, -10, 9, -7, 6, -3, 0], rotation: [0, -3, 3, -2, 2, 0, 0] }, duration: 0.8, ease: "none" }, 8.8);
+          photoDanger(8.6, b);
+          tl.to(b, { keyframes: { x: [0, -10, 9, -7, 6, -3, 0], rotation: [-3, -6, 0, -5, -1, -3, -3] }, duration: 0.8, ease: "none" }, 8.8);
           danger(8.6, true);
           ic.forEach((e, i) => tl.to(e, { x: (i % 2 ? 1 : -1) * 26, y: (i < 2 ? -1 : 1) * 20, duration: 2.4, ease: SO, yoyo: true, repeat: 1 }, 7.2));
           bullet(c, "مغز گیج می‌شه", 1470, 8.9);
@@ -194,15 +206,9 @@
           badge(c, "۲", 15.0, 250);
           const T = title(c, ["چک کردن", "{مـــداوم} گوشی"], 420, 100);
           wordsIn(T, [15.2, 15.8, 16.6, 17.2]);
-          // B&W "photo" cut-out sticker: a hand holding a phone
-          const st = svgEl(c, 290, 820, 500, 640, `
-            <defs><linearGradient id="g2" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#d9d9de"/><stop offset="1" stop-color="#7d7e88"/></linearGradient>
-            <linearGradient id="g2s" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3a3b44"/><stop offset="1" stop-color="#121218"/></linearGradient></defs>
-            <g stroke="#fff" stroke-width="22" stroke-linejoin="round"><path d="M130 600 C 110 470, 120 380, 170 330 L 170 120 Q 170 70 220 70 L 360 70 Q 410 70 410 120 L 410 470 C 420 520, 400 580, 380 640 Z" fill="#fff"/></g>
-            <path d="M130 600 C 110 470, 120 380, 170 330 L 170 120 Q 170 70 220 70 L 360 70 Q 410 70 410 120 L 410 470 C 420 520, 400 580, 380 640 Z" fill="url(#g2)"/>
-            <rect x="190" y="95" width="200" height="350" rx="26" fill="url(#g2s)"/>
-            <path d="M120 420 C 160 400, 200 420, 210 450 C 220 480, 200 500, 170 505" fill="#b4b5bd" stroke="#fff" stroke-width="10"/>`, "sticker");
-          tl.fromTo(st, { opacity: 0, scale: 0.6, rotation: -14 }, { opacity: 1, scale: 1, rotation: -5, duration: 0.9, ease: POP }, 16.4);
+          // real photo cut-out: a hand holding a phone
+          const st = photo(c, "assets/img/cut-phone.png", 340, 790, 400, 616, -6);
+          photoIn(16.4, st, -6);
           floatY(17.4, st, 3.4, 16);
           // notification badges pop in on the screen
           [[350, 900], [470, 980], [360, 1070], [480, 1150]].forEach(([x, y], i) => {
@@ -215,7 +221,7 @@
           popIn(19.6, tag.g, 0.6, 0.6);
           tl.to(tag.L, { x: -90, y: 30, rotation: -14, duration: 0.7, ease: EXPO }, 21.3);
           tl.to(tag.R, { x: 90, y: 40, rotation: 12, duration: 0.7, ease: EXPO }, 21.3);
-          danger(21.3, true);
+          danger(21.3, true); photoDanger(21.3, st);
           bullet(c, "تمرکز کامل قطع می‌شه", 1500, 21.2);
           bullet(c, "برگشتن دوباره سخته", 1600, 22.3);
           danger(23.9, false);
@@ -229,17 +235,17 @@
           badge(c, "۳", 24.3, 250);
           const T = title(c, ["خواب {کم}", "و بی‌کیفیت"], 420, 104);
           wordsIn(T, [24.5, 25.1, 26.1, 26.5]);
-          const moon = svgEl(c, 200, 840, 260, 260, `<path class="neon" d="M170 40 A 100 100 0 1 0 220 190 A 80 80 0 1 1 170 40 Z"/><g class="neon" stroke-width="5"><path d="M60 40 h30 l-30 34 h30"/><path d="M20 100 h22 l-22 25 h22"/></g>`);
-          drawOn(25.0, moon, 1.1);
-          floatY(26.1, moon, 2.8, 12);
+          const moon = photo(c, "assets/img/cut-sleep.png", 50, 930, 600, 428, 2);
+          photoIn(25.0, moon, 2);
+          floatY(26.0, moon, 2.8, 12);
           // battery drains: cyan → amber
-          const bat = svgEl(c, 560, 860, 300, 520, `<rect class="neon" x="40" y="60" width="220" height="430" rx="34"/><rect class="neon" x="110" y="20" width="80" height="40" rx="10"/>`);
+          const bat = svgEl(c, 700, 880, 300, 520, `<rect class="neon" x="40" y="60" width="220" height="430" rx="34"/><rect class="neon" x="110" y="20" width="80" height="40" rx="10"/>`);
           drawOn(25.3, bat, 0.9);
-          const lvl = box(c, 620, 942, 180, 380, "", "", { borderRadius: 16, background: `linear-gradient(180deg, ${CYAN}, #1aa6ff)`, boxShadow: `0 0 24px ${CYAN}`, transformOrigin: "50% 100%" });
+          const lvl = box(c, 760, 962, 180, 380, "", "", { borderRadius: 16, background: `linear-gradient(180deg, ${CYAN}, #1aa6ff)`, boxShadow: `0 0 24px ${CYAN}`, transformOrigin: "50% 100%" });
           tl.fromTo(lvl, { scaleY: 0.92 }, { scaleY: 0.16, duration: 3.2, ease: "power1.inOut" }, 26.6);
           tl.to(lvl, { background: `linear-gradient(180deg, ${AMBER}, #ff5a1f)`, boxShadow: "0 0 28px rgba(255,80,40,0.9)", duration: 1.0 }, 27.6);
           tl.fromTo(lvl, { opacity: 1 }, { opacity: 0.45, duration: 0.25, ease: "steps(1)", yoyo: true, repeat: 5, immediateRender: false }, 29.9);
-          danger(27.6, true);
+          danger(27.6, true); photoDanger(27.6, moon);
           bullet(c, "مغز خسته", 1470, 27.3);
           bullet(c, "تمرکز طولانی ممکن نیست", 1570, 28.3);
           danger(31.2, false);
@@ -253,18 +259,15 @@
           badge(c, "۴", 31.7, 250);
           const T = title(c, ["محیط", "{شلـــوغ} و نامرتب"], 420, 100);
           wordsIn(T, [31.9, 32.8, 33.6, 34.2]);
-          // scattered paper cut-outs (grey sticker style) + neon laptop
-          const papers = [[160, 860, -14], [420, 820, 9], [690, 880, -6], [230, 1130, 12], [640, 1150, -12]].map(([x, y, r], i) => {
-            const p = svgEl(c, x, y, 220, 260, `<rect x="10" y="10" width="200" height="240" rx="6" fill="#fff"/><rect x="22" y="22" width="176" height="216" rx="3" fill="${["#c8c9cf", "#a9aab3", "#dcdce0", "#8f909a", "#bdbec6"][i]}"/>${[0, 1, 2, 3].map((k) => `<rect x="40" y="${50 + k * 40}" width="${130 - k * 18}" height="12" rx="6" fill="#55566a" opacity="0.6"/>`).join("")}`, "sticker");
-            tl.fromTo(p, { opacity: 0, scale: 0.4, rotation: r * 3, y: -80 }, { opacity: 1, scale: 1, rotation: r, y: 0, duration: 0.7, ease: POP }, 32.6 + i * 0.22);
-            tl.to(p, { rotation: r + (i % 2 ? 5 : -5), duration: 3, ease: SO, yoyo: true, repeat: 1 }, 34);
-            return p;
-          });
+          // real photo: a cluttered desk
+          const desk = photo(c, "assets/img/photo-desk.jpg", 300, 820, 480, 561, 4);
+          photoIn(32.6, desk, 4);
+          tl.to(desk, { rotation: -2, duration: 4, ease: SO }, 33.5);
           // «سردرگمی» — a tangled amber scribble draws over the clutter
           const tangle = svgEl(c, 180, 860, 720, 520, `<path class="neonA" stroke-width="7" d="M40 260 C 120 40, 260 480, 330 220 S 520 40, 470 300 S 240 480, 300 200 S 640 100, 600 360 S 380 470, 420 240 S 700 200, 680 420"/>`);
           tangle.querySelector("path").setAttribute("stroke", AMBER);
           drawOn(35.9, tangle, 1.4, "power1.inOut");
-          danger(36.2, true);
+          danger(36.2, true); photoDanger(36.2, desk);
           bullet(c, "سردرگمی ذهن", 1480, 36.2);
           bullet(c, "حواس‌پرتی", 1580, 37.7);
           danger(39.2, false);
@@ -279,6 +282,9 @@
           const T = title(c, ["اعتیاد به", "{پاداش} فوری"], 420, 104);
           wordsIn(T, [39.8, 40.2, 41.1, 41.5]);
           // chart: rises, then crashes (short-term gain)
+          const sc = photo(c, "assets/img/cut-scroll.png", 70, 800, 470, 271, -4);
+          photoIn(42.0, sc, -4);
+          floatY(43.0, sc, 3.0, 10);
           const ax = svgEl(c, 110, 830, 860, 560, `<path class="neon" stroke-width="4" d="M40 520 H840 M40 520 V20" opacity="0.6"/>`);
           drawOn(41.8, ax, 0.8);
           const up = svgEl(c, 110, 830, 860, 560, `<polyline class="holo" stroke-width="8" points="40,480 160,430 260,450 370,330 470,350 580,190 660,120"/>`);
@@ -290,7 +296,7 @@
           drawOn(49.2, crash, 0.7, "power3.in");
           tl.to(up.querySelector("polyline"), { stroke: "rgba(54,227,255,0.35)", duration: 0.6 }, 49.4);
           tl.to(c, { keyframes: { y: [0, 14, -10, 6, 0] }, duration: 0.5, ease: "none" }, 49.75);
-          danger(49.3, true);
+          danger(49.3, true); photoDanger(49.3, sc);
           bullet(c, "سر زدن هر چند دقیقه", 1480, 43.0);
           bullet(c, "تمرکز {سقوط} می‌کنه".replace("{سقوط}", `<span class="k">سقوط</span>`), 1580, 49.2);
           danger(50.0, false);
@@ -304,18 +310,15 @@
           badge(c, "۶", 50.4, 250);
           const T = title(c, ["کار {بدون}", "استراحت"], 420, 104);
           wordsIn(T, [50.6, 51.8, 52.6]);
-          const clock = svgEl(c, 150, 860, 380, 380, `<circle class="neon" cx="190" cy="190" r="160"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((k) => `<path class="neon" stroke-width="5" d="M190 46 V64" transform="rotate(${k * 30} 190 190)"/>`).join("")}`);
-          drawOn(50.8, clock, 1.0);
-          const hm = box(c, 150, 860, 380, 380, "", `<svg width="380" height="380" viewBox="0 0 380 380"><path class="neon" stroke-width="9" d="M190 190 V100"/></svg>`);
-          const hh = box(c, 150, 860, 380, 380, "", `<svg width="380" height="380" viewBox="0 0 380 380"><path class="neonA" stroke="${AMBER}" stroke-width="11" d="M190 190 H260"/></svg>`);
-          tl.fromTo(hm, { rotation: 0 }, { rotation: 360 * 5, duration: 7, ease: "power1.in" }, 51.0);
-          tl.fromTo(hh, { rotation: 0 }, { rotation: 360 * 0.8, duration: 7, ease: "power1.in" }, 51.0);
-          const bat = svgEl(c, 610, 900, 300, 300, `<rect class="neon" x="20" y="80" width="230" height="130" rx="22"/><rect class="neon" x="250" y="120" width="28" height="50" rx="6"/>`);
+          const burn = photo(c, "assets/img/photo-burnout.jpg", 80, 850, 600, 484, -3);
+          photoIn(51.0, burn, -3);
+          tl.to(burn, { scale: 1.04, duration: 6, ease: SO }, 52);
+          const bat = svgEl(c, 690, 1170, 300, 300, `<rect class="neon" x="20" y="80" width="230" height="130" rx="22"/><rect class="neon" x="250" y="120" width="28" height="50" rx="6"/>`);
           drawOn(51.4, bat, 0.8);
-          const lvl = box(c, 645, 1005, 180, 90, "", "", { borderRadius: 10, background: `linear-gradient(90deg, ${CYAN}, #1aa6ff)`, boxShadow: `0 0 20px ${CYAN}`, transformOrigin: "0% 50%" });
+          const lvl = box(c, 725, 1275, 180, 90, "", "", { borderRadius: 10, background: `linear-gradient(90deg, ${CYAN}, #1aa6ff)`, boxShadow: `0 0 20px ${CYAN}`, transformOrigin: "0% 50%" });
           tl.fromTo(lvl, { scaleX: 1 }, { scaleX: 0.12, duration: 3.4, ease: "power1.in" }, 52.4);
           tl.to(lvl, { background: `linear-gradient(90deg, #ff5a1f, ${AMBER})`, boxShadow: "0 0 24px rgba(255,80,40,0.9)", duration: 0.8 }, 54.4);
-          danger(54.6, true);
+          danger(54.6, true); photoDanger(54.6, burn);
           bullet(c, "مغز خسته می‌شه", 1480, 54.6);
           bullet(c, "نتیجه پایین میاد", 1580, 56.5);
           sceneOut(58.15, c);
@@ -346,7 +349,7 @@
           tl.fromTo(lc, { clipPath: "inset(0 0 0 0)" }, { keyframes: { clipPath: ["inset(10% 0 55% 0)", "inset(60% 0 8% 0)", "inset(30% 0 40% 0)", "inset(0 0 0 0)"] }, duration: 0.45, ease: "steps(4)" }, 60.0);
           const slogan = mk("div", "fa", c, { position: "absolute", left: 0, top: 1060, width: 1080, textAlign: "center", fontSize: 50, fontWeight: 700, lineHeight: 1.5, color: "#ffffff", textShadow: "0 0 16px rgba(170,200,255,0.45)" }, `ذهن متمرکز، <span class="k">قدرت</span> واقعی`);
           tl.fromTo(slogan, { opacity: 0, y: 30, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: EXPO }, 60.8);
-          const soc = mk("div", "", c, { position: "absolute", left: 0, top: 1170, width: 1080, textAlign: "center", fontFamily: "Modam", fontSize: 34, fontWeight: 400, color: "#a7a9c2", direction: "ltr" }, "@elyasomar");
+          const soc = mk("div", "", c, { position: "absolute", left: 0, top: 1170, width: 1080, textAlign: "center", fontFamily: "Modam", fontSize: 34, fontWeight: 400, color: "#a7a9c2", direction: "ltr" }, "@hindukush");
           tl.fromTo(soc, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: EXPO }, 61.3);
           tl.to(L, { y: -10, duration: 4, ease: SO }, 61);
         })();
