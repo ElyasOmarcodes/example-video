@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="lib/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Modam"; src: url("assets/fonts/Modam-Regular.ttf") format("truetype"); font-weight: 400; }
+      @font-face { font-family: "Modam"; src: url("assets/fonts/Modam-Bold.ttf") format("truetype"); font-weight: 700; }
+      @font-face { font-family: "Modam"; src: url("assets/fonts/Modam-Black.ttf") format("truetype"); font-weight: 900; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #050260; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #050260; font-family: "Modam", sans-serif; color: #fff; }
+      .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      .cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .abs { position: absolute; }
+      .fa { font-family: "Modam", sans-serif; direction: rtl; }
+      /* title: right-aligned, upper third */
+      .ttl { position: absolute; right: 90px; width: 900px; text-align: right; direction: rtl; font-weight: 900; line-height: 1.45; color: #fff;
+             text-shadow: 0 0 18px rgba(170,200,255,0.55), 0 0 42px rgba(120,160,255,0.25); }
+      .w { display: inline-block; white-space: pre; }
+      .k { color: #EAA500; text-shadow: 0 0 16px rgba(255,90,40,0.75), 0 0 40px rgba(255,60,30,0.45); }
+      .bul { position: absolute; right: 90px; width: 900px; direction: rtl; text-align: right; font-weight: 700; font-size: 50px; line-height: 1.5; color: #fff;
+             text-shadow: 0 0 14px rgba(170,200,255,0.4); display: flex; align-items: center; gap: 26px; }
+      .dia { width: 26px; height: 26px; background: #EAA500; transform: rotate(45deg); box-shadow: 0 0 18px rgba(255,90,40,0.85); flex: none; }
+      .holo { stroke: #36e3ff; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(54,227,255,0.9)) drop-shadow(0 0 18px rgba(54,227,255,0.45)); }
+      .neon { stroke: #9fd8ff; fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px rgba(120,200,255,0.9)) drop-shadow(0 0 22px rgba(80,160,255,0.45)); }
+      .neonA { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke: #EAA500; filter: drop-shadow(0 0 8px rgba(255,90,40,0.95)) drop-shadow(0 0 24px rgba(255,60,30,0.55)); }
+      .sticker { filter: drop-shadow(0 18px 24px rgba(0,0,10,0.55)); }
+      .paper { position: absolute; background: #f1efe8; color: #0b0a30; font-weight: 900; text-align: center; direction: rtl; filter: drop-shadow(0 14px 18px rgba(0,0,10,0.5)); }
+      svg { overflow: visible; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="66">
+      <!-- ===== persistent background ===== -->
+      <div id="bg" class="full">
+        <div class="full" style="background: radial-gradient(70% 55% at 50% 46%, #14108f 0%, #08057a 38%, #050260 62%, #02012f 100%);"></div>
+        <div id="grid" class="full" style="opacity:0.07; background-image: linear-gradient(#E4E4EA 1.5px, transparent 1.5px), linear-gradient(90deg, #E4E4EA 1.5px, transparent 1.5px), linear-gradient(rgba(228,228,234,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(228,228,234,0.5) 1px, transparent 1px); background-size: 120px 120px, 120px 120px, 30px 30px, 30px 30px;"></div>
+        <div id="leak1" class="abs" style="left:-400px; top:-300px; width:520px; height:2800px; background: linear-gradient(90deg, rgba(120,150,255,0) 0%, rgba(150,175,255,0.13) 45%, rgba(120,150,255,0) 100%); filter: blur(30px);"></div>
+        <div id="leak2" class="abs" style="left:300px; top:-300px; width:300px; height:2800px; background: linear-gradient(90deg, rgba(120,150,255,0) 0%, rgba(170,190,255,0.10) 50%, rgba(120,150,255,0) 100%); filter: blur(24px);"></div>
+        <div id="leak3" class="abs" style="left:760px; top:-300px; width:420px; height:2800px; background: linear-gradient(90deg, rgba(120,150,255,0) 0%, rgba(140,165,255,0.09) 50%, rgba(120,150,255,0) 100%); filter: blur(34px);"></div>
+        <div id="dangerGlow" class="full" style="opacity:0; background: radial-gradient(60% 45% at 50% 50%, rgba(255,70,30,0.22) 0%, rgba(255,70,30,0) 70%);"></div>
+        <div class="full" style="background: radial-gradient(85% 65% at 50% 47%, rgba(0,0,0,0) 45%, rgba(1,0,22,0.82) 100%);"></div>
+        <div class="abs" style="left:26px; top:26px; width:1028px; height:1868px; border:1.5px solid rgba(228,228,234,0.16); border-radius:6px;"></div>
+      </div>
+
+      <section id="s0" class="clip scene" data-start="0" data-duration="5.4" data-track-index="1"><div class="cam" id="c0"></div></section>
+      <section id="s1" class="clip scene" data-start="3.3" data-duration="13.4" data-track-index="2"><div class="cam" id="c1"></div></section>
+      <section id="s2" class="clip scene" data-start="14.9" data-duration="11.0" data-track-index="1"><div class="cam" id="c2"></div></section>
+      <section id="s3" class="clip scene" data-start="24.1" data-duration="9.3" data-track-index="2"><div class="cam" id="c3"></div></section>
+      <section id="s4" class="clip scene" data-start="31.5" data-duration="9.9" data-track-index="1"><div class="cam" id="c4"></div></section>
+      <section id="s5" class="clip scene" data-start="39.5" data-duration="12.6" data-track-index="2"><div class="cam" id="c5"></div></section>
+      <section id="s6" class="clip scene" data-start="50.2" data-duration="9.9" data-track-index="1"><div class="cam" id="c6"></div></section>
+      <section id="s7" class="clip scene" data-start="58.2" data-duration="7.8" data-track-index="2"><div class="cam" id="c7"></div></section>
+
+      <!-- logo + language tag (always on, top-right) -->
+      <div id="brand" class="abs" style="right:56px; top:58px; display:flex; align-items:center; gap:16px; direction:ltr;">
+        <span id="lang" style="font-family:Modam; font-weight:700; font-size:22px; color:#a7a9c2; border:1.5px solid rgba(167,169,194,0.55); border-radius:8px; padding:2px 10px 4px; letter-spacing:1px;">FA</span>
+        <img src="assets/img/logo-white.png" style="height:58px; display:block; filter: drop-shadow(0 0 10px rgba(255,255,255,0.35));" />
+      </div>
+      <!-- film grain over everything -->
+      <div id="grain" class="full" style="opacity:0.13; mix-blend-mode:screen; background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='256' height='256' filter='url(%23n)'/></svg>&quot;); background-size:256px 256px;"></div>
+
+      <audio id="vo" src="assets/audio/voiceover.mp3" data-start="0" data-duration="65.04" data-track-index="10" data-volume="1"></audio>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const EXPO = "expo.out", POP = "back.out(1.7)", IN = "power3.in", IO = "power2.inOut", SO = "sine.inOut";
+        const AMBER = "#EAA500", CYAN = "#36e3ff";
+        const $ = (id) => document.getElementById(id);
+        const NS = "http://www.w3.org/2000/svg";
+        function mk(tag, cls, parent, css, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (css) for (const k in css) e.style[k] = typeof css[k] === "number" && !/opacity|zIndex|fontWeight|lineHeight/.test(k) ? css[k] + "px" : css[k]; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; }
+        function box(p, x, y, w, h, cls, html, css) { return mk("div", "abs " + (cls || ""), p, Object.assign({ left: x, top: y, width: w, height: h }, css || {}), html); }
+        function svgEl(p, x, y, w, h, inner, cls) { const d = box(p, x, y, w, h, cls || ""); d.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${inner}</svg>`; return d; }
+        function drawOn(t, el, d, ease) { el.querySelectorAll("path, line, polyline, circle, rect, ellipse").forEach((p) => { if (p.getAttribute("data-nodraw") != null) return; p.setAttribute("pathLength", "1"); p.style.strokeDasharray = "1"; tl.fromTo(p, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d || 1.0, ease: ease || IO }, t); }); }
+        // title: words (with optional {keyword}) slide in RTL with motion blur + slight scale-up
+        function title(p, lines, top, size) {
+          const el = mk("div", "ttl", p, { top: top, fontSize: size });
+          const ws = [];
+          lines.forEach((ln, li) => {
+            const row = mk("div", "", el, null, "");
+            ln.split(/(\{[^}]*\})/).filter(Boolean).forEach((ch) => {
+              const key = ch[0] === "{"; const t = key ? ch.slice(1, -1) : ch;
+              t.trim().split(/\s+/).filter(Boolean).forEach((w) => { ws.push(mk("span", "w" + (key ? " k" : ""), row, null, w)); row.appendChild(document.createTextNode(" ")); });
+            });
+          });
+          return { el, ws };
+        }
+        function wordsIn(T, times) { T.ws.forEach((w, i) => { const t = times[Math.min(i, times.length - 1)] + (i >= times.length ? (i - times.length + 1) * 0.12 : 0); tl.fromTo(w, { opacity: 0, x: 90, scale: 0.86, filter: "blur(14px)" }, { opacity: 1, x: 0, scale: 1, filter: "blur(0px)", duration: 0.7, ease: EXPO }, t); }); }
+        function bullet(p, text, top, t) {
+          const b = mk("div", "bul", p, { top: top }, `<span class="dia"></span><span>${text}</span>`);
+          tl.fromTo(b.children[0], { scale: 0, rotation: -45 }, { scale: 1, rotation: 45, duration: 0.5, ease: POP }, t);
+          tl.fromTo(b.children[1], { opacity: 0, x: 70, filter: "blur(12px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.65, ease: EXPO }, t + 0.06);
+          return b;
+        }
+        function popIn(t, el, d, s0) { tl.fromTo(el, { opacity: 0, scale: s0 == null ? 0.5 : s0 }, { opacity: 1, scale: 1, duration: d || 0.8, ease: POP }, t); }
+        function floatY(t, el, d, amp) { tl.fromTo(el, { y: 0 }, { y: -(amp || 14), duration: d, ease: SO, yoyo: true, repeat: 1, immediateRender: false }, t); }
+        // section number on a red brush stroke
+        function badge(p, num, t, top) {
+          const g = box(p, 760, top, 230, 150);
+          g.innerHTML = `<svg width="230" height="150" viewBox="0 0 230 150"><path d="M18 92 C 50 46, 120 40, 212 56 C 186 70, 120 88, 30 118" fill="none" stroke="${AMBER}" stroke-width="44" stroke-linecap="round" opacity="0.95" style="filter:drop-shadow(0 0 16px rgba(255,80,40,0.7))"/></svg><div style="position:absolute;right:62px;top:6px;font-family:Modam;font-weight:900;font-size:104px;line-height:1.3;color:#fff;text-shadow:0 0 18px rgba(255,255,255,0.5)">${num}</div>`;
+          drawOn(t, g, 0.55, "power2.out");
+          tl.fromTo(g.lastChild, { opacity: 0, scale: 0.4, rotation: -12 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.7, ease: POP }, t + 0.15);
+          return g;
+        }
+        // torn paper label (two halves; can split)
+        function torn(p, x, y, w, h, text, size) {
+          const g = box(p, x, y, w, h);
+          const L = mk("div", "paper", g, { left: 0, top: 0, width: w, height: h, fontSize: size, lineHeight: h + "px", clipPath: "polygon(0 6%, 51% 0, 49% 18%, 53% 34%, 47% 52%, 52% 70%, 48% 86%, 51% 100%, 0 96%)" }, text);
+          const R = mk("div", "paper", g, { left: 0, top: 0, width: w, height: h, fontSize: size, lineHeight: h + "px", clipPath: "polygon(51% 0, 100% 4%, 100% 98%, 51% 100%, 48% 86%, 52% 70%, 47% 52%, 53% 34%, 49% 18%)" }, text);
+          return { g, L, R };
+        }
+        // camera: slow push-in; transition: zoom-blur out, then linger as a soft blurred ghost
+        function sceneIn(t, c) { tl.fromTo(c, { opacity: 0, scale: 0.72, filter: "blur(22px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.75, ease: EXPO }, t); }
+        function push(t, c, d) { tl.to(c, { scale: 1.06, duration: d, ease: "none" }, t + 0.8); }
+        function sceneOut(t, c) { tl.to(c, { scale: 1.55, opacity: 0.16, filter: "blur(18px)", duration: 0.45, ease: IN }, t); tl.to(c, { opacity: 0, duration: 1.4, ease: SO }, t + 0.5); }
+        function danger(t, on) { tl.to("#dangerGlow", { opacity: on ? 1 : 0, duration: 0.8, ease: SO }, t); }
+
+        // ===== persistent motion =====
+        tl.fromTo("#leak1", { x: 0, rotation: 24 }, { x: 260, rotation: 24, duration: 66, ease: "none" }, 0);
+        tl.fromTo("#leak2", { x: 0, rotation: 24 }, { x: -220, rotation: 24, duration: 66, ease: "none" }, 0);
+        tl.fromTo("#leak3", { x: 0, rotation: 24 }, { x: 180, rotation: 24, duration: 66, ease: "none" }, 0);
+        [["#leak1", 0.0], ["#leak2", 1.7], ["#leak3", 3.1]].forEach(([s, o]) => tl.fromTo(s, { opacity: 0.6 }, { opacity: 1, duration: 3.3, ease: SO, yoyo: true, repeat: 19 }, o));
+        tl.fromTo("#grid", { backgroundPosition: "0px 0px" }, { backgroundPosition: "0px -240px", duration: 66, ease: "none" }, 0);
+        tl.fromTo("#grain", { backgroundPosition: "0px 0px" }, { backgroundPosition: "1980px 1320px", duration: 66, ease: "steps(1980)" }, 0);
+        tl.fromTo("#brand", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.8, ease: EXPO }, 0.3);
+
+        // hologram brain (wireframe) used in intro + scene 1
+        function brain(p, x, y, s, cls) {
+          const g = box(p, x, y, 520 * s, 420 * s);
+          let gy = "";
+          for (let i = 0; i < 7; i++) gy += `<path d="M${70 + i * 8} ${120 + i * 26} C ${150 + i * 6} ${80 + i * 30}, ${200} ${170 + i * 22}, ${250} ${110 + i * 30}"/>`;
+          for (let i = 0; i < 7; i++) gy += `<path d="M${450 - i * 8} ${120 + i * 26} C ${370 - i * 6} ${80 + i * 30}, ${320} ${170 + i * 22}, ${270} ${110 + i * 30}"/>`;
+          g.innerHTML = `<svg width="${520 * s}" height="${420 * s}" viewBox="0 0 520 420"><g class="${cls || "holo"}" stroke-width="3.2"><path d="M258 40 C 170 10, 60 40, 40 150 C 20 250, 80 340, 170 360 C 210 372, 240 360, 258 340"/><path d="M262 40 C 350 10, 460 40, 480 150 C 500 250, 440 340, 350 360 C 310 372, 280 360, 262 340"/><path d="M260 40 L 260 340"/>${gy}<path d="M230 360 C 240 390, 250 405, 262 412 C 274 405, 284 390, 290 360"/></g><g fill="${CYAN}">${[[120, 140], [380, 160], [200, 260], [330, 280], [260, 200]].map(([a, b]) => `<circle data-nodraw cx="${a}" cy="${b}" r="6" style="filter:drop-shadow(0 0 8px ${CYAN})"/>`).join("")}</g></svg>`;
+          return g;
+        }
+
+        // ========================= 0 · INTRO 0–3.6 =========================
+        (function () {
+          const c = $("c0");
+          sceneIn(0.05, c); push(0, c, 3.2);
+          const T = title(c, ["{۶} عـــادت", "که {تمرکز} شما رو", "کاهش می‌ده"], 300, 104);
+          wordsIn(T, [0.2, 0.5, 0.9, 1.2, 1.5, 1.8, 2.3, 2.6]);
+          const b = brain(c, 230, 920, 1.18);
+          drawOn(0.6, b, 1.6);
+          tl.fromTo(b, { rotationY: -20, transformPerspective: 1400 }, { rotationY: 20, transformPerspective: 1400, duration: 3.2, ease: SO }, 0.2);
+          const scan = box(c, 200, 920, 680, 6, "", "", { background: `linear-gradient(90deg, rgba(54,227,255,0), ${CYAN}, rgba(54,227,255,0))`, boxShadow: `0 0 22px ${CYAN}` });
+          tl.fromTo(scan, { y: 0, opacity: 0 }, { y: 480, opacity: 1, duration: 1.6, ease: IO, repeat: 1, yoyo: true }, 0.9);
+          sceneOut(3.35, c);
+        })();
+
+        // ========================= 1 · MULTITASKING 3.3–15.0 =========================
+        (function () {
+          const c = $("c1");
+          sceneIn(3.35, c); push(3.3, c, 11);
+          badge(c, "۱", 3.45, 250);
+          const T = title(c, ["انجام {چند کار}", "هم‌زمان"], 420, 100);
+          wordsIn(T, [3.6, 3.75, 4.3, 5.2]);
+          const b = brain(c, 330, 860, 0.8);
+          popIn(4.9, b, 0.9, 0.4);
+          // four neon icons pulling the brain apart
+          const ic = [
+            ["laptop", 110, 790, `<rect x="20" y="16" width="120" height="78" rx="8"/><path d="M6 108 H154"/>`],
+            ["phone", 830, 780, `<rect x="45" y="6" width="70" height="120" rx="14"/><path d="M70 110 H90"/>`],
+            ["mail", 100, 1240, `<rect x="16" y="26" width="128" height="88" rx="8"/><path d="M16 30 L80 78 L144 30"/>`],
+            ["chat", 840, 1250, `<path d="M20 22 H140 V96 H70 L40 122 V96 H20 Z"/>`],
+          ].map(([n, x, y, d], i) => { const e = svgEl(c, x, y, 160, 140, `<g class="neon">${d}</g>`); popIn(5.6 + i * 0.25, e, 0.7); return e; });
+          const arrows = svgEl(c, 0, 0, 1080, 1920, [[540, 1020, 260, 870], [540, 1020, 900, 860], [540, 1020, 250, 1300], [540, 1020, 910, 1310]].map(([a, b2, x, y]) => `<path class="neonA" stroke-width="6" d="M${a} ${b2} L${x} ${y}"/><path class="neonA" stroke-width="6" d="M${x} ${y} l ${a > x ? 30 : -30} ${b2 > y ? 6 : -6} M${x} ${y} l ${a > x ? 8 : -8} ${b2 > y ? 30 : -30}"/>`).join(""));
+          arrows.querySelectorAll("path").forEach((p) => p.setAttribute("stroke", AMBER));
+          drawOn(6.6, arrows, 0.9);
+          // «مغز گیج می‌شه» — the brain turns amber and jitters
+          tl.to(b.querySelectorAll(".holo"), { stroke: AMBER, duration: 0.6 }, 8.6);
+          tl.to(b, { keyframes: { x: [0, -10, 9, -7, 6, -3, 0], rotation: [0, -3, 3, -2, 2, 0, 0] }, duration: 0.8, ease: "none" }, 8.8);
+          danger(8.6, true);
+          ic.forEach((e, i) => tl.to(e, { x: (i % 2 ? 1 : -1) * 26, y: (i < 2 ? -1 : 1) * 20, duration: 2.4, ease: SO, yoyo: true, repeat: 1 }, 7.2));
+          bullet(c, "مغز گیج می‌شه", 1470, 8.9);
+          bullet(c, "هیچ‌کدوم درست انجام نمی‌شه", 1570, 10.0);
+          const tag = torn(c, 330, 1700, 420, 110, "تمرکز ناقص", 52);
+          popIn(12.4, tag.g, 0.6, 0.6);
+          tl.to(tag.L, { x: -60, rotation: -8, y: 14, duration: 0.6, ease: EXPO }, 13.4);
+          tl.to(tag.R, { x: 60, rotation: 8, y: 14, duration: 0.6, ease: EXPO }, 13.4);
+          danger(14.6, false);
+          sceneOut(14.85, c);
+        })();
+
+        // ========================= 2 · PHONE 14.9–24.2 =========================
+        (function () {
+          const c = $("c2");
+          sceneIn(14.95, c); push(14.9, c, 9);
+          badge(c, "۲", 15.0, 250);
+          const T = title(c, ["چک کردن", "{مـــداوم} گوشی"], 420, 100);
+          wordsIn(T, [15.2, 15.8, 16.6, 17.2]);
+          // B&W "photo" cut-out sticker: a hand holding a phone
+          const st = svgEl(c, 290, 820, 500, 640, `
+            <defs><linearGradient id="g2" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#d9d9de"/><stop offset="1" stop-color="#7d7e88"/></linearGradient>
+            <linearGradient id="g2s" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3a3b44"/><stop offset="1" stop-color="#121218"/></linearGradient></defs>
+            <g stroke="#fff" stroke-width="22" stroke-linejoin="round"><path d="M130 600 C 110 470, 120 380, 170 330 L 170 120 Q 170 70 220 70 L 360 70 Q 410 70 410 120 L 410 470 C 420 520, 400 580, 380 640 Z" fill="#fff"/></g>
+            <path d="M130 600 C 110 470, 120 380, 170 330 L 170 120 Q 170 70 220 70 L 360 70 Q 410 70 410 120 L 410 470 C 420 520, 400 580, 380 640 Z" fill="url(#g2)"/>
+            <rect x="190" y="95" width="200" height="350" rx="26" fill="url(#g2s)"/>
+            <path d="M120 420 C 160 400, 200 420, 210 450 C 220 480, 200 500, 170 505" fill="#b4b5bd" stroke="#fff" stroke-width="10"/>`, "sticker");
+          tl.fromTo(st, { opacity: 0, scale: 0.6, rotation: -14 }, { opacity: 1, scale: 1, rotation: -5, duration: 0.9, ease: POP }, 16.4);
+          floatY(17.4, st, 3.4, 16);
+          // notification badges pop in on the screen
+          [[350, 900], [470, 980], [360, 1070], [480, 1150]].forEach(([x, y], i) => {
+            const n = box(c, x, y, 200, 64, "", `<div style="display:flex;align-items:center;gap:10px;height:64px;padding:0 16px;border-radius:18px;background:rgba(255,255,255,0.92);box-shadow:0 10px 20px rgba(0,0,0,0.4)"><span style="width:30px;height:30px;border-radius:50%;background:${AMBER};box-shadow:0 0 12px rgba(255,80,40,0.8)"></span><span style="flex:1;height:10px;border-radius:5px;background:#9a9aa6"></span></div>`);
+            popIn(18.4 + i * 0.35, n, 0.5, 0.3);
+            tl.to(n, { opacity: 0, x: 60, duration: 0.35, ease: IN }, 20.9 + i * 0.05);
+          });
+          // «تمرکز» label tears in two when focus is cut
+          const tag = torn(c, 330, 1330, 420, 120, "تمرکز", 66);
+          popIn(19.6, tag.g, 0.6, 0.6);
+          tl.to(tag.L, { x: -90, y: 30, rotation: -14, duration: 0.7, ease: EXPO }, 21.3);
+          tl.to(tag.R, { x: 90, y: 40, rotation: 12, duration: 0.7, ease: EXPO }, 21.3);
+          danger(21.3, true);
+          bullet(c, "تمرکز کامل قطع می‌شه", 1500, 21.2);
+          bullet(c, "برگشتن دوباره سخته", 1600, 22.3);
+          danger(23.9, false);
+          sceneOut(24.1, c);
+        })();
+
+        // ========================= 3 · SLEEP 24.1–31.6 =========================
+        (function () {
+          const c = $("c3");
+          sceneIn(24.15, c); push(24.1, c, 7.4);
+          badge(c, "۳", 24.3, 250);
+          const T = title(c, ["خواب {کم}", "و بی‌کیفیت"], 420, 104);
+          wordsIn(T, [24.5, 25.1, 26.1, 26.5]);
+          const moon = svgEl(c, 200, 840, 260, 260, `<path class="neon" d="M170 40 A 100 100 0 1 0 220 190 A 80 80 0 1 1 170 40 Z"/><g class="neon" stroke-width="5"><path d="M60 40 h30 l-30 34 h30"/><path d="M20 100 h22 l-22 25 h22"/></g>`);
+          drawOn(25.0, moon, 1.1);
+          floatY(26.1, moon, 2.8, 12);
+          // battery drains: cyan → amber
+          const bat = svgEl(c, 560, 860, 300, 520, `<rect class="neon" x="40" y="60" width="220" height="430" rx="34"/><rect class="neon" x="110" y="20" width="80" height="40" rx="10"/>`);
+          drawOn(25.3, bat, 0.9);
+          const lvl = box(c, 620, 942, 180, 380, "", "", { borderRadius: 16, background: `linear-gradient(180deg, ${CYAN}, #1aa6ff)`, boxShadow: `0 0 24px ${CYAN}`, transformOrigin: "50% 100%" });
+          tl.fromTo(lvl, { scaleY: 0.92 }, { scaleY: 0.16, duration: 3.2, ease: "power1.inOut" }, 26.6);
+          tl.to(lvl, { background: `linear-gradient(180deg, ${AMBER}, #ff5a1f)`, boxShadow: "0 0 28px rgba(255,80,40,0.9)", duration: 1.0 }, 27.6);
+          tl.fromTo(lvl, { opacity: 1 }, { opacity: 0.45, duration: 0.25, ease: "steps(1)", yoyo: true, repeat: 5, immediateRender: false }, 29.9);
+          danger(27.6, true);
+          bullet(c, "مغز خسته", 1470, 27.3);
+          bullet(c, "تمرکز طولانی ممکن نیست", 1570, 28.3);
+          danger(31.2, false);
+          sceneOut(31.45, c);
+        })();
+
+        // ========================= 4 · CLUTTER 31.5–39.6 =========================
+        (function () {
+          const c = $("c4");
+          sceneIn(31.55, c); push(31.5, c, 8);
+          badge(c, "۴", 31.7, 250);
+          const T = title(c, ["محیط", "{شلـــوغ} و نامرتب"], 420, 100);
+          wordsIn(T, [31.9, 32.8, 33.6, 34.2]);
+          // scattered paper cut-outs (grey sticker style) + neon laptop
+          const papers = [[160, 860, -14], [420, 820, 9], [690, 880, -6], [230, 1130, 12], [640, 1150, -12]].map(([x, y, r], i) => {
+            const p = svgEl(c, x, y, 220, 260, `<rect x="10" y="10" width="200" height="240" rx="6" fill="#fff"/><rect x="22" y="22" width="176" height="216" rx="3" fill="${["#c8c9cf", "#a9aab3", "#dcdce0", "#8f909a", "#bdbec6"][i]}"/>${[0, 1, 2, 3].map((k) => `<rect x="40" y="${50 + k * 40}" width="${130 - k * 18}" height="12" rx="6" fill="#55566a" opacity="0.6"/>`).join("")}`, "sticker");
+            tl.fromTo(p, { opacity: 0, scale: 0.4, rotation: r * 3, y: -80 }, { opacity: 1, scale: 1, rotation: r, y: 0, duration: 0.7, ease: POP }, 32.6 + i * 0.22);
+            tl.to(p, { rotation: r + (i % 2 ? 5 : -5), duration: 3, ease: SO, yoyo: true, repeat: 1 }, 34);
+            return p;
+          });
+          // «سردرگمی» — a tangled amber scribble draws over the clutter
+          const tangle = svgEl(c, 180, 860, 720, 520, `<path class="neonA" stroke-width="7" d="M40 260 C 120 40, 260 480, 330 220 S 520 40, 470 300 S 240 480, 300 200 S 640 100, 600 360 S 380 470, 420 240 S 700 200, 680 420"/>`);
+          tangle.querySelector("path").setAttribute("stroke", AMBER);
+          drawOn(35.9, tangle, 1.4, "power1.inOut");
+          danger(36.2, true);
+          bullet(c, "سردرگمی ذهن", 1480, 36.2);
+          bullet(c, "حواس‌پرتی", 1580, 37.7);
+          danger(39.2, false);
+          sceneOut(39.45, c);
+        })();
+
+        // ========================= 5 · INSTANT REWARD 39.5–50.3 =========================
+        (function () {
+          const c = $("c5");
+          sceneIn(39.55, c); push(39.5, c, 10.6);
+          badge(c, "۵", 39.7, 250);
+          const T = title(c, ["اعتیاد به", "{پاداش} فوری"], 420, 104);
+          wordsIn(T, [39.8, 40.2, 41.1, 41.5]);
+          // chart: rises, then crashes (short-term gain)
+          const ax = svgEl(c, 110, 830, 860, 560, `<path class="neon" stroke-width="4" d="M40 520 H840 M40 520 V20" opacity="0.6"/>`);
+          drawOn(41.8, ax, 0.8);
+          const up = svgEl(c, 110, 830, 860, 560, `<polyline class="holo" stroke-width="8" points="40,480 160,430 260,450 370,330 470,350 580,190 660,120"/>`);
+          drawOn(42.6, up, 4.5, "power1.inOut");
+          const dots = svgEl(c, 110, 830, 860, 560, [[160, 430], [370, 330], [580, 190]].map(([x, y]) => `<circle data-nodraw cx="${x}" cy="${y}" r="12" fill="${CYAN}" style="filter:drop-shadow(0 0 10px ${CYAN})"/>`).join(""));
+          dots.querySelectorAll("circle").forEach((d, i) => popIn(43.2 + i * 1.3, d, 0.5, 0));
+          const crash = svgEl(c, 110, 830, 860, 560, `<polyline class="neonA" stroke-width="9" points="660,120 720,240 760,210 840,500"/><path class="neonA" stroke-width="9" d="M840 500 l -44 -14 M840 500 l 8 -44"/>`);
+          crash.querySelectorAll("polyline, path").forEach((p) => p.setAttribute("stroke", AMBER));
+          drawOn(49.2, crash, 0.7, "power3.in");
+          tl.to(up.querySelector("polyline"), { stroke: "rgba(54,227,255,0.35)", duration: 0.6 }, 49.4);
+          tl.to(c, { keyframes: { y: [0, 14, -10, 6, 0] }, duration: 0.5, ease: "none" }, 49.75);
+          danger(49.3, true);
+          bullet(c, "سر زدن هر چند دقیقه", 1480, 43.0);
+          bullet(c, "تمرکز {سقوط} می‌کنه".replace("{سقوط}", `<span class="k">سقوط</span>`), 1580, 49.2);
+          danger(50.0, false);
+          sceneOut(50.15, c);
+        })();
+
+        // ========================= 6 · NO BREAKS 50.2–58.3 =========================
+        (function () {
+          const c = $("c6");
+          sceneIn(50.25, c); push(50.2, c, 8);
+          badge(c, "۶", 50.4, 250);
+          const T = title(c, ["کار {بدون}", "استراحت"], 420, 104);
+          wordsIn(T, [50.6, 51.8, 52.6]);
+          const clock = svgEl(c, 150, 860, 380, 380, `<circle class="neon" cx="190" cy="190" r="160"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((k) => `<path class="neon" stroke-width="5" d="M190 46 V64" transform="rotate(${k * 30} 190 190)"/>`).join("")}`);
+          drawOn(50.8, clock, 1.0);
+          const hm = box(c, 150, 860, 380, 380, "", `<svg width="380" height="380" viewBox="0 0 380 380"><path class="neon" stroke-width="9" d="M190 190 V100"/></svg>`);
+          const hh = box(c, 150, 860, 380, 380, "", `<svg width="380" height="380" viewBox="0 0 380 380"><path class="neonA" stroke="${AMBER}" stroke-width="11" d="M190 190 H260"/></svg>`);
+          tl.fromTo(hm, { rotation: 0 }, { rotation: 360 * 5, duration: 7, ease: "power1.in" }, 51.0);
+          tl.fromTo(hh, { rotation: 0 }, { rotation: 360 * 0.8, duration: 7, ease: "power1.in" }, 51.0);
+          const bat = svgEl(c, 610, 900, 300, 300, `<rect class="neon" x="20" y="80" width="230" height="130" rx="22"/><rect class="neon" x="250" y="120" width="28" height="50" rx="6"/>`);
+          drawOn(51.4, bat, 0.8);
+          const lvl = box(c, 645, 1005, 180, 90, "", "", { borderRadius: 10, background: `linear-gradient(90deg, ${CYAN}, #1aa6ff)`, boxShadow: `0 0 20px ${CYAN}`, transformOrigin: "0% 50%" });
+          tl.fromTo(lvl, { scaleX: 1 }, { scaleX: 0.12, duration: 3.4, ease: "power1.in" }, 52.4);
+          tl.to(lvl, { background: `linear-gradient(90deg, #ff5a1f, ${AMBER})`, boxShadow: "0 0 24px rgba(255,80,40,0.9)", duration: 0.8 }, 54.4);
+          danger(54.6, true);
+          bullet(c, "مغز خسته می‌شه", 1480, 54.6);
+          bullet(c, "نتیجه پایین میاد", 1580, 56.5);
+          sceneOut(58.15, c);
+        })();
+
+        // ========================= OUTRO 58.2–66.0 =========================
+        (function () {
+          const c = $("c7");
+          tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.01 }, 58.2);
+          danger(58.2, false);
+          const r1 = box(c, 540 - 1200, 960 - 1200, 2400, 2400, "", "", { borderRadius: "50%", background: AMBER, boxShadow: "0 0 120px rgba(255,80,40,0.8)" });
+          const r2 = box(c, 540 - 1200, 960 - 1200, 2400, 2400, "", "", { borderRadius: "50%", background: "#ffffff" });
+          const r3 = box(c, 540 - 1200, 960 - 1200, 2400, 2400, "", "", { borderRadius: "50%", background: "#051449" });
+          tl.fromTo(r1, { scale: 0 }, { scale: 1, duration: 0.7, ease: "power3.inOut" }, 58.3);
+          tl.fromTo(r2, { scale: 0 }, { scale: 1, duration: 0.7, ease: "power3.inOut" }, 58.75);
+          tl.fromTo(r3, { scale: 0 }, { scale: 1, duration: 0.75, ease: "power3.inOut" }, 59.2);
+          box(c, 0, 0, 1080, 1920, "", "", { opacity: 0.06, backgroundImage: "linear-gradient(#E4E4EA 1px, transparent 1px), linear-gradient(90deg, #E4E4EA 1px, transparent 1px)", backgroundSize: "120px 120px" });
+          tl.to("#brand", { opacity: 0, duration: 0.3 }, 58.3);
+          // logo with a short RGB-split glitch
+          const L = box(c, 160, 760, 760, 232);
+          const lc = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760 }); lc.src = "assets/img/logo-color.png";
+          const gr = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760, opacity: 0, mixBlendMode: "screen", filter: "drop-shadow(0 0 0 #ff0040) hue-rotate(300deg) saturate(3)" }); gr.src = "assets/img/logo-white.png";
+          const gb = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760, opacity: 0, mixBlendMode: "screen", filter: "hue-rotate(160deg) saturate(3)" }); gb.src = "assets/img/logo-white.png";
+          tl.fromTo(L, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: EXPO }, 59.9);
+          tl.fromTo([gr, gb], { opacity: 0.0 }, { opacity: 0.55, duration: 0.06, ease: "steps(1)", yoyo: true, repeat: 7 }, 59.95);
+          tl.fromTo(gr, { x: 0 }, { keyframes: { x: [0, -14, 9, -6, 12, 0] }, duration: 0.5, ease: "steps(5)" }, 59.95);
+          tl.fromTo(gb, { x: 0 }, { keyframes: { x: [0, 12, -10, 7, -12, 0] }, duration: 0.5, ease: "steps(5)" }, 59.95);
+          tl.fromTo(lc, { clipPath: "inset(0 0 0 0)" }, { keyframes: { clipPath: ["inset(10% 0 55% 0)", "inset(60% 0 8% 0)", "inset(30% 0 40% 0)", "inset(0 0 0 0)"] }, duration: 0.45, ease: "steps(4)" }, 60.0);
+          const slogan = mk("div", "fa", c, { position: "absolute", left: 0, top: 1060, width: 1080, textAlign: "center", fontSize: 50, fontWeight: 700, lineHeight: 1.5, color: "#ffffff", textShadow: "0 0 16px rgba(170,200,255,0.45)" }, `ذهن متمرکز، <span class="k">قدرت</span> واقعی`);
+          tl.fromTo(slogan, { opacity: 0, y: 30, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: EXPO }, 60.8);
+          const soc = mk("div", "", c, { position: "absolute", left: 0, top: 1170, width: 1080, textAlign: "center", fontFamily: "Modam", fontSize: 34, fontWeight: 400, color: "#a7a9c2", direction: "ltr" }, "@elyasomar");
+          tl.fromTo(soc, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: EXPO }, 61.3);
+          tl.to(L, { y: -10, duration: 4, ease: SO }, 61);
+        })();
+
+        document.fonts.ready.then(() => { window.__timelines["main"] = tl; if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind(); });
+      })();
+    </script>
+  </body>
+</html>
