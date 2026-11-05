@@ -19,7 +19,7 @@
   const Ci = (x, y, r, fill, ex) => `<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(r)}" fill="${fill}" ${ex || ""}/>`;
   const El = (x, y, rx, ry, fill, ex) => `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1(rx)}" ry="${r1(ry)}" fill="${fill}" ${ex || ""}/>`;
   const Rc = (x, y, w, h, rx, fill, ex) => `<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(rx)}" fill="${fill}" ${ex || ""}/>`;
-  const Tx = (x, y, txt, size, fill, wt, ex) => `<text x="${r1(x)}" y="${r1(y)}" font-family="Quds" font-weight="${wt || 800}" font-size="${size}" fill="${fill}" text-anchor="middle" direction="rtl" ${ex || ""}>${txt}</text>`;
+  const Tx = (x, y, txt, size, fill, wt, ex) => `<text x="${r1(x)}" y="${r1(y)}" font-family="Quds" font-weight="${wt || 700}" font-size="${size}" fill="${fill}" text-anchor="middle" direction="rtl" ${ex || ""}>${txt}</text>`;
   const shadow = (x, y, rx, op) => El(x, y, rx, rx * 0.16, "#000", `opacity="${op || 0.32}"`);
 
   // ---------------- people ----------------
@@ -254,9 +254,10 @@
     return P(d, "#000", 'opacity=".25" transform="translate(6 8)"') + P(d, col || C.w) + (inner || "");
   }
   function tag(x, y, text, o) {
-    o = Object.assign({ bg: C.am, fg: C.navy, size: 34, pad: 26 }, o);
-    const w = text.length * o.size * 0.5 + o.pad * 2, h = o.size * 1.6;
-    return Rc(x - w / 2 + 4, y - h / 2 + 6, w, h, h / 2, "#000", 'opacity=".25"') + Rc(x - w / 2, y - h / 2, w, h, h / 2, o.bg) + Tx(x, y + o.size * 0.36, text, o.size, o.fg, 900);
+    o = Object.assign({ bg: C.am, fg: C.navy, size: 34, pad: 28 }, o);
+    if (!o.keep) x = 500 + (x - 500) * 0.72; // keep free-floating side chips close to the centre
+    const w = text.length * o.size * 0.5 + o.pad * 2, h = o.size * 2.05;
+    return Rc(x - w / 2 + 4, y - h / 2 + 6, w, h, h / 2, "#000", 'opacity=".22"') + Rc(x - w / 2, y - h / 2, w, h, h / 2, o.bg) + Tx(x, y + o.size * 0.22, text, o.size, o.fg, 600);
   }
   function arrow(x1, y1, x2, y2, col, w) {
     const a = Math.atan2(y2 - y1, x2 - x1), hs = (w || 10) * 2.6;

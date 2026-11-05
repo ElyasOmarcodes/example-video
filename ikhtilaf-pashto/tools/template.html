@@ -28,38 +28,36 @@
       .wp { position: absolute; }
       /* section tag */
       .stag { position: absolute; right: 56px; top: 62px; height: 54px; display: flex; direction: rtl; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
-      .stag b { background: var(--amber); color: var(--navy); font-weight: 900; font-size: 28px; padding: 0 20px; display: flex; align-items: center; }
-      .stag span { background: rgba(228, 228, 234, 0.12); color: var(--light); font-weight: 800; font-size: 26px; padding: 0 18px; display: flex; align-items: center; }
+      .stag b { background: var(--amber); color: var(--navy); font-weight: 800; font-size: 28px; padding: 0 20px; display: flex; align-items: center; }
+      .stag span { background: rgba(228, 228, 234, 0.12); color: var(--light); font-weight: 700; direction: rtl; font-size: 26px; padding: 0 18px; display: flex; align-items: center; }
       /* written-only heading: amber number block + light title box */
       .head { position: absolute; left: 50px; right: 50px; top: 168px; display: flex; justify-content: center; align-items: stretch; direction: rtl; filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.4)); }
       .head .num { flex: 0 0 auto; width: 132px; background: var(--amber); color: var(--navy); font-weight: 900; font-size: 66px; display: flex; align-items: center; justify-content: center; border-radius: 0 18px 18px 0; }
       .head .ttx { flex: 0 1 auto; background: var(--light); color: var(--navy); font-weight: 900; display: flex; align-items: center; justify-content: center; text-align: center; padding: 18px 40px; border-radius: 18px 0 0 18px; line-height: 1.3; min-height: 132px; }
       .head.solo .ttx { border-radius: 18px; }
-      .head .bar { position: absolute; bottom: -14px; right: 0; height: 8px; background: var(--amber); border-radius: 4px; }
       .stage { position: absolute; left: 40px; top: 330px; width: 1000px; height: 900px; overflow: visible; }
       /* spoken caption */
-      .cap { position: absolute; left: 48px; right: 48px; top: 1262px; height: 330px; border-radius: 26px; background: linear-gradient(180deg, rgba(5, 20, 73, 0.88), rgba(3, 12, 48, 0.92)); border: 2px solid rgba(228, 228, 234, 0.1); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); display: flex; align-items: center; justify-content: center; padding: 26px 44px; overflow: hidden; }
-      .cap::before { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 10px; background: var(--amber); }
+      .cap { position: absolute; left: 0; right: 0; top: 1240px; height: 380px; background: radial-gradient(58% 54% at 50% 50%, rgba(3, 10, 38, 0.86) 0%, rgba(3, 10, 38, 0.6) 55%, rgba(3, 10, 38, 0) 100%); display: flex; align-items: center; justify-content: center; padding: 26px 90px; }
       .cap .tx { text-align: center; direction: rtl; font-size: 52px; line-height: 1.6; font-weight: 600; color: var(--light); }
       .w { display: inline-block; }
-      .prog { position: absolute; left: 140px; width: 800px; top: 1650px; height: 8px; display: flex; gap: 8px; direction: rtl; }
-      .prog i { flex: 1 1 0; height: 8px; border-radius: 4px; background: rgba(228, 228, 234, 0.14); }
-      .prog i.past { background: rgba(234, 165, 0, 0.45); }
-      .prog i.cur { background: var(--amber); flex-grow: 2.6; }
+      .prog { position: absolute; left: 0; right: 0; top: 1662px; height: 14px; display: flex; justify-content: center; align-items: center; gap: 14px; direction: rtl; }
+      .prog i { flex: 0 0 auto; width: 12px; height: 12px; border-radius: 6px; background: rgba(228, 228, 234, 0.18); }
+      .prog i.past { background: rgba(234, 165, 0, 0.5); }
+      .prog i.cur { width: 44px; background: var(--amber); box-shadow: 0 0 18px rgba(234, 165, 0, 0.55); }
       /* intro */
       .title { position: absolute; left: 60px; right: 60px; top: 200px; text-align: center; direction: rtl; font-size: 88px; line-height: 1.38; font-weight: 900; color: var(--light); }
       .title .k { color: var(--amber); }
       .kick { position: absolute; left: 0; right: 0; text-align: center; direction: rtl; }
-      .kick span { display: inline-block; background: var(--amber); color: var(--navy); font-weight: 900; font-size: 34px; padding: 10px 30px; border-radius: 12px; }
+      .kick span { display: inline-block; background: var(--amber); color: var(--navy); font-weight: 700; font-size: 34px; padding: 10px 30px; border-radius: 12px; }
       .bignum { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-size: 1100px; line-height: 1; font-weight: 900; color: transparent; -webkit-text-stroke: 5px rgba(234, 165, 0, 0.5); opacity: 0.25; }
       /* conclusion */
       .ccard { position: absolute; width: 456px; height: 150px; border-radius: 22px; background: rgba(228, 228, 234, 0.08); border: 2px solid rgba(228, 228, 234, 0.16); direction: rtl; display: flex; align-items: center; gap: 18px; padding: 0 18px; }
       .ccard svg { flex: 0 0 auto; width: 112px; height: 112px; border-radius: 50%; background: rgba(5, 20, 73, 0.9); border: 3px solid var(--amber); overflow: visible; }
-      .ccard div { font-size: 40px; font-weight: 900; color: var(--light); white-space: nowrap; }
+      .ccard div { font-size: 40px; font-weight: 700; color: var(--light); white-space: nowrap; }
       .row { position: absolute; left: 70px; right: 70px; height: 156px; border-radius: 24px; background: var(--light); direction: rtl; display: flex; align-items: center; gap: 26px; padding: 0 20px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35); }
-      .row svg { flex: 0 0 auto; width: 118px; height: 118px; border-radius: 18px; background: var(--navy); overflow: visible; }
-      .row .tx2 { font-size: 50px; font-weight: 900; color: var(--navy); white-space: nowrap; }
-      .row .no { margin-right: auto; font-size: 54px; font-weight: 900; color: var(--amber); }
+      .row svg { flex: 0 0 auto; width: 118px; height: 118px; border-radius: 18px; background: var(--navy); overflow: visible; margin-right: auto; }
+      .row .tx2 { font-size: 50px; font-weight: 800; color: var(--navy); white-space: nowrap; }
+      .row .no { flex: 0 0 auto; width: 70px; height: 70px; border-radius: 35px; background: var(--amber); color: var(--navy); font-size: 40px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
     </style>
   </head>
   <body>
@@ -212,22 +210,20 @@
         function stag(p, sec, n, N) {
           const s = mk("div", "stag", p);
           mk("b", "", s, null, SEC[sec]);
-          if (n) mk("span", "", s, null, pad(n) + " / " + pad(N));
+          if (n) mk("span", "", s, null, FA(n) + " له " + FA(N));
           return s;
         }
         function heading(p, text, n, t0, big) {
           const h = mk("div", "head" + (n ? "" : " solo"), p, big ? { top: 200 } : null);
           let num = null;
-          if (n) num = mk("div", "num", h, null, pad(n));
+          if (n) num = mk("div", "num", h, null, FA(n));
           const tx = mk("div", "ttx", h, null, text);
           const base = big ? 110 : 66, maxW = n ? 700 : 860;
           let fs = Math.min(base, Math.floor((base * maxW) / measure(text, 900, base)));
           if (fs < 52) { fs = 56; tx.style.maxWidth = "760px"; }
           tx.style.fontSize = fs + "px";
-          const bar = mk("div", "bar", h, { width: big ? 300 : 220 });
           if (num) tl.fromTo(num, { scaleX: 0, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.4, ease: EXPO }, t0 + 0.02);
           tl.fromTo(tx, { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: EXPO }, t0 + 0.12);
-          tl.fromTo(bar, { scaleX: 0, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.6, ease: EXPO }, t0 + 0.3);
           return h;
         }
         function caption(p, text, spans, top) {
@@ -316,9 +312,9 @@
           const keys = ["split", "weak", "down", "ruin"];
           sc.rows.forEach(([txt, t], i) => {
             const r = mk("div", "row", c, { top: 420 + i * 196 });
-            svg(r, minis[keys[i]], "0 0 400 400");
+            mk("div", "no", r, null, FA(i + 1));
             mk("div", "tx2", r, null, txt);
-            mk("div", "no", r, null, pad(i + 1));
+            svg(r, minis[keys[i]], "0 0 400 400");
             tl.from(r, { x: 140, opacity: 0, duration: 0.5, ease: EXPO }, t);
             cue(t, "fast_swoosh", -8);
           });
@@ -333,7 +329,6 @@
           tl.fromTo(r1, { scale: 0 }, { scale: 1, duration: 0.7, ease: "power3.inOut" }, t0 + 0.05);
           tl.fromTo(r2, { scale: 0 }, { scale: 1, duration: 0.7, ease: "power3.inOut" }, t0 + 0.5);
           tl.fromTo(r3, { scale: 0 }, { scale: 1, duration: 0.75, ease: "power3.inOut" }, t0 + 0.95);
-          mk("div", "abs", c, { left: 0, top: 0, width: 1080, height: 1920, opacity: 0.035, backgroundImage: "linear-gradient(#E4E4EA 1px, transparent 1px), linear-gradient(90deg, #E4E4EA 1px, transparent 1px)", backgroundSize: "120px 120px" });
           const L = mk("div", "abs", c, { left: 160, top: 800, width: 760, height: 232 });
           const lc = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760 }); lc.src = "assets/img/logo-color.png";
           const gr = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760, opacity: 0, mixBlendMode: "screen", filter: "hue-rotate(300deg) saturate(3)" }); gr.src = "assets/img/logo-white.png";

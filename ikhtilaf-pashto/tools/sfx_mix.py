@@ -1,5 +1,5 @@
 # Builds assets/audio/sfx.m4a (cue list exported from the composition + scene extras) and
-# assets/audio/music.m4a (Mixkit "Echoes", arranged to the film length, kept low under the voice).
+# assets/audio/music.m4a (the user's news background track, looped to the film length, kept very low).
 # Usage: python3 -I tools/sfx_mix.py <mixkit_sfx_dir> <music_mp3> <out_dir>
 import subprocess, numpy as np, wave, sys, os, json, re
 SR = 48000
@@ -57,19 +57,18 @@ def write(path, x):
 write("/tmp/claude-0/hk/sfx.wav", mix)
 print("sfx peak", round(20 * np.log10(np.abs(mix).max() + 1e-9), 1), "dBFS, cues", len(CUES))
 
-# ---- music bed ----
+# ---- music bed: the user's "Breaking News Background Music" looped with crossfades, very low ----
 m = load(MUSIC)
-A_START, A_END, B_START, XF = 12.0, 92.0, 50.0, 3.0
-a = m[int(A_START * SR): int(A_END * SR)].copy(); b = m[int(B_START * SR):].copy()
-x0 = len(a) - int(XF * SR)
-fade = np.linspace(0, 1, int(XF * SR))[:, None]
-out = np.concatenate([a[:x0], a[x0:] * (1 - fade) + b[: len(fade)] * fade, b[len(fade):]])
-if len(out) < N: out = np.concatenate([out, np.zeros((N - len(out), 2))])
+seg = m[int(2.0 * SR): int(59.0 * SR)]
+XF = int(1.5 * SR); fade = np.linspace(0, 1, XF)[:, None]
+out = m[: int(59.0 * SR)].copy()
+while len(out) < N + SR:
+    out = np.concatenate([out[:-XF], out[-XF:] * (1 - fade) + seg[:XF] * fade, seg[XF:]])
 out = out[:N]
 t = np.arange(N) / SR
-g = np.full(N, 10 ** (-12 / 20))                       # bed under the voice
-ramp = (t > 232.0) & (t < 233.5); g[ramp] = 10 ** ((-12 + (t[ramp] - 232.0) / 1.5 * 6) / 20)
-g[t >= 233.5] = 10 ** (-6 / 20)
+g = np.full(N, 10 ** (-27 / 20))                       # bed under the voice
+ramp = (t > 232.0) & (t < 233.5); g[ramp] = 10 ** ((-27 + (t[ramp] - 232.0) / 1.5 * 9) / 20)
+g[t >= 233.5] = 10 ** (-18 / 20)
 g *= np.clip((END - t) / 3.0, 0, 1)                    # fade out over the last 3 s
 g *= np.clip(t / 0.6, 0, 1)
 out *= g[:, None]

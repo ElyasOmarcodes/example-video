@@ -34,8 +34,7 @@
     w(K.note(680, 250, 140, 14), { in: "pop", tin: 0.4, act: "float", y: 12 }) +
     w(K.coin(420, 180, 34) + K.coin(600, 410, 26), { in: "pop", tin: 0.6, act: "float", y: 10 }) +
     w(K.tag(500, 110, "بهرنۍ مرستې"), { in: "pop", tin: 0.08 }) +
-    w(K.tag(190, 200, "بودیجه"), { in: "pop", tin: 0.38 }) +
-    w(K.tag(820, 160, "مالي سرچینې"), { in: "pop", tin: 0.62 });
+    w(K.tag(190, 200, "بودیجه"), { in: "pop", tin: 0.38 });
 
   S.p1_3 = () => {
     const target = K.Ci(0, 0, 110, C.w) + K.Ci(0, 0, 80, C.n4) + K.Ci(0, 0, 50, C.w) + K.Ci(0, 0, 22, C.am) + K.Rc(-6, 110, 12, 160, 6, C.w3);
@@ -43,12 +42,11 @@
     return floor(800) +
       w(K.T(250, 330, 1, target), { in: "zoom", at: 0.2, act: "fade", t: 0.6, o: 0.35 }) +
       w(P({ x: 130, y: 800, s: 0.72, pose: "raise", suit: C.n4 }) + P({ x: 250, y: 800, s: 0.72, suit: C.n3, beard: true }) + P({ x: 370, y: 800, s: 0.72, pose: "point", suit: "#3B4466" }), { in: "left", at: 0.1, act: "fade", t: 0.62, o: 0.45 }) +
-      w(K.tag(250, 150, "ګډې موخې", { bg: C.w }), { in: "pop", tin: 0.05 }) +
+      w(K.tag(250, 150, "ګډې موخې", { bg: C.w, keep: 1 }), { in: "pop", tin: 0.05 }) +
       w(K.T(760, 470, 1, gem), { in: "drop", tin: 0.3, act: "pulse", s: 1.07 }) +
       w(spark(760, 340, 0.8), { in: "pop", tin: 0.4, act: "blink", d: 0.4 }) +
       w(P({ x: 760, y: 800, s: 0.86, pose: "hold", fl: -1, suit: C.n2, beard: true, glow: true }), { in: "right", at: 0.25 }) +
-      w(K.tag(760, 175, "شخصي ګټې"), { in: "pop", tin: 0.38 }) +
-      w(K.tag(770, 245, "امتیازات", { bg: C.w, size: 28 }), { in: "pop", tin: 0.55 }) +
+      w(K.tag(760, 175, "شخصي ګټې", { keep: 1 }), { in: "pop", tin: 0.38 }) +
       w(K.arrow(420, 470, 620, 470, C.am, 12), { in: "growx", tin: 0.5 });
   };
 
@@ -101,8 +99,7 @@
     w(K.El(500, 110, 70, 38, C.w) + K.Ci(500, 110, 28, C.n4) + K.Ci(500, 110, 13, C.dk) + K.Ci(508, 102, 5, "#fff"), { in: "pop", tin: 0.35, act: "blink", d: 0.6 }) +
     w(K.crack([[500, 800], [480, 830], [516, 856], [490, 890]], C.am, 8), { in: "draw", tin: 0.55 }) +
     w(K.tag(160, 420, "بې‌باوري"), { in: "pop", tin: 0.2 }) +
-    w(K.tag(840, 420, "شک"), { in: "pop", tin: 0.45 }) +
-    w(K.tag(500, 300, "خپلمنځي سیالي", { bg: C.w }), { in: "pop", tin: 0.7 });
+    w(K.tag(840, 420, "شک"), { in: "pop", tin: 0.45 });
 
   S.p1_8 = () =>
     w(K.Rc(380, 500, 240, 300, 8, C.n3) + K.Rc(380, 500, 240, 14, 6, C.n4) + K.Rc(360, 790, 280, 20, 6, C.n4), { in: "grow", at: 0.05 }) +
@@ -134,8 +131,7 @@
       w(K.magnifier(330, 330, 0.9), { in: "pop", at: 0.5, act: "move", t: 0.2, x: 340, y: 260, d: 2.6 }) +
       w(q(140, 330, 1), { in: "pop", tin: 0.45, act: "float", y: 12 }) + w(q(870, 260, 0.8), { in: "pop", tin: 0.65, act: "float", y: 10 }) +
       w(K.Rc(700, 760, 220, 70, 12, C.n3) + K.Rc(700, 760, 220, 14, 7, C.n5) + K.Rc(770, 790, 80, 12, 6, C.n2) + K.El(810, 762, 90, 12, C.dk), { in: "fade", at: 0.4 }) +
-      w(K.coin(760, 640, 30), { in: "pop", at: 0.6, act: "fall", t: 0.5, y: 120 }) + w(K.coin(840, 600, 26), { in: "pop", at: 0.7, act: "fall", t: 0.62, y: 160 }) +
-      w(K.tag(500, 800, "حساب ورکونه نشته", { bg: C.w }), { in: "pop", tin: 0.82 });
+      w(K.coin(760, 640, 30), { in: "pop", at: 0.6, act: "fall", t: 0.5, y: 120 }) + w(K.coin(840, 600, 26), { in: "pop", at: 0.7, act: "fall", t: 0.62, y: 160 });
   };
 
   S.p1_11 = () => {
@@ -146,11 +142,10 @@
       w(K.T(500, 300, 1, K.pan(-280, 1, heavy)), { in: "fade", at: 0.3, act: "move", t: 0.25, y: 62, x: 6, d: 1.4 }) +
       w(K.T(500, 300, 1, K.pan(280, 1, light)), { in: "fade", at: 0.3, act: "move", t: 0.25, y: -62, x: -6, d: 1.4 }) +
       w(K.T(500, 300, 1, K.balanceBeam()), { in: "fade", at: 0.25, act: "tilt1", t: 0.25, r: -12, o: piv }) +
-      w(K.tag(220, 170, "امتیازات"), { in: "pop", tin: 0.4 }) + w(K.tag(220, 100, "صلاحیتونه"), { in: "pop", tin: 0.2 }) +
+      w(K.tag(220, 170, "امتیازات"), { in: "pop", tin: 0.4 }) +
       w(K.tag(780, 120, "مسؤلیتونه", { bg: C.w }), { in: "pop", tin: 0.6 }) +
       w(P({ x: 110, y: 800, s: 0.66, pose: "hips", suit: C.n2, beard: true }), { in: "left", at: 0.3 }) +
-      w(P({ x: 890, y: 800, s: 0.66, pose: "carry", fl: -1, suit: "#3B4466" }) + K.box(872, 670, 0.9), { in: "right", at: 0.35 }) +
-      w(K.tag(500, 860, "نابرابر وېش", { bg: C.w }), { in: "pop", tin: 0.8 });
+      w(P({ x: 890, y: 800, s: 0.66, pose: "carry", fl: -1, suit: "#3B4466" }) + K.box(872, 670, 0.9), { in: "right", at: 0.35 });
   };
 
   S.p1_12 = () =>
@@ -172,8 +167,7 @@
     w(P({ x: 210, y: 830, s: 0.8, pose: "reach", suit: C.n4 }), { in: "left", at: 0.2, act: "tug", x: 10 }) +
     w(P({ x: 500, y: 860, s: 0.8, pose: "both", suit: "#3B4466", beard: true }), { in: "up", at: 0.3, act: "tug", x: 8 }) +
     w(P({ x: 790, y: 830, s: 0.8, pose: "reach", fl: -1, suit: C.n3, cap: true }), { in: "right", at: 0.25, act: "tug", x: 10 }) +
-    w(K.tag(200, 250, "سیاسي ملاتړ"), { in: "pop", tin: 0.15 }) + w(K.tag(800, 250, "مالي ملاتړ"), { in: "pop", tin: 0.35 }) +
-    w(K.tag(500, 610, "رقابت", { bg: C.w }), { in: "pop", tin: 0.75 });
+    w(K.tag(200, 250, "سیاسي ملاتړ"), { in: "pop", tin: 0.15 }) + w(K.tag(800, 250, "مالي ملاتړ"), { in: "pop", tin: 0.35 });
 
   S.p1_14 = () =>
     w(K.cliff(330, 560, 340, -1) + K.cliff(670, 560, 340, 1), { in: "up", at: 0.05 }) +
@@ -225,7 +219,7 @@
     w(K.hand(560, 420, 1.3, -1, C.n5), { in: "right", at: 0.1, act: "move", t: 0.3, x: 160, r: 8, d: 0.8 }) +
     w(K.bolt(500, 420, 1.6), { in: "pop", tin: 0.32, act: "pulse", s: 1.12 }) + w(spark(500, 420, 1.6), { in: "pop", tin: 0.33, act: "blink", d: 0.25 }) +
     w(K.tag(220, 150, "پخواني متحدین", { bg: C.w }), { in: "pop", tin: 0.05 }) +
-    w(K.tag(780, 150, "بې‌باوري"), { in: "pop", tin: 0.5 }) + w(K.tag(780, 230, "مخالفت"), { in: "pop", tin: 0.7 });
+    w(K.tag(780, 150, "بې‌باوري"), { in: "pop", tin: 0.5 });
 
   S.p2_5 = () => {
     const cx = 500, cy = 420, r = 230;
@@ -266,9 +260,9 @@
     return w(frame(270, B({ x: 270, y: 440, s: 1.3, suit: C.n4 }) + K.Tx(270, 474, "", 26, C.navy, 900)), { in: "left", at: 0.05 }) +
       w(frame(730, B({ x: 730, y: 440, s: 1.3, suit: "#3B4466", beard: true })), { in: "right", at: 0.1 }) +
       w(K.Rc(80, 120, 120, 40, 8, C.am) + K.Tx(140, 150, "ژوندی", 26, C.navy, 900), { in: "pop", at: 0.4, act: "blink", d: 0.6 }) +
-      w(K.bubble(330, 640, 260, 100, 1, C.w, K.Tx(330, 656, "تورونه", 40, C.navy, 900)), { in: "pop", tin: 0.25, act: "float", y: 8 }) +
-      w(K.bubble(670, 700, 240, 100, -1, C.am, K.Tx(670, 716, "نیوکې", 40, C.navy, 900)), { in: "pop", tin: 0.45, act: "float", y: 8 }) +
-      w(K.bubble(500, 820, 300, 90, 1, C.n5, K.Tx(500, 834, "سیاسي تقابل", 36, C.w, 900)), { in: "pop", tin: 0.7 }) +
+      w(K.bubble(330, 640, 260, 100, 1, C.w, K.Tx(330, 656, "تورونه", 40, C.navy, 700)), { in: "pop", tin: 0.25, act: "float", y: 8 }) +
+      w(K.bubble(670, 700, 240, 100, -1, C.am, K.Tx(670, 716, "نیوکې", 40, C.navy, 700)), { in: "pop", tin: 0.45, act: "float", y: 8 }) +
+      w(K.bubble(500, 820, 300, 90, 1, C.n5, K.Tx(500, 834, "سیاسي تقابل", 36, C.w, 700)), { in: "pop", tin: 0.7 }) +
       w(K.bolt(500, 320, 1.1), { in: "pop", tin: 0.35, act: "pulse", s: 1.15 });
   };
 
@@ -277,10 +271,9 @@
     w(K.Ci(160, 220, 86, C.n3) + B({ x: 160, y: 270, s: 0.75, suit: C.n5 }), { in: "pop", tin: 0.05, act: "fall", t: 0.4, y: 120 }) +
     w(K.Ci(840, 220, 86, C.n3) + K.coinStack(840, 260, 40, 4), { in: "pop", tin: 0.22, act: "fall", t: 0.55, y: 120 }) +
     w(K.Ci(160, 600, 86, C.n3) + K.gear(160, 600, 52, 8, C.w2), { in: "pop", tin: 0.38, act: "fall", t: 0.7, y: 120 }) +
-    w(K.tag(160, 90, "بشري"), { in: "pop", tin: 0.08 }) + w(K.tag(840, 90, "مالي"), { in: "pop", tin: 0.25 }) + w(K.tag(160, 470, "مدیریتي"), { in: "pop", tin: 0.42 }) +
+    w(K.tag(160, 90, "بشري", { keep: 1 }), { in: "pop", tin: 0.08 }) + w(K.tag(840, 90, "مالي", { keep: 1 }), { in: "pop", tin: 0.25 }) + w(K.tag(160, 470, "مدیریتي", { keep: 1 }), { in: "pop", tin: 0.42 }) +
     w(K.Ci(840, 620, 96, C.n2) + K.P("M760 640 A84 84 0 0 1 920 640", "none", `stroke="${C.w3}" stroke-width="14"`) + K.P("M760 640 A84 84 0 0 1 790 580", "none", `stroke="${C.am}" stroke-width="14"`), { in: "zoom", at: 0.4 }) +
-    w(K.Rc(836, 636, 74, 8, 4, C.w), { in: "fade", at: 0.5, act: "needle", t: 0.4, o: "840 640" }) +
-    w(K.tag(500, 860, "سرچینې ضایع کېږي", { bg: C.w }), { in: "pop", tin: 0.75 });
+    w(K.Rc(836, 636, 74, 8, 4, C.w), { in: "fade", at: 0.5, act: "needle", t: 0.4, o: "840 640" });
 
   S.p2_10 = () =>
     w(K.globe(220, 240, 140), { in: "zoom", at: 0.1 }) +
@@ -289,8 +282,7 @@
     w(spark(430, 440, 1.1), { in: "pop", tin: 0.32, act: "blink", d: 0.25 }) +
     floor(830, 0.3) +
     w(P({ x: 760, y: 830, s: 0.7, pose: "head", suit: C.n4 }) + P({ x: 890, y: 830, s: 0.7, fl: -1, suit: "#3B4466", beard: true }), { in: "right", at: 0.3, act: "fade", t: 0.6, o: 0.55 }) +
-    w(K.tag(220, 450, "بهرنۍ اړیکې", { bg: C.w }), { in: "pop", tin: 0.4 }) + w(K.tag(220, 530, "ملاتړ"), { in: "pop", tin: 0.6 }) +
-    w(K.Rc(380, 120, 340, 70, 35, C.n2) + K.Ci(420, 155, 18, C.am) + K.Tx(560, 168, "اړیکه پرې شوه", 32, C.w, 900), { in: "pop", tin: 0.75 });
+    w(K.tag(220, 450, "بهرنۍ اړیکې", { bg: C.w, keep: 1 }), { in: "pop", tin: 0.4 });
 
   S.p2_11 = () =>
     w(K.cloud(470, 170, 1.5, C.w3), { in: "down", at: 0.1, act: "float", y: 6 }) +
@@ -300,8 +292,7 @@
     w(P({ x: 500, y: 800, s: 0.8, pose: "head", suit: C.n4, beard: true }), { in: "up", at: 0.2, act: "droop", t: 0.3, y: 10, r: 3 }) +
     w(K.battery(820, 520, 0.9, 1), { in: "pop", tin: 0.2 }) +
     w(q(160, 420, 1.1, C.w2) + q(250, 330, 0.7, C.w3), { in: "pop", tin: 0.55, act: "float", y: 12 }) +
-    w(K.tag(180, 560, "ناهیلي"), { in: "pop", tin: 0.1 }) + w(K.tag(820, 660, "بې‌باوري", { bg: C.w }), { in: "pop", tin: 0.3 }) +
-    w(K.tag(500, 880, "نامعلوم راتلونکی", { bg: C.w }), { in: "pop", tin: 0.65 });
+    w(K.tag(180, 560, "ناهیلي"), { in: "pop", tin: 0.1 });
 
   S.p2_12 = () =>
     w(K.Rc(120, 500, 760, 60, 30, C.n3) + [0, 1, 2, 3, 4, 5, 6].map((i) => K.Ci(170 + i * 110, 530, 22, C.n5)).join(""), { in: "growx", at: 0.1 }) +
@@ -333,8 +324,7 @@
     w(K.crack([[530, 220], [600, 250]], C.w, 7) + K.crack([[480, 320], [400, 350]], C.w, 7), { in: "draw", tin: 0.4 }) +
     [0, 1, 2, 3, 4].map((i) => w(K.star(320 + i * 90, 640, 34, C.am), i >= 2 ? { in: "pop", at: 0.4 + i * 0.06, act: "fade", t: 0.45 + (i - 2) * 0.12, o: 0.15 } : { in: "pop", at: 0.4 + i * 0.06 })).join("") +
     w(crowd(905, 6, 0.8, 1, 3), { in: "up", at: 0.2 }) +
-    w(K.tag(160, 120, "خلک", { bg: C.w }), { in: "pop", tin: 0.6 }) + w(K.tag(840, 120, "سیاسي متحدین", { bg: C.w }), { in: "pop", tin: 0.7 }) +
-    w(K.tag(500, 740, "باور کمېږي"), { in: "pop", tin: 0.85 });
+    w(K.tag(160, 120, "خلک", { bg: C.w }), { in: "pop", tin: 0.6 }) + w(K.tag(840, 120, "سیاسي متحدین", { bg: C.w }), { in: "pop", tin: 0.7 });
 
   // ================= PART 3: EVENTS =================
   const box2 = (x, y, w2, txt, col) => K.Rc(x - w2 / 2 + 5, y + 7, w2, 76, 14, "#000", 'opacity=".3"') + K.Rc(x - w2 / 2, y, w2, 76, 14, col || C.w) + K.Tx(x, y + 50, txt, 32, col === C.am || !col ? C.navy : C.w, 900);
@@ -365,15 +355,14 @@
     w(P({ x: 260, y: 690, s: 0.72, pose: "point", suit: C.n4, legs: false, sh: false }) + K.podium(260, 820, 0.78), { in: "left", at: 0.15 }) +
     w(P({ x: 740, y: 690, s: 0.72, pose: "point", fl: -1, suit: "#3B4466", beard: true, legs: false, sh: false }) + K.podium(740, 820, 0.78), { in: "right", at: 0.2 }) +
     w(K.bolt(500, 420, 1.4), { in: "pop", tin: 0.35, act: "pulse", s: 1.15 }) +
-    w(K.bubble(300, 210, 280, 110, 1, C.w, K.Tx(300, 228, "رهبري", 44, C.navy, 900)), { in: "pop", tin: 0.55 }) +
-    w(K.bubble(700, 210, 280, 110, -1, C.am, K.Tx(700, 228, "سیاسي دریځ", 40, C.navy, 900)), { in: "pop", tin: 0.4 }) +
+    w(K.bubble(300, 210, 280, 110, 1, C.w, K.Tx(300, 228, "رهبري", 44, C.navy, 700)), { in: "pop", tin: 0.55 }) +
+    w(K.bubble(700, 210, 280, 110, -1, C.am, K.Tx(700, 228, "سیاسي دریځ", 40, C.navy, 700)), { in: "pop", tin: 0.4 }) +
     w(K.tag(500, 880, "ښکاره اختلاف"), { in: "pop", tin: 0.75 });
 
   S.p3_4 = () => {
     const feed = [0, 1, 2, 3].map((i) => w(K.post(0, -150 + i * 90, 190, i % 2 === 0, i % 2 ? C.am : C.w2), { in: "down", tin: 0.08 + i * 0.18 })).join("");
     return w(K.phone(500, 430, 1.25, ""), { in: "zoom", at: 0.05 }) + `<g transform="translate(500 430) scale(1.25)">${feed}</g>` +
-      [[170, 220, "نیوکې", 0.2], [820, 300, "تورونه", 0.4], [180, 560, "کړنې", 0.55], [820, 640, "تګلارې", 0.7]].map(([x, y, t, f], i) => w(K.bubble(x, y, 230, 90, i % 2 ? -1 : 1, i % 2 ? C.am : C.w, K.Tx(x, y + 14, t, 38, C.navy, 900)), { in: "pop", tin: f, act: "float", y: 8 })).join("") +
-      w(K.Rc(610, 120, 110, 56, 28, C.am) + K.Tx(665, 160, "۹۹+", 32, C.navy, 900), { in: "pop", tin: 0.6, act: "pulse", s: 1.1 });
+      [[170, 220, "نیوکې", 0.2], [820, 300, "تورونه", 0.4], [180, 560, "کړنې", 0.55], [820, 640, "تګلارې", 0.7]].map(([x, y, t, f], i) => w(K.bubble(x, y, 230, 90, i % 2 ? -1 : 1, i % 2 ? C.am : C.w, K.Tx(x, y + 14, t, 38, C.navy, 700)), { in: "pop", tin: f, act: "float", y: 8 })).join("");
   };
 
   S.p3_5 = () =>
@@ -383,8 +372,7 @@
     w(B({ x: 330, y: 560, s: 0.85, suit: "#3B4466", beard: true }) + K.star(330, 520, 18, C.am), { in: "up", at: 0.25, act: "move", t: 0.3, x: -360, y: -60, d: 1.8 }) +
     w(B({ x: 610, y: 560, s: 0.85, suit: C.n2, cap: true }) + K.star(610, 520, 18, C.am), { in: "up", at: 0.3, act: "move", t: 0.45, x: 380, y: -60, d: 1.8 }) +
     w(K.Ci(330, 480, 60, "none", `stroke="${C.am}" stroke-width="6" stroke-dasharray="10 10"`) + K.Ci(610, 480, 60, "none", `stroke="${C.am}" stroke-width="6" stroke-dasharray="10 10"`), { in: "fade", tin: 0.55 }) +
-    w(K.tag(250, 140, "تجربه‌لرونکي"), { in: "pop", tin: 0.15 }) + w(K.tag(760, 140, "اغېزناک کسان"), { in: "pop", tin: 0.35 }) +
-    w(K.tag(500, 820, "اصلي تشکیلات", { bg: C.w }), { in: "pop", tin: 0.7 });
+    w(K.tag(250, 140, "تجربه‌لرونکي"), { in: "pop", tin: 0.15 }) + w(K.tag(760, 140, "اغېزناک کسان"), { in: "pop", tin: 0.35 });
 
   S.p3_6 = () =>
     floor(830, 0.3) + w(K.signpost(500, 830, 1), { in: "grow", at: 0.05 }) +
@@ -402,8 +390,7 @@
       w(H.cols[3], { in: "grow", at: 0.3, act: "fall", t: 0.5, y: 120 }) + w(H.cols[4], { in: "grow", at: 0.35 }) +
       w(H.roof, { in: "drop", at: 0.45, act: "droop", t: 0.55, r: 5, y: 26, o: "500 360" }) +
       w(K.crack([[300, 380], [330, 440], [310, 500], [340, 560]], C.am, 8) + K.crack([[640, 360], [610, 420], [650, 470]], C.am, 7), { in: "draw", tin: 0.3 }) +
-      w(K.tag(220, 120, "انسجام", { bg: C.w }), { in: "pop", tin: 0.4 }) + w(K.tag(780, 120, "همغږي", { bg: C.w }), { in: "pop", tin: 0.55 }) +
-      w(K.tag(500, 880, "جوړښت کمزوری کېږي"), { in: "pop", tin: 0.75 });
+      w(K.tag(220, 120, "انسجام", { bg: C.w }), { in: "pop", tin: 0.4 }) + w(K.tag(780, 120, "همغږي", { bg: C.w }), { in: "pop", tin: 0.55 });
   };
 
   S.p3_8 = () =>
