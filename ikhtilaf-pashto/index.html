@@ -4,91 +4,70 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1920" />
     <script src="lib/gsap.min.js"></script>
-    <script src="lib/icons.js"></script>
+    <script src="lib/kit.js"></script>
+    <script src="lib/scenes.js"></script>
     <style>
       @font-face { font-family: "Quds"; src: url("assets/fonts/quds_bold.ttf") format("truetype"); font-weight: 600; }
       @font-face { font-family: "Quds"; src: url("assets/fonts/quds_extrabold.ttf") format("truetype"); font-weight: 700; }
       @font-face { font-family: "Quds"; src: url("assets/fonts/quds_black.ttf") format("truetype"); font-weight: 800; }
       @font-face { font-family: "Quds"; src: url("assets/fonts/quds_extrablack.ttf") format("truetype"); font-weight: 900; }
-      :root {
-        --bg0: #122126; --bg1: #1a2f34; --ink: #eee7d9; --mut: #9fb5b0; --dim: rgba(238, 231, 217, 0.14);
-        --sand: #ddbe8e; --sage: #8cc3b0; --mist: #a6bedd; --hot: #e39a82; --acc: var(--sand);
-      }
+      :root { --navy: #051449; --amber: #eaa500; --light: #e4e4ea; --mut: #9aa3c7; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg0); }
-      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Quds", sans-serif; color: var(--ink); }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #030a26; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Quds", sans-serif; color: var(--light); }
       .clip { position: absolute; inset: 0; }
       .cam { position: absolute; inset: 0; }
       .abs { position: absolute; }
-      /* background */
-      #bg { background: radial-gradient(130% 80% at 50% 38%, var(--bg1) 0%, var(--bg0) 70%); }
-      .blob { position: absolute; width: 900px; height: 900px; border-radius: 50%; filter: blur(60px); opacity: 0.16; }
-      #dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(238, 231, 217, 0.09) 1.6px, transparent 1.8px); background-size: 44px 44px; }
-      #vig { position: absolute; inset: 0; background: radial-gradient(120% 75% at 50% 45%, transparent 55%, rgba(6, 14, 17, 0.6) 100%); }
-      /* brand */
-      #logo { position: absolute; left: 60px; top: 66px; height: 62px; }
-      #handle { position: absolute; left: 0; right: 0; top: 1838px; text-align: center; font-size: 30px; font-weight: 600; color: var(--mut); opacity: 0.75; direction: ltr; }
-      /* chip (section) */
-      .chip { position: absolute; right: 60px; top: 70px; height: 58px; padding: 0 26px; border-radius: 29px; border: 2px solid rgba(238, 231, 217, 0.16); background: rgba(238, 231, 217, 0.05); display: flex; align-items: center; gap: 14px; direction: rtl; font-size: 30px; font-weight: 700; color: var(--ink); white-space: nowrap; }
-      .chip .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--acc); }
-      .chip .cnt { color: var(--acc); font-weight: 800; }
-      /* written-only heading: solid tab with number badge */
-      .head { position: absolute; left: 60px; right: 60px; top: 236px; height: 150px; display: flex; align-items: center; justify-content: center; gap: 22px; direction: rtl; }
-      .head .num { flex: 0 0 auto; width: 118px; height: 118px; border-radius: 50%; border: 5px solid var(--acc); display: flex; align-items: center; justify-content: center; font-size: 54px; font-weight: 900; color: var(--acc); }
-      .head .pill { position: relative; flex: 0 1 auto; height: 118px; padding: 0 44px; border-radius: 24px 59px 59px 24px; background: var(--acc); display: flex; align-items: center; white-space: nowrap; font-weight: 900; color: #13232a; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28); }
-      .head .pill::after { content: ""; position: absolute; left: 18px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: rgba(19, 35, 42, 0.35); }
-      /* medallion */
-      .med { position: absolute; left: 160px; top: 490px; width: 760px; height: 760px; }
-      .med .ring, .med .orbit, .med .dash, .med .flip { position: absolute; inset: 0; }
-      .med .disc { position: absolute; left: 80px; top: 80px; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, rgba(238, 231, 217, 0.07), rgba(238, 231, 217, 0.025) 70%); border: 2px solid rgba(238, 231, 217, 0.1); }
-      .med .ic { position: absolute; left: 120px; top: 120px; width: 520px; height: 520px; overflow: visible; }
-      .med .shake { position: absolute; inset: 0; }
-      .med .marker { position: absolute; left: 368px; top: -6px; width: 24px; height: 24px; }
-      .ic { overflow: visible; }
-      .ic .k, .ic .a, .ic .m, .ic .cr { fill: none; stroke-width: 7px; stroke-linecap: round; stroke-linejoin: round; }
-      .ic .k { stroke: var(--ink); }
-      .ic .a { stroke: var(--acc); }
-      .ic .m { stroke: var(--mut); opacity: 0.75; }
-      .ic .cr { stroke: var(--hot); }
-      .ic .fa { fill: var(--acc); opacity: 0.2; stroke: none; }
-      .ic .fk { fill: var(--ink); opacity: 0.08; stroke: none; }
-      .ic .fs { fill: var(--acc); stroke: none; }
-      .ic .fc { fill: var(--hot); stroke: none; }
-      /* spoken text */
-      .desc { position: absolute; left: 70px; right: 70px; top: 1316px; text-align: center; direction: rtl; font-size: 54px; line-height: 1.62; font-weight: 600; color: var(--ink); }
+      #bg { background: radial-gradient(120% 75% at 50% 42%, #0b2063 0%, #061551 38%, #030a26 100%); }
+      #map { position: absolute; left: -360px; top: 520px; width: 1800px; height: 900px; opacity: 0.16; }
+      .beam { position: absolute; top: -300px; height: 2600px; filter: blur(30px); }
+      #vig { position: absolute; inset: 0; background: radial-gradient(90% 70% at 50% 46%, transparent 55%, rgba(1, 4, 20, 0.75) 100%); }
+      #logo { position: absolute; left: 56px; top: 58px; height: 60px; }
+      #handle { position: absolute; left: 0; right: 0; top: 1846px; text-align: center; font-size: 28px; font-weight: 700; color: var(--mut); direction: ltr; }
+      #wipes { pointer-events: none; }
+      .wp { position: absolute; }
+      /* section tag */
+      .stag { position: absolute; right: 56px; top: 62px; height: 54px; display: flex; direction: rtl; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
+      .stag b { background: var(--amber); color: var(--navy); font-weight: 900; font-size: 28px; padding: 0 20px; display: flex; align-items: center; }
+      .stag span { background: rgba(228, 228, 234, 0.12); color: var(--light); font-weight: 800; font-size: 26px; padding: 0 18px; display: flex; align-items: center; }
+      /* written-only heading: amber number block + light title box */
+      .head { position: absolute; left: 50px; right: 50px; top: 168px; display: flex; justify-content: center; align-items: stretch; direction: rtl; filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.4)); }
+      .head .num { flex: 0 0 auto; width: 132px; background: var(--amber); color: var(--navy); font-weight: 900; font-size: 66px; display: flex; align-items: center; justify-content: center; border-radius: 0 18px 18px 0; }
+      .head .ttx { flex: 0 1 auto; background: var(--light); color: var(--navy); font-weight: 900; display: flex; align-items: center; justify-content: center; text-align: center; padding: 18px 40px; border-radius: 18px 0 0 18px; line-height: 1.3; min-height: 132px; }
+      .head.solo .ttx { border-radius: 18px; }
+      .head .bar { position: absolute; bottom: -14px; right: 0; height: 8px; background: var(--amber); border-radius: 4px; }
+      .stage { position: absolute; left: 40px; top: 330px; width: 1000px; height: 900px; overflow: visible; }
+      /* spoken caption */
+      .cap { position: absolute; left: 48px; right: 48px; top: 1262px; height: 330px; border-radius: 26px; background: linear-gradient(180deg, rgba(5, 20, 73, 0.88), rgba(3, 12, 48, 0.92)); border: 2px solid rgba(228, 228, 234, 0.1); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); display: flex; align-items: center; justify-content: center; padding: 26px 44px; overflow: hidden; }
+      .cap::before { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 10px; background: var(--amber); }
+      .cap .tx { text-align: center; direction: rtl; font-size: 52px; line-height: 1.6; font-weight: 600; color: var(--light); }
       .w { display: inline-block; }
-      .rail { position: absolute; left: 160px; width: 760px; top: 1716px; height: 10px; display: flex; gap: 10px; direction: rtl; }
-      .rail i { flex: 1 1 0; height: 10px; border-radius: 5px; background: var(--dim); }
-      .rail i.past { background: var(--acc); opacity: 0.45; }
-      .rail i.cur { background: var(--acc); flex-grow: 2.4; }
-      /* intro / dividers */
-      .ttl { position: absolute; left: 60px; right: 60px; text-align: center; direction: rtl; font-weight: 900; line-height: 1.45; color: var(--ink); }
-      .ttl .k2 { color: var(--acc); }
-      .bignum { position: absolute; left: 0; right: 0; top: 380px; text-align: center; font-size: 980px; line-height: 1; font-weight: 900; color: transparent; -webkit-text-stroke: 4px var(--acc); opacity: 0.16; }
-      .art { position: absolute; overflow: visible; }
-      .uline { position: absolute; height: 10px; border-radius: 5px; background: var(--acc); }
+      .prog { position: absolute; left: 140px; width: 800px; top: 1650px; height: 8px; display: flex; gap: 8px; direction: rtl; }
+      .prog i { flex: 1 1 0; height: 8px; border-radius: 4px; background: rgba(228, 228, 234, 0.14); }
+      .prog i.past { background: rgba(234, 165, 0, 0.45); }
+      .prog i.cur { background: var(--amber); flex-grow: 2.6; }
+      /* intro */
+      .title { position: absolute; left: 60px; right: 60px; top: 200px; text-align: center; direction: rtl; font-size: 88px; line-height: 1.38; font-weight: 900; color: var(--light); }
+      .title .k { color: var(--amber); }
+      .kick { position: absolute; left: 0; right: 0; text-align: center; direction: rtl; }
+      .kick span { display: inline-block; background: var(--amber); color: var(--navy); font-weight: 900; font-size: 34px; padding: 10px 30px; border-radius: 12px; }
+      .bignum { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-size: 1100px; line-height: 1; font-weight: 900; color: transparent; -webkit-text-stroke: 5px rgba(234, 165, 0, 0.5); opacity: 0.25; }
       /* conclusion */
-      .mchip { position: absolute; width: 200px; height: 200px; border-radius: 50%; background: rgba(26, 47, 52, 0.92); border: 3px solid var(--acc); }
-      .mchip svg { position: absolute; left: 30px; top: 30px; width: 140px; height: 140px; overflow: visible; }
-      .row { position: absolute; left: 90px; right: 90px; height: 148px; border-radius: 30px; background: rgba(238, 231, 217, 0.05); border: 2px solid rgba(238, 231, 217, 0.1); direction: rtl; display: flex; align-items: center; gap: 30px; padding: 0 22px; }
-      .row .ico { flex: 0 0 auto; width: 108px; height: 108px; border-radius: 50%; background: rgba(140, 195, 176, 0.12); border: 3px solid var(--acc); position: relative; }
-      .row .ico svg { position: absolute; left: 14px; top: 14px; width: 74px; height: 74px; overflow: visible; }
-      .row .tx { font-size: 50px; font-weight: 800; color: var(--ink); white-space: nowrap; }
-      .row .no { margin-right: auto; font-size: 40px; font-weight: 900; color: var(--acc); opacity: 0.7; }
-      .lead { position: absolute; left: 0; right: 0; text-align: center; direction: rtl; font-size: 50px; font-weight: 800; color: var(--acc); }
-      /* outro */
-      .panel { position: absolute; inset: 0; background: radial-gradient(90% 60% at 50% 45%, #1d3438 0%, #0f1c20 75%); }
-      .slogan { position: absolute; left: 40px; right: 40px; top: 1060px; text-align: center; direction: rtl; font-size: 80px; font-weight: 900; color: var(--sand); }
-      .hdl { position: absolute; left: 0; right: 0; top: 1205px; text-align: center; font-size: 40px; font-weight: 700; color: var(--mut); direction: ltr; }
+      .ccard { position: absolute; width: 456px; height: 150px; border-radius: 22px; background: rgba(228, 228, 234, 0.08); border: 2px solid rgba(228, 228, 234, 0.16); direction: rtl; display: flex; align-items: center; gap: 18px; padding: 0 18px; }
+      .ccard svg { flex: 0 0 auto; width: 112px; height: 112px; border-radius: 50%; background: rgba(5, 20, 73, 0.9); border: 3px solid var(--amber); overflow: visible; }
+      .ccard div { font-size: 40px; font-weight: 900; color: var(--light); white-space: nowrap; }
+      .row { position: absolute; left: 70px; right: 70px; height: 156px; border-radius: 24px; background: var(--light); direction: rtl; display: flex; align-items: center; gap: 26px; padding: 0 20px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35); }
+      .row svg { flex: 0 0 auto; width: 118px; height: 118px; border-radius: 18px; background: var(--navy); overflow: visible; }
+      .row .tx2 { font-size: 50px; font-weight: 900; color: var(--navy); white-space: nowrap; }
+      .row .no { margin-right: auto; font-size: 54px; font-weight: 900; color: var(--amber); }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="238">
-      <div id="bg" class="clip" data-start="0" data-duration="238" data-track-index="0">
-        <div class="blob" id="b1" style="left: -320px; top: 120px; background: #8cc3b0"></div>
-        <div class="blob" id="b2" style="left: 520px; top: 760px; background: #ddbe8e"></div>
-        <div class="blob" id="b3" style="left: -120px; top: 1300px; background: #a6bedd"></div>
-        <div id="dots"></div>
+    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="239.5">
+      <div id="bg" class="clip" data-start="0" data-duration="239.5" data-track-index="0">
+        <svg id="map" viewBox="0 0 1000 500"></svg>
+        <div class="beam" id="bm1" style="left: -200px; width: 420px; background: linear-gradient(90deg, rgba(120, 150, 255, 0), rgba(140, 170, 255, 0.1), rgba(120, 150, 255, 0))"></div>
+        <div class="beam" id="bm2" style="left: 640px; width: 360px; background: linear-gradient(90deg, rgba(234, 165, 0, 0), rgba(234, 165, 0, 0.06), rgba(234, 165, 0, 0))"></div>
         <div id="vig"></div>
       </div>
       <section id="s0" class="clip scene" data-start="0.00" data-duration="4.46" data-track-index="1"><div class="cam" id="c0"></div></section>
@@ -133,26 +112,30 @@
       <section id="s39" class="clip scene" data-start="200.93" data-duration="7.24" data-track-index="2"><div class="cam" id="c39"></div></section>
       <section id="s40" class="clip scene" data-start="208.17" data-duration="6.25" data-track-index="1"><div class="cam" id="c40"></div></section>
       <section id="s41" class="clip scene" data-start="214.42" data-duration="18.43" data-track-index="2"><div class="cam" id="c41"></div></section>
-      <section id="s42" class="clip scene" data-start="232.85" data-duration="5.15" data-track-index="1"><div class="cam" id="c42"></div></section>
+      <section id="s42" class="clip scene" data-start="232.85" data-duration="6.65" data-track-index="1"><div class="cam" id="c42"></div></section>
+      <div id="wipes" class="clip" data-start="0" data-duration="232.85" data-track-index="4"></div>
       <div id="brand" class="clip" data-start="0" data-duration="232.85" data-track-index="5">
         <img id="logo" src="assets/img/logo-white.png" alt="Hindukush" />
         <div id="handle">@hindukush</div>
       </div>
       <audio id="vo" src="assets/audio/voiceover.mp3" data-start="0" data-duration="232.7" data-track-index="10" data-volume="1"></audio>
-      <audio id="sfx" src="assets/audio/sfx.m4a" data-start="0" data-duration="238" data-track-index="11" data-volume="1"></audio>
+      <audio id="bed" src="assets/audio/music.m4a" data-start="0" data-duration="239.5" data-track-index="11" data-volume="1"></audio>
+      <audio id="sfx" src="assets/audio/sfx.m4a" data-start="0" data-duration="239.5" data-track-index="12" data-volume="1"></audio>
     </div>
     <script>
       (function () {
-        const D = [{"kind": "intro", "t0": 0, "t1": 4.46, "s": 0, "e": 4.15, "text": "هغه عوامل چې د شر و فساد ډلو ترمنځ د اختلاف ذريعه ګرځېدلي", "icon": "intro"}, {"kind": "item", "t0": 4.46, "t1": 8.87, "s": 4.76, "e": 8.56, "sec": 1, "n": 1, "N": 14, "head": "د واک انحصار", "text": "د رهبرۍ او تصمیم نیونې واک د محدودو کسانو په لاس کې پاتې کېدل.", "icon": "p1_1"}, {"kind": "item", "t0": 8.87, "t1": 13.28, "s": 9.18, "e": 12.97, "sec": 1, "n": 2, "N": 14, "head": "مالي اختلافات", "text": "د بهرنیو مرستو، بودیجې او مالي سرچینو پر سر سیالي.", "icon": "p1_2"}, {"kind": "item", "t0": 13.28, "t1": 17.59, "s": 13.59, "e": 17.25, "sec": 1, "n": 3, "N": 14, "head": "شخصي ګټې", "text": "د ګډو موخو پر ځای شخصي ګټو او امتیازاتو ته لومړیتوب ورکول.", "icon": "p1_3"}, {"kind": "item", "t0": 17.59, "t1": 22.69, "s": 17.94, "e": 22.34, "sec": 1, "n": 4, "N": 14, "head": "بهرنۍ اړیکې", "text": "له بهرنیو تمویلوونکو او سیاسي سرچینو سره د اړیکو پر سر اختلافات.", "icon": "p1_4"}, {"kind": "item", "t0": 22.69, "t1": 26.83, "s": 23.04, "e": 26.6, "sec": 1, "n": 5, "N": 14, "head": "د ګډې اجنډا نشتوالی", "text": "د واحدې سیاسي موخې او ګډې ستراتیژۍ نشتون.", "icon": "p1_5"}, {"kind": "item", "t0": 26.83, "t1": 32.05, "s": 27.05, "e": 31.76, "sec": 1, "n": 6, "N": 14, "head": "د کورنۍ نفوذ", "text": "د رهبر د کورنۍ او نږدې کړیو له خوا د تشکیلاتي پرېکړو کنټرول.", "icon": "p1_6"}, {"kind": "item", "t0": 32.05, "t1": 36.31, "s": 32.35, "e": 35.93, "sec": 1, "n": 7, "N": 14, "head": "د باور کمښت", "text": "د غړو ترمنځ بې‌باوري، شک او خپلمنځي سیالي.", "icon": "p1_7"}, {"kind": "item", "t0": 36.31, "t1": 40.36, "s": 36.69, "e": 40.05, "sec": 1, "n": 8, "N": 14, "head": "د رهبرۍ پر سر سیالي", "text": "د مشرۍ، نفوذ او سیاسي موقف ترلاسه کولو هڅې.", "icon": "p1_8"}, {"kind": "item", "t0": 40.36, "t1": 45.35, "s": 40.68, "e": 44.99, "sec": 1, "n": 9, "N": 14, "head": "د بهرنیو غوښتنو ټکر", "text": "د تمویلوونکو د غوښتنو د منلو او ردولو پر سر اختلافات.", "icon": "p1_9"}, {"kind": "item", "t0": 45.35, "t1": 50.0, "s": 45.71, "e": 49.64, "sec": 1, "n": 10, "N": 14, "head": "د مالي شفافیت نشتوالی", "text": "د عوایدو، لګښتونو او مالي مرستو په اړه د حساب ورکونې نشتون.", "icon": "p1_10"}, {"kind": "item", "t0": 50.0, "t1": 55.62, "s": 50.35, "e": 55.23, "sec": 1, "n": 11, "N": 14, "head": "د تشکیلاتي عدالت نشتوالی", "text": "د غړو ترمنځ د صلاحیتونو، امتیازاتو او مسؤلیتونو نابرابر وېش.", "icon": "p1_11"}, {"kind": "item", "t0": 55.62, "t1": 60.55, "s": 56.01, "e": 60.1, "sec": 1, "n": 12, "N": 14, "head": "د تصمیم نیونې انحصار", "text": "د مهمو پرېکړو په بهیر کې د ډېری غړو له ګډون څخه مخنیوی.", "icon": "p1_12"}, {"kind": "item", "t0": 60.55, "t1": 65.95, "s": 61.0, "e": 65.52, "sec": 1, "n": 13, "N": 14, "head": "د بهرني ملاتړ سیالي", "text": "د سیاسي او مالي ملاتړ د ترلاسه کولو لپاره د ډلو ترمنځ رقابت.", "icon": "p1_13"}, {"kind": "item", "t0": 65.95, "t1": 71.83, "s": 66.39, "e": 71.31, "sec": 1, "n": 14, "N": 14, "head": "د اختلافاتو د حل کمزوري میکانیزمونه", "text": "د داخلي ستونزو د حل لپاره د منظمې او منل شوې تګلارې نشتوالی.", "icon": "p1_14"}, {"kind": "div", "t0": 71.83, "t1": 75.72, "s": 72.34, "e": 75.4, "sec": 2, "head": "دویمه برخه", "text": "د داخلي اختلافاتو او انشعابونو پایلې", "icon": "div2"}, {"kind": "item", "t0": 75.72, "t1": 79.67, "s": 76.04, "e": 79.38, "sec": 2, "n": 1, "N": 14, "head": "تشکیلاتي انشعاب", "text": "د اصلي جبهې وېشل کېدل او د نویو ډلو رامنځته کېدل.", "icon": "p2_1"}, {"kind": "item", "t0": 79.67, "t1": 83.29, "s": 79.96, "e": 83.04, "sec": 2, "n": 2, "N": 14, "head": "د رهبرۍ کمزورتیا", "text": "د مشرانو د نفوذ او تصمیم نیونې وړتیا له منځه تلل.", "icon": "p2_2"}, {"kind": "item", "t0": 83.29, "t1": 87.35, "s": 83.54, "e": 87.08, "sec": 2, "n": 3, "N": 14, "head": "د غړو بېلتون", "text": "د مهمو غړو جلا کېدل او د تشکیلاتو پرېښودل.", "icon": "p2_3"}, {"kind": "item", "t0": 87.35, "t1": 92.57, "s": 87.63, "e": 92.27, "sec": 2, "n": 4, "N": 14, "head": "د متقابل باور له منځه تلل", "text": "د پخوانیو متحدینو ترمنځ د بې‌باورۍ او مخالفت پراخېدل.", "icon": "p2_4"}, {"kind": "item", "t0": 92.57, "t1": 98.23, "s": 92.88, "e": 97.9, "sec": 2, "n": 5, "N": 14, "head": "د مالي سرچینو په ترلاسه کولو سيالي", "text": "د بودیجې او بهرنیو مالي مرستو پر سر د شر و فساد ډلو ترمنځ سیالۍ زیاتېدل.", "icon": "p2_5"}, {"kind": "item", "t0": 98.23, "t1": 103.26, "s": 98.56, "e": 102.99, "sec": 2, "n": 6, "N": 14, "head": "د سیاسي نفوذ کمېدل", "text": "د شر و فساد ډلو د سیاسي دریځ او اغېزمنتیا کمزوري کېدل.", "icon": "p2_6"}, {"kind": "item", "t0": 103.26, "t1": 108.06, "s": 103.53, "e": 107.75, "sec": 2, "n": 7, "N": 14, "head": "د ګډې اجنډا له منځه تلل", "text": "د واحد دریځ او ګډو موخو پر ځای د بېلابېلو تګلارو رامنځته کېدل.", "icon": "p2_7"}, {"kind": "item", "t0": 108.06, "t1": 114.11, "s": 108.37, "e": 113.81, "sec": 2, "n": 8, "N": 14, "head": "خپلمنځي مخالفتونه", "text": "د ډلو د همکارانو ترمنځ د تورونو، نیوکو او سیاسي تقابل زیاتېدل.", "icon": "p2_8"}, {"kind": "item", "t0": 114.11, "t1": 117.91, "s": 114.41, "e": 117.53, "sec": 2, "n": 9, "N": 14, "head": "د تشکیلاتي ظرفیت بحران", "text": "د بشري، مالي او مدیریتي سرچینو ضایع کېدل.", "icon": "p2_9"}, {"kind": "item", "t0": 117.91, "t1": 123.38, "s": 118.28, "e": 123.1, "sec": 2, "n": 10, "N": 14, "head": "د بهرني ملاتړ کمزورتیا", "text": "د داخلي اختلافاتو له امله د بهرنیو اړیکو او ملاتړ له لاسه ورکول.", "icon": "p2_10"}, {"kind": "item", "t0": 123.38, "t1": 129.2, "s": 123.67, "e": 128.9, "sec": 2, "n": 11, "N": 14, "head": "د غړو د روحیې کمزورتیا", "text": "د ناهیلۍ، بې‌باورۍ او د راتلونکي په اړه د نامعلوم وضعیت رامنځته کېدل.", "icon": "p2_11"}, {"kind": "item", "t0": 129.2, "t1": 134.71, "s": 129.5, "e": 134.42, "sec": 2, "n": 12, "N": 14, "head": "د فعالیتونو ټکني کېدل", "text": "د همغږۍ د نشتوالي له امله د تشکیلاتي او سیاسي فعالیتونو کمزوري کېدل.", "icon": "p2_12"}, {"kind": "item", "t0": 134.71, "t1": 140.19, "s": 135.0, "e": 139.94, "sec": 2, "n": 13, "N": 14, "head": "د انشعابونو دوام", "text": "د اختلافاتو نه حل کېدل او د جبهاتو دننه د نورو ډلو رامنځته کېدل.", "icon": "p2_13"}, {"kind": "item", "t0": 140.19, "t1": 147.22, "s": 140.44, "e": 146.94, "sec": 2, "n": 14, "N": 14, "head": "د سیاسي اعتبار زیانمنېدل", "text": "د پرله‌پسې اختلافاتو او انشعابونو له امله د خلکو او سیاسي متحدینو د باور کمېدل.", "icon": "p2_14"}, {"kind": "div", "t0": 147.22, "t1": 151.12, "s": 147.49, "e": 150.79, "sec": 3, "head": "درېیمه برخه", "text": "د داخلي اختلافاتو په پایله کې رامنځته شوې پېښې", "icon": "div3"}, {"kind": "item", "t0": 151.12, "t1": 157.62, "s": 151.46, "e": 157.23, "sec": 3, "n": 1, "N": 10, "head": "د جبهاتو انشعاب", "text": "د آزادۍ جبهې له مرکزي جوړښت څخه د مهمو غړو بېلېدل او د نوي تشکیلاتي جوړښت اعلان.", "icon": "p3_1"}, {"kind": "item", "t0": 157.62, "t1": 163.25, "s": 158.01, "e": 162.89, "sec": 3, "n": 2, "N": 10, "head": "د نویو ډلو جوړېدل", "text": "د پخوانیو جبهاتو له بدنې څخه د جلا ډلو او تشکیلاتو رامنځته کېدل.", "icon": "p3_2"}, {"kind": "item", "t0": 163.25, "t1": 169.89, "s": 163.6, "e": 169.53, "sec": 3, "n": 3, "N": 10, "head": "د رهبرانو ترمنځ ښکاره اختلافات", "text": "د پخوانیو متحدینو ترمنځ د سیاسي دریځونو او رهبرۍ پر سر اختلافات څرګندېدل.", "icon": "p3_3"}, {"kind": "item", "t0": 169.89, "t1": 177.81, "s": 170.25, "e": 177.46, "sec": 3, "n": 4, "N": 10, "head": "د متقابلو نیوکو زیاتېدل", "text": "د ډلو د پخوانیو همکارانو او اوسنيو غړو ترمنځ د یو بل پر کړنو او تشکیلاتي تګلارو نیوکې.", "icon": "p3_4"}, {"kind": "item", "t0": 177.81, "t1": 182.64, "s": 178.17, "e": 182.31, "sec": 3, "n": 5, "N": 10, "head": "د مهمو غړو جلا کېدل", "text": "د تجربه‌لرونکو او اغېزناکو کسانو له اصلي تشکیلاتو څخه بېلېدل.", "icon": "p3_5"}, {"kind": "item", "t0": 182.64, "t1": 188.98, "s": 182.97, "e": 188.69, "sec": 3, "n": 6, "N": 10, "head": "د سیاسي دریځونو وېشل کېدل", "text": "د هرې جبهې د غړو ترمنځ د بېلابېلو سیاسي لیدلورو او تګلارو رامنځته کېدل.", "icon": "p3_6"}, {"kind": "item", "t0": 188.98, "t1": 195.65, "s": 189.27, "e": 195.29, "sec": 3, "n": 7, "N": 10, "head": "د تشکیلاتي جوړښت کمزورتیا", "text": "د داخلي اختلافاتو له امله د پخوانیو تشکیلاتو د انسجام او همغږۍ زیانمنېدل.", "icon": "p3_7"}, {"kind": "item", "t0": 195.65, "t1": 200.93, "s": 196.01, "e": 200.5, "sec": 3, "n": 8, "N": 10, "head": "د پخوانیو متحدینو ترمنځ واټن", "text": "د ګډو اړیکو کمزوري کېدل او د سیاسي همکاریو محدودېدل.", "icon": "p3_8"}, {"kind": "item", "t0": 200.93, "t1": 208.17, "s": 201.36, "e": 207.84, "sec": 3, "n": 9, "N": 10, "head": "د جبهاتو د داخلي ستونزو افشا کېدل", "text": "د انشعابونو له لارې د رهبرۍ، مالي سرچینو او تشکیلاتي جوړښتونو په اړه اختلافات څرګندېدل.", "icon": "p3_9"}, {"kind": "item", "t0": 208.17, "t1": 214.42, "s": 208.49, "e": 214.35, "sec": 3, "n": 10, "N": 10, "head": "د انشعابونو د لړۍ پراخېدل", "text": "د داخلي اختلافاتو نه حل کېدل او د نورو احتمالي انشعابونو لپاره د زمینې برابرېدل.", "icon": "p3_10"}, {"kind": "concl", "t0": 214.42, "t1": 232.85, "head": "پایله", "textA": "د واک انحصار، مالي سیالي، شخصي ګټې او د بهرنیو اړیکو پر سر اختلافات د جبهاتو داخلي انسجام زیانمنوي؛", "spanA": [[214.5, 215.95], [216.26, 223.3]], "rows": [["انشعاب", 224.0, "split"], ["د رهبرۍ لا کمزورتیا", 225.37, "weakcrown"], ["د سیاسي نفوذ له لاسه ورکول", 227.27, "down"], ["د تشکیلاتي جوړښتونو له منځه تلل", 229.05, "ruin"]]}, {"kind": "outro", "t0": 232.85, "t1": 238.0, "text": "کره خبرونه زمونږ رسالت دی"}];
-        const END = 238;
+        const D = [{"kind": "intro", "t0": 0, "t1": 4.46, "s": 0, "e": 4.15, "text": "هغه عوامل چې د شر و فساد ډلو ترمنځ د اختلاف ذريعه ګرځېدلي", "icon": "intro"}, {"kind": "item", "t0": 4.46, "t1": 8.87, "s": 4.76, "e": 8.56, "sec": 1, "n": 1, "N": 14, "head": "د واک انحصار", "text": "د رهبرۍ او تصمیم نیونې واک د محدودو کسانو په لاس کې پاتې کېدل.", "icon": "p1_1"}, {"kind": "item", "t0": 8.87, "t1": 13.28, "s": 9.18, "e": 12.97, "sec": 1, "n": 2, "N": 14, "head": "مالي اختلافات", "text": "د بهرنیو مرستو، بودیجې او مالي سرچینو پر سر سیالي.", "icon": "p1_2"}, {"kind": "item", "t0": 13.28, "t1": 17.59, "s": 13.59, "e": 17.25, "sec": 1, "n": 3, "N": 14, "head": "شخصي ګټې", "text": "د ګډو موخو پر ځای شخصي ګټو او امتیازاتو ته لومړیتوب ورکول.", "icon": "p1_3"}, {"kind": "item", "t0": 17.59, "t1": 22.69, "s": 17.94, "e": 22.34, "sec": 1, "n": 4, "N": 14, "head": "بهرنۍ اړیکې", "text": "له بهرنیو تمویلوونکو او سیاسي سرچینو سره د اړیکو پر سر اختلافات.", "icon": "p1_4"}, {"kind": "item", "t0": 22.69, "t1": 26.83, "s": 23.04, "e": 26.6, "sec": 1, "n": 5, "N": 14, "head": "د ګډې اجنډا نشتوالی", "text": "د واحدې سیاسي موخې او ګډې ستراتیژۍ نشتون.", "icon": "p1_5"}, {"kind": "item", "t0": 26.83, "t1": 32.05, "s": 27.05, "e": 31.76, "sec": 1, "n": 6, "N": 14, "head": "د کورنۍ نفوذ", "text": "د رهبر د کورنۍ او نږدې کړیو له خوا د تشکیلاتي پرېکړو کنټرول.", "icon": "p1_6"}, {"kind": "item", "t0": 32.05, "t1": 36.31, "s": 32.35, "e": 35.93, "sec": 1, "n": 7, "N": 14, "head": "د باور کمښت", "text": "د غړو ترمنځ بې‌باوري، شک او خپلمنځي سیالي.", "icon": "p1_7"}, {"kind": "item", "t0": 36.31, "t1": 40.36, "s": 36.69, "e": 40.05, "sec": 1, "n": 8, "N": 14, "head": "د رهبرۍ پر سر سیالي", "text": "د مشرۍ، نفوذ او سیاسي موقف ترلاسه کولو هڅې.", "icon": "p1_8"}, {"kind": "item", "t0": 40.36, "t1": 45.35, "s": 40.68, "e": 44.99, "sec": 1, "n": 9, "N": 14, "head": "د بهرنیو غوښتنو ټکر", "text": "د تمویلوونکو د غوښتنو د منلو او ردولو پر سر اختلافات.", "icon": "p1_9"}, {"kind": "item", "t0": 45.35, "t1": 50.0, "s": 45.71, "e": 49.64, "sec": 1, "n": 10, "N": 14, "head": "د مالي شفافیت نشتوالی", "text": "د عوایدو، لګښتونو او مالي مرستو په اړه د حساب ورکونې نشتون.", "icon": "p1_10"}, {"kind": "item", "t0": 50.0, "t1": 55.62, "s": 50.35, "e": 55.23, "sec": 1, "n": 11, "N": 14, "head": "د تشکیلاتي عدالت نشتوالی", "text": "د غړو ترمنځ د صلاحیتونو، امتیازاتو او مسؤلیتونو نابرابر وېش.", "icon": "p1_11"}, {"kind": "item", "t0": 55.62, "t1": 60.55, "s": 56.01, "e": 60.1, "sec": 1, "n": 12, "N": 14, "head": "د تصمیم نیونې انحصار", "text": "د مهمو پرېکړو په بهیر کې د ډېری غړو له ګډون څخه مخنیوی.", "icon": "p1_12"}, {"kind": "item", "t0": 60.55, "t1": 65.95, "s": 61.0, "e": 65.52, "sec": 1, "n": 13, "N": 14, "head": "د بهرني ملاتړ سیالي", "text": "د سیاسي او مالي ملاتړ د ترلاسه کولو لپاره د ډلو ترمنځ رقابت.", "icon": "p1_13"}, {"kind": "item", "t0": 65.95, "t1": 71.83, "s": 66.39, "e": 71.31, "sec": 1, "n": 14, "N": 14, "head": "د اختلافاتو د حل کمزوري میکانیزمونه", "text": "د داخلي ستونزو د حل لپاره د منظمې او منل شوې تګلارې نشتوالی.", "icon": "p1_14"}, {"kind": "div", "t0": 71.83, "t1": 75.72, "s": 72.34, "e": 75.4, "sec": 2, "head": "دویمه برخه", "text": "د داخلي اختلافاتو او انشعابونو پایلې", "icon": "div2"}, {"kind": "item", "t0": 75.72, "t1": 79.67, "s": 76.04, "e": 79.38, "sec": 2, "n": 1, "N": 14, "head": "تشکیلاتي انشعاب", "text": "د اصلي جبهې وېشل کېدل او د نویو ډلو رامنځته کېدل.", "icon": "p2_1"}, {"kind": "item", "t0": 79.67, "t1": 83.29, "s": 79.96, "e": 83.04, "sec": 2, "n": 2, "N": 14, "head": "د رهبرۍ کمزورتیا", "text": "د مشرانو د نفوذ او تصمیم نیونې وړتیا له منځه تلل.", "icon": "p2_2"}, {"kind": "item", "t0": 83.29, "t1": 87.35, "s": 83.54, "e": 87.08, "sec": 2, "n": 3, "N": 14, "head": "د غړو بېلتون", "text": "د مهمو غړو جلا کېدل او د تشکیلاتو پرېښودل.", "icon": "p2_3"}, {"kind": "item", "t0": 87.35, "t1": 92.57, "s": 87.63, "e": 92.27, "sec": 2, "n": 4, "N": 14, "head": "د متقابل باور له منځه تلل", "text": "د پخوانیو متحدینو ترمنځ د بې‌باورۍ او مخالفت پراخېدل.", "icon": "p2_4"}, {"kind": "item", "t0": 92.57, "t1": 98.23, "s": 92.88, "e": 97.9, "sec": 2, "n": 5, "N": 14, "head": "د مالي سرچینو په ترلاسه کولو سيالي", "text": "د بودیجې او بهرنیو مالي مرستو پر سر د شر و فساد ډلو ترمنځ سیالۍ زیاتېدل.", "icon": "p2_5"}, {"kind": "item", "t0": 98.23, "t1": 103.26, "s": 98.56, "e": 102.99, "sec": 2, "n": 6, "N": 14, "head": "د سیاسي نفوذ کمېدل", "text": "د شر و فساد ډلو د سیاسي دریځ او اغېزمنتیا کمزوري کېدل.", "icon": "p2_6"}, {"kind": "item", "t0": 103.26, "t1": 108.06, "s": 103.53, "e": 107.75, "sec": 2, "n": 7, "N": 14, "head": "د ګډې اجنډا له منځه تلل", "text": "د واحد دریځ او ګډو موخو پر ځای د بېلابېلو تګلارو رامنځته کېدل.", "icon": "p2_7"}, {"kind": "item", "t0": 108.06, "t1": 114.11, "s": 108.37, "e": 113.81, "sec": 2, "n": 8, "N": 14, "head": "خپلمنځي مخالفتونه", "text": "د ډلو د همکارانو ترمنځ د تورونو، نیوکو او سیاسي تقابل زیاتېدل.", "icon": "p2_8"}, {"kind": "item", "t0": 114.11, "t1": 117.91, "s": 114.41, "e": 117.53, "sec": 2, "n": 9, "N": 14, "head": "د تشکیلاتي ظرفیت بحران", "text": "د بشري، مالي او مدیریتي سرچینو ضایع کېدل.", "icon": "p2_9"}, {"kind": "item", "t0": 117.91, "t1": 123.38, "s": 118.28, "e": 123.1, "sec": 2, "n": 10, "N": 14, "head": "د بهرني ملاتړ کمزورتیا", "text": "د داخلي اختلافاتو له امله د بهرنیو اړیکو او ملاتړ له لاسه ورکول.", "icon": "p2_10"}, {"kind": "item", "t0": 123.38, "t1": 129.2, "s": 123.67, "e": 128.9, "sec": 2, "n": 11, "N": 14, "head": "د غړو د روحیې کمزورتیا", "text": "د ناهیلۍ، بې‌باورۍ او د راتلونکي په اړه د نامعلوم وضعیت رامنځته کېدل.", "icon": "p2_11"}, {"kind": "item", "t0": 129.2, "t1": 134.71, "s": 129.5, "e": 134.42, "sec": 2, "n": 12, "N": 14, "head": "د فعالیتونو ټکني کېدل", "text": "د همغږۍ د نشتوالي له امله د تشکیلاتي او سیاسي فعالیتونو کمزوري کېدل.", "icon": "p2_12"}, {"kind": "item", "t0": 134.71, "t1": 140.19, "s": 135.0, "e": 139.94, "sec": 2, "n": 13, "N": 14, "head": "د انشعابونو دوام", "text": "د اختلافاتو نه حل کېدل او د جبهاتو دننه د نورو ډلو رامنځته کېدل.", "icon": "p2_13"}, {"kind": "item", "t0": 140.19, "t1": 147.22, "s": 140.44, "e": 146.94, "sec": 2, "n": 14, "N": 14, "head": "د سیاسي اعتبار زیانمنېدل", "text": "د پرله‌پسې اختلافاتو او انشعابونو له امله د خلکو او سیاسي متحدینو د باور کمېدل.", "icon": "p2_14"}, {"kind": "div", "t0": 147.22, "t1": 151.12, "s": 147.49, "e": 150.79, "sec": 3, "head": "درېیمه برخه", "text": "د داخلي اختلافاتو په پایله کې رامنځته شوې پېښې", "icon": "div3"}, {"kind": "item", "t0": 151.12, "t1": 157.62, "s": 151.46, "e": 157.23, "sec": 3, "n": 1, "N": 10, "head": "د جبهاتو انشعاب", "text": "د آزادۍ جبهې له مرکزي جوړښت څخه د مهمو غړو بېلېدل او د نوي تشکیلاتي جوړښت اعلان.", "icon": "p3_1"}, {"kind": "item", "t0": 157.62, "t1": 163.25, "s": 158.01, "e": 162.89, "sec": 3, "n": 2, "N": 10, "head": "د نویو ډلو جوړېدل", "text": "د پخوانیو جبهاتو له بدنې څخه د جلا ډلو او تشکیلاتو رامنځته کېدل.", "icon": "p3_2"}, {"kind": "item", "t0": 163.25, "t1": 169.89, "s": 163.6, "e": 169.53, "sec": 3, "n": 3, "N": 10, "head": "د رهبرانو ترمنځ ښکاره اختلافات", "text": "د پخوانیو متحدینو ترمنځ د سیاسي دریځونو او رهبرۍ پر سر اختلافات څرګندېدل.", "icon": "p3_3"}, {"kind": "item", "t0": 169.89, "t1": 177.81, "s": 170.25, "e": 177.46, "sec": 3, "n": 4, "N": 10, "head": "د متقابلو نیوکو زیاتېدل", "text": "د ډلو د پخوانیو همکارانو او اوسنيو غړو ترمنځ د یو بل پر کړنو او تشکیلاتي تګلارو نیوکې.", "icon": "p3_4"}, {"kind": "item", "t0": 177.81, "t1": 182.64, "s": 178.17, "e": 182.31, "sec": 3, "n": 5, "N": 10, "head": "د مهمو غړو جلا کېدل", "text": "د تجربه‌لرونکو او اغېزناکو کسانو له اصلي تشکیلاتو څخه بېلېدل.", "icon": "p3_5"}, {"kind": "item", "t0": 182.64, "t1": 188.98, "s": 182.97, "e": 188.69, "sec": 3, "n": 6, "N": 10, "head": "د سیاسي دریځونو وېشل کېدل", "text": "د هرې جبهې د غړو ترمنځ د بېلابېلو سیاسي لیدلورو او تګلارو رامنځته کېدل.", "icon": "p3_6"}, {"kind": "item", "t0": 188.98, "t1": 195.65, "s": 189.27, "e": 195.29, "sec": 3, "n": 7, "N": 10, "head": "د تشکیلاتي جوړښت کمزورتیا", "text": "د داخلي اختلافاتو له امله د پخوانیو تشکیلاتو د انسجام او همغږۍ زیانمنېدل.", "icon": "p3_7"}, {"kind": "item", "t0": 195.65, "t1": 200.93, "s": 196.01, "e": 200.5, "sec": 3, "n": 8, "N": 10, "head": "د پخوانیو متحدینو ترمنځ واټن", "text": "د ګډو اړیکو کمزوري کېدل او د سیاسي همکاریو محدودېدل.", "icon": "p3_8"}, {"kind": "item", "t0": 200.93, "t1": 208.17, "s": 201.36, "e": 207.84, "sec": 3, "n": 9, "N": 10, "head": "د جبهاتو د داخلي ستونزو افشا کېدل", "text": "د انشعابونو له لارې د رهبرۍ، مالي سرچینو او تشکیلاتي جوړښتونو په اړه اختلافات څرګندېدل.", "icon": "p3_9"}, {"kind": "item", "t0": 208.17, "t1": 214.42, "s": 208.49, "e": 214.35, "sec": 3, "n": 10, "N": 10, "head": "د انشعابونو د لړۍ پراخېدل", "text": "د داخلي اختلافاتو نه حل کېدل او د نورو احتمالي انشعابونو لپاره د زمینې برابرېدل.", "icon": "p3_10"}, {"kind": "concl", "t0": 214.42, "t1": 232.85, "head": "پایله", "textA": "د واک انحصار، مالي سیالي، شخصي ګټې او د بهرنیو اړیکو پر سر اختلافات د جبهاتو داخلي انسجام زیانمنوي؛", "spanA": [[214.5, 215.95], [216.26, 223.3]], "textB": "پایله یې انشعاب، د رهبرۍ لا کمزورتیا، د سیاسي نفوذ له لاسه ورکول او د تشکیلاتي جوړښتونو له منځه تلل دي.", "spanB": [[224.0, 224.89], [225.37, 226.9], [227.27, 232.5]], "rows": [["انشعاب", 224.0, "split"], ["د رهبرۍ لا کمزورتیا", 225.37, "weakcrown"], ["د سیاسي نفوذ له لاسه ورکول", 227.27, "down"], ["د تشکیلاتي جوړښتونو له منځه تلل", 229.05, "ruin"]]}, {"kind": "outro", "t0": 232.85, "t1": 239.5}];
+        const END = 239.5, OUT_T = 232.85;
         const tl = gsap.timeline({ paused: true });
-        const OUT = "power3.out", IO = "power2.inOut", BACK = "back.out(1.7)";
+        const OUT = "power3.out", IO = "power2.inOut", BACK = "back.out(1.6)", EXPO = "expo.out";
         const DIG = "۰۱۲۳۴۵۶۷۸۹";
         const FA = (n) => String(n).replace(/\d/g, (d) => DIG[+d]);
         const pad = (n) => FA(String(n).padStart(2, "0"));
-        const ACC = { 1: "#ddbe8e", 2: "#8cc3b0", 3: "#a6bedd" };
         const SEC = { 1: "عوامل", 2: "پایلې", 3: "پېښې" };
-        const SVGNS = "http://www.w3.org/2000/svg";
+        const NS = "http://www.w3.org/2000/svg";
+        const CUES = [];
+        const cue = (t, name, db) => CUES.push([+t.toFixed(3), name, db == null ? 0 : db]);
+        window.__sfxCues = CUES;
 
         function mk(tag, cls, p, css, html) {
           const el = document.createElement(tag);
@@ -162,363 +145,316 @@
           if (p) p.appendChild(el);
           return el;
         }
-        function svg(p, inner, cls, css) {
-          const s = document.createElementNS(SVGNS, "svg");
-          s.setAttribute("viewBox", "0 0 400 400");
-          s.setAttribute("class", "ic " + (cls || ""));
+        function svg(p, inner, vb, cls, css) {
+          const s = document.createElementNS(NS, "svg");
+          s.setAttribute("viewBox", vb || "0 0 1000 900");
+          if (cls) s.setAttribute("class", cls);
           if (css) Object.keys(css).forEach((k) => (s.style[k] = typeof css[k] === "number" ? css[k] + "px" : css[k]));
           s.innerHTML = inner;
           p.appendChild(s);
           return s;
         }
         const reps = (span, d) => Math.max(0, Math.floor(span / d) - 1);
+        const cv = document.createElement("canvas").getContext("2d");
+        const measure = (text, wt, fs) => { cv.font = wt + " " + fs + 'px "Quds"'; return cv.measureText(text).width; };
 
-        // ---------- words: written faint, light up as spoken ----------
+        // ---------- spoken words: dim, flash amber when said, settle to light ----------
         function wordsInto(el, text) {
           const ws = [];
-          text.split(/\s+/).filter(Boolean).forEach((w, i) => {
-            if (i) el.appendChild(document.createTextNode(" "));
-            ws.push(mk("span", "w", el, null, w));
-          });
+          text.split(/\s+/).filter(Boolean).forEach((wd, i) => { if (i) el.appendChild(document.createTextNode(" ")); ws.push(mk("span", "w", el, null, wd)); });
           return ws;
         }
-        function speak(ws, spans, faint) {
-          gsap.set(ws, { opacity: faint == null ? 0.2 : faint, y: 10 });
-          // split words over spans proportionally to characters
+        function speak(ws, spans, dim) {
+          gsap.set(ws, { opacity: dim == null ? 0.32 : dim });
           const tot = ws.reduce((a, w) => a + w.textContent.length + 1, 0);
           const spanTot = spans.reduce((a, s) => a + (s[1] - s[0]), 0);
           let acc = 0;
           ws.forEach((w) => {
-            const frac = acc / tot;
-            let rem = frac * spanTot, t = spans[0][0];
+            let rem = (acc / tot) * spanTot, t = spans[0][0];
             for (const s of spans) { const L = s[1] - s[0]; if (rem <= L) { t = s[0] + rem; break; } rem -= L; t = s[1]; }
-            tl.to(w, { opacity: 1, y: 0, duration: 0.32, ease: OUT }, t);
+            tl.to(w, { opacity: 1, color: "#eaa500", duration: 0.12, ease: "none" }, t);
+            tl.to(w, { color: "#e4e4ea", duration: 0.35, ease: "none" }, t + 0.28);
             acc += w.textContent.length + 1;
           });
         }
-        const cv = document.createElement("canvas").getContext("2d");
-        function measure(text, wt, fs) { cv.font = wt + " " + fs + 'px "Quds"'; return cv.measureText(text).width; }
-        function fit(el, max, start, min) {
-          let fs = start;
-          el.style.fontSize = fs + "px";
-          while (el.scrollWidth > max && fs > min) { fs -= 2; el.style.fontSize = fs + "px"; }
-        }
 
-        // ---------- line-art engine ----------
-        function drawStroke(el, t, d) {
-          el.setAttribute("pathLength", "1");
-          el.style.strokeDasharray = "1";
-          tl.fromTo(el, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: IO }, t);
-        }
-        function animIcon(root, t0, s, e, t1, shakeEl) {
-          const at = (fr) => s + (+fr || 0) * (e - s);
-          const skip = '[data-a~="pop"],[data-a~="crack"],[data-a~="snap"],[data-a~="march"],[data-a~="ripple"]';
-          const strokes = [...root.querySelectorAll("path,line,circle,rect,ellipse")].filter((el) => {
-            const c = el.getAttribute("class") || "";
-            if (!/(^|\s)(k|a|m|cr)(\s|$)/.test(c)) return false;
-            if (el.getAttribute("data-nodraw") != null) return false;
-            if ((el.getAttribute("style") || "").indexOf("dasharray") >= 0) return false;
-            return !el.closest(skip);
+        // ---------- illustration engine ----------
+        function drawStrokes(root, t, d) {
+          root.querySelectorAll("path,line,circle,rect,ellipse").forEach((el) => {
+            const st = el.getAttribute("stroke");
+            if (!st || st === "none" || el.getAttribute("stroke-dasharray")) return;
+            el.setAttribute("pathLength", "1");
+            el.style.strokeDasharray = "1";
+            tl.fromTo(el, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: IO }, t);
           });
-          const st = Math.min(0.04, 0.5 / Math.max(1, strokes.length));
-          strokes.forEach((el, i) => drawStroke(el, t0 + 0.02 + i * st, 0.7));
-          const fills = [...root.querySelectorAll("[data-nodraw]")].filter((el) => !el.closest(skip) && /(^|\s)f[akcs](\s|$)/.test(el.getAttribute("class") || ""));
-          if (fills.length) tl.from(fills, { opacity: 0, duration: 0.5, ease: "none" }, t0 + 0.2);
-          root.querySelectorAll("[data-a]").forEach((el) => {
-            const types = el.getAttribute("data-a").split(/\s+/);
-            const g = (k, dflt) => (el.getAttribute("data-" + k) != null ? +el.getAttribute("data-" + k) : dflt);
-            const o = el.getAttribute("data-o");
-            const org = o && o.indexOf(" ") > 0 ? { svgOrigin: o } : { transformOrigin: "50% 50%" };
-            const T = at(g("t", 0));
-            types.forEach((ty) => {
+        }
+        function animate(root, t0, s, e, t1) {
+          const span = Math.max(0.5, e - s);
+          const atF = (f) => s + (+f || 0) * span;
+          let lastPop = -1;
+          root.querySelectorAll("[data-in],[data-act]").forEach((el) => {
+            const g = (k, dflt) => (el.getAttribute("data-" + k) != null ? el.getAttribute("data-" + k) : dflt);
+            const n = (k, dflt) => +g(k, dflt);
+            const o = g("o", null);
+            const org = o && String(o).indexOf(" ") > 0 ? { svgOrigin: o } : { transformOrigin: "50% 50%" };
+            const ty = g("in", null);
+            if (ty) {
+              const T = g("tin", null) != null ? atF(g("tin")) : t0 + n("at", 0.1);
+              const d = 0.55;
               switch (ty) {
-                case "pop":
-                  gsap.set(el, { scale: 0, transformOrigin: "50% 50%" });
-                  tl.to(el, { scale: 1, duration: 0.5, ease: BACK }, T);
-                  break;
-                case "float": {
-                  const st0 = el.getAttribute("data-a").indexOf("pop") >= 0 ? T + 0.5 : t0 + 0.6;
-                  tl.to(el, { y: -g("y", 8), duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - st0, 1.2) }, st0);
-                  break;
-                }
-                case "spin":
-                  tl.to(el, { rotation: g("r", 360), duration: t1 - t0, ease: "none", transformOrigin: "50% 50%" }, t0);
-                  break;
-                case "spinstop":
-                  tl.to(el, { rotation: g("r", 60), duration: Math.max(0.4, T - t0), ease: "power2.out", transformOrigin: "50% 50%" }, t0);
-                  tl.to(el, { rotation: "+=5", duration: 0.06, yoyo: true, repeat: 5, ease: "none" }, T);
-                  break;
-                case "move":
-                  tl.to(el, { x: g("x", 0), y: g("y", 0), rotation: g("r", 0), duration: g("d", 0.9), ease: IO, transformOrigin: "50% 50%" }, T);
-                  break;
-                case "crack":
-                  el.setAttribute("pathLength", "1");
-                  el.style.strokeDasharray = "1";
-                  gsap.set(el, { strokeDashoffset: 1 });
-                  tl.to(el, { strokeDashoffset: 0, duration: 0.35, ease: "power1.in" }, T);
-                  if (shakeEl) tl.fromTo(shakeEl, { x: -9 }, { x: 9, duration: 0.05, yoyo: true, repeat: 5, ease: "none", immediateRender: false }, T + 0.05).to(shakeEl, { x: 0, duration: 0.05 }, T + 0.36);
-                  break;
-                case "snap":
-                  tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.3 }, t0 + 0.2);
-                  tl.to(el, { opacity: 0.15, duration: 0.06, yoyo: true, repeat: 3 }, T);
-                  tl.to(el, { opacity: 0, scale: 0.5, transformOrigin: "50% 50%", duration: 0.3 }, T + 0.3);
-                  break;
-                case "tilt":
-                  tl.fromTo(el, { rotation: -g("r", 6), ...org }, { rotation: g("r", 6), duration: 1.1, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 0.3, 1.1), ...org }, t0 + 0.3);
-                  break;
-                case "tilt1":
-                  tl.to(el, { rotation: g("r", -12), duration: 1.4, ease: "elastic.out(1, 0.45)", ...org }, T);
-                  break;
-                case "strike": {
-                  const n = Math.max(1, Math.floor((e - s) / 1.0));
-                  for (let k = 0; k < n; k++) tl.to(el, { rotation: g("r", -20), duration: 0.16, yoyo: true, repeat: 1, ease: "power2.in", ...org }, s + 0.3 + k * 1.0);
-                  break;
-                }
-                case "blink":
-                  tl.to(el, { opacity: 0.2, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - T, 0.5) | 1 }, T);
-                  break;
-                case "pulse":
-                  tl.to(el, { scale: g("s", 1.08), duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - T - 0.5, 0.7) | 1, transformOrigin: "50% 50%" }, T + 0.5);
-                  break;
-                case "march":
-                  [...el.children].forEach((ch) => {
-                    ch.style.strokeDasharray = "12 16";
-                    tl.fromTo(ch, { strokeDashoffset: 0, opacity: 0 }, { strokeDashoffset: -6 * (t1 - t0) * 10, opacity: 1, duration: t1 - t0, ease: "none" }, t0);
-                  });
-                  break;
-                case "rain":
-                  [...el.children].forEach((ch, i) => tl.fromTo(ch, { y: -14, opacity: 1 }, { y: 50, opacity: 0, duration: 0.8, ease: "power1.in", repeat: reps(t1 - t0 - 0.6, 0.8) }, t0 + 0.5 + i * 0.26));
-                  break;
-                case "fade":
-                  tl.to(el, { opacity: g("o", 0.3), duration: 0.6 }, T);
-                  break;
-                case "fall":
-                  tl.to(el, { y: g("y", 120), rotation: 28, opacity: 0.25, duration: 1.0, ease: "power2.in", transformOrigin: "50% 50%" }, T);
-                  break;
-                case "droop":
-                  tl.to(el, { y: g("y", 0), rotation: g("r", 0), duration: 1.0, ease: "bounce.out", ...org }, T);
-                  break;
-                case "grow":
-                  gsap.set(el, { scaleY: 0, transformOrigin: "50% 100%" });
-                  tl.to(el, { scaleY: 1, duration: 0.6, ease: OUT }, t0 + 0.3 + g("t", 0) * 2);
-                  break;
-                case "tug":
-                  tl.fromTo(el, { x: -g("x", 16) }, { x: g("x", 16), duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 0.4, 0.7) }, t0 + 0.4);
-                  break;
-                case "domino":
-                  tl.to(el, { rotation: 62, duration: 0.42, ease: "power2.in", ...org }, T);
-                  break;
-                case "ripple":
-                  gsap.set(el, { opacity: 0 });
-                  tl.fromTo(el, { scale: 0.6, opacity: 0.9, transformOrigin: "50% 50%" }, { scale: 4.2, opacity: 0, duration: 1.4, ease: "power1.out", repeat: 1 }, T);
-                  break;
-                case "meridian": {
-                  const rx = +el.getAttribute("rx");
-                  tl.to(el, { attr: { rx: rx * 0.1 }, duration: 1.3, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 1, 1.3) }, t0 + 1);
-                  break;
-                }
+                case "up": tl.from(el, { y: 120, opacity: 0, duration: d, ease: OUT }, T); break;
+                case "down": tl.from(el, { y: -140, opacity: 0, duration: d, ease: OUT }, T); break;
+                case "left": tl.from(el, { x: -260, opacity: 0, duration: d + 0.1, ease: OUT }, T); break;
+                case "right": tl.from(el, { x: 260, opacity: 0, duration: d + 0.1, ease: OUT }, T); break;
+                case "pop": tl.from(el, { scale: 0, opacity: 0, transformOrigin: "50% 50%", duration: 0.5, ease: BACK }, T); if (g("tin", null) != null && T - lastPop > 0.3) { cue(T, "dry_pop", -6); lastPop = T; } break;
+                case "zoom": tl.from(el, { scale: 0.6, opacity: 0, transformOrigin: "50% 50%", duration: 0.7, ease: EXPO }, T); break;
+                case "drop": tl.from(el, { y: -420, opacity: 0, duration: 0.8, ease: "bounce.out" }, T); cue(T + 0.45, "tw_soft", -4); break;
+                case "grow": tl.from(el, { scaleY: 0, transformOrigin: "50% 100%", duration: 0.55, ease: OUT }, T); break;
+                case "growx": tl.from(el, { scaleX: 0, transformOrigin: "0% 50%", duration: 0.5, ease: OUT }, T); break;
+                case "fade": tl.from(el, { opacity: 0, duration: 0.5, ease: "none" }, T); break;
+                case "draw": drawStrokes(el, T, 0.7); break;
+                case "slam": tl.fromTo(el, { scale: 2.4, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.2, ease: "power3.in" }, T - 0.2); cue(T, "wood_hit", -3); break;
+              }
+            }
+            const act = g("act", null);
+            if (!act) return;
+            const T = atF(g("t", 0));
+            act.split(/\s+/).forEach((a) => {
+              switch (a) {
+                case "move": tl.to(el, { x: n("x", 0), y: n("y", 0), rotation: n("r", 0), duration: n("d", 0.9), ease: IO, ...org }, T); if (Math.abs(n("x", 0)) > 80) cue(T, "paper_quick", -8); break;
+                case "float": tl.to(el, { y: -n("y", 8), duration: 1.3, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 1, 1.3) }, t0 + 0.9); break;
+                case "pulse": tl.to(el, { scale: n("s", 1.08), transformOrigin: "50% 50%", duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - T - 0.6, 0.7) | 1 }, T + 0.5); break;
+                case "blink": tl.to(el, { opacity: 0.25, duration: n("d", 0.5), ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 0.4, n("d", 0.5)) | 1 }, t0 + 0.4); break;
+                case "fade": tl.to(el, { opacity: n("o", 0.3), duration: 0.6 }, T); break;
+                case "fall": tl.to(el, { y: n("y", 200), rotation: 24, opacity: 0.2, duration: 0.9, ease: "power2.in", transformOrigin: "50% 50%" }, T); break;
+                case "droop": tl.to(el, { y: n("y", 0), rotation: n("r", 0), duration: 1.0, ease: "bounce.out", ...org }, T); break;
+                case "tug": tl.fromTo(el, { x: -n("x", 14) }, { x: n("x", 14), duration: 0.75, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 0.6, 0.75) }, t0 + 0.6); break;
+                case "tilt": tl.fromTo(el, { rotation: -n("r", 4), ...org }, { rotation: n("r", 4), duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0 - 0.3, 1.2), ...org }, t0 + 0.3); break;
+                case "tilt1": tl.to(el, { rotation: n("r", -12), duration: 1.4, ease: "elastic.out(1, 0.5)", ...org }, T); cue(T, "metal_woosh", -10); break;
+                case "spin": tl.to(el, { rotation: n("r", 360), duration: t1 - t0, ease: "none", transformOrigin: "50% 50%" }, t0); break;
+                case "spinstop": tl.to(el, { rotation: n("r", 60), duration: Math.max(0.5, T - t0), ease: "power2.out", transformOrigin: "50% 50%" }, t0); tl.to(el, { rotation: "+=4", duration: 0.05, yoyo: true, repeat: 5 }, T); cue(T, "metal_woosh", -10); break;
+                case "shake": tl.to(el, { x: "+=10", duration: 0.05, yoyo: true, repeat: 7, ease: "none" }, T); break;
+                case "stamp": tl.to(el, { y: n("y", 60), duration: 0.16, ease: "power3.in", yoyo: true, repeat: 1 }, T - 0.16); cue(T, "wood_hit", -4); break;
+                case "strike": { const k = Math.max(1, Math.floor(span / 1.1)); for (let i = 0; i < k; i++) { tl.to(el, { rotation: n("r", -24), duration: 0.14, ease: "power2.in", yoyo: true, repeat: 1, ...org }, s + 0.4 + i * 1.1); cue(s + 0.54 + i * 1.1, "wood_hit", -5); } break; }
+                case "domino": tl.to(el, { rotation: 64, duration: 0.42, ease: "power2.in", ...org }, T); cue(T + 0.38, "tw_hit", -6); break;
+                case "ripple": tl.fromTo(el, { scale: 1, opacity: 0.9, transformOrigin: "50% 50%" }, { scale: 5, opacity: 0, duration: 1.4, ease: "power1.out" }, T); break;
+                case "march": el.querySelectorAll("path,line").forEach((p) => tl.fromTo(p, { strokeDashoffset: 0 }, { strokeDashoffset: -40 * (t1 - t0), duration: t1 - t0, ease: "none" }, t0)); break;
+                case "flutter": tl.fromTo(el, { skewY: -3, scaleX: 0.97 }, { skewY: 3, scaleX: 1.02, transformOrigin: "0% 50%", duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: reps(t1 - t0, 0.7) }, t0); break;
+                case "globe": tl.fromTo(el, { x: -n("r", 100) * 0.4 }, { x: n("r", 100) * 0.4, duration: t1 - t0, ease: "none" }, t0); break;
+                case "needle": tl.fromTo(el, { rotation: -150, svgOrigin: o }, { rotation: -20, duration: 0.6, ease: OUT, svgOrigin: o }, t0 + 0.5); tl.to(el, { rotation: -170, duration: 1.4, ease: "power2.in", svgOrigin: o }, T); break;
+                case "flash": tl.fromTo(el, { opacity: 0 }, { opacity: 0.85, duration: 0.05, yoyo: true, repeat: 1 }, T); cue(T, "shutter", -6); break;
               }
             });
+            const sx = g("sfx", null);
+            if (sx) cue(g("t", null) != null ? T : t0 + n("at", 0.1), sx, n("db", -6));
           });
         }
 
         // ---------- shared builders ----------
-        function chip(p, sec, n, N) {
-          const c = mk("div", "chip", p);
-          mk("i", "dot", c);
-          mk("span", "", c, null, SEC[sec]);
-          if (n) mk("span", "cnt", c, null, pad(n) + " / " + pad(N));
-          return c;
+        function stag(p, sec, n, N) {
+          const s = mk("div", "stag", p);
+          mk("b", "", s, null, SEC[sec]);
+          if (n) mk("span", "", s, null, pad(n) + " / " + pad(N));
+          return s;
         }
         function heading(p, text, n, t0, big) {
-          const h = mk("div", "head", p, big ? { top: 400, height: 170 } : null);
+          const h = mk("div", "head" + (n ? "" : " solo"), p, big ? { top: 200 } : null);
           let num = null;
           if (n) num = mk("div", "num", h, null, pad(n));
-          const pill = mk("div", "pill", h, big ? { height: 150, padding: "0 70px", borderRadius: "75px" } : null);
-          const sp = mk("span", "", pill, null, text);
-          const base = big ? 96 : 76, maxW = n ? 700 : 820;
-          const w0 = measure(text, 900, base);
-          let fs = Math.min(base, Math.floor((base * maxW) / w0));
-          if (fs < 56) {
-            fs = 58;
-            Object.assign(pill.style, { whiteSpace: "normal", height: "auto", maxWidth: "780px", padding: "14px 40px", lineHeight: "1.25", textAlign: "center", borderRadius: "34px" });
-          }
-          pill.style.fontSize = fs + "px";
-          if (num) tl.fromTo(num, { scale: 0, rotation: -120 }, { scale: 1, rotation: 0, duration: 0.6, ease: BACK }, t0 + 0.02);
-          tl.fromTo(pill, { clipPath: "inset(0% 0% 0% 100% round 34px)" }, { clipPath: "inset(0% 0% 0% 0% round 34px)", duration: 0.6, ease: OUT }, t0 + 0.08);
-          tl.fromTo(sp, { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.55, ease: OUT }, t0 + 0.2);
+          const tx = mk("div", "ttx", h, null, text);
+          const base = big ? 110 : 66, maxW = n ? 700 : 860;
+          let fs = Math.min(base, Math.floor((base * maxW) / measure(text, 900, base)));
+          if (fs < 52) { fs = 56; tx.style.maxWidth = "760px"; }
+          tx.style.fontSize = fs + "px";
+          const bar = mk("div", "bar", h, { width: big ? 300 : 220 });
+          if (num) tl.fromTo(num, { scaleX: 0, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.4, ease: EXPO }, t0 + 0.02);
+          tl.fromTo(tx, { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: EXPO }, t0 + 0.12);
+          tl.fromTo(bar, { scaleX: 0, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.6, ease: EXPO }, t0 + 0.3);
           return h;
         }
-        function rail(p, n, N, t0) {
-          const r = mk("div", "rail", p);
+        function caption(p, text, spans, top) {
+          const c = mk("div", "cap", p, top ? { top } : null);
+          const tx = mk("div", "tx", c);
+          const ws = wordsInto(tx, text);
+          if (text.length > 95) tx.style.fontSize = "46px";
+          speak(ws, spans);
+          return c;
+        }
+        function prog(p, n, N, t0) {
+          const r = mk("div", "prog", p);
           for (let i = 1; i <= N; i++) {
             const it = mk("i", i < n ? "past" : i === n ? "cur" : "", r);
-            if (i === n) tl.fromTo(it, { scaleX: 0.15, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.7, ease: OUT }, t0 + 0.1);
+            if (i === n) tl.fromTo(it, { scaleX: 0.1, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.7, ease: OUT }, t0 + 0.15);
           }
-          return r;
         }
-        function medallion(p, N, n, t0, t1, iconSvg) {
-          const m = mk("div", "med", p);
-          const step = 360 / N;
-          const ring = mk("div", "ring", m);
-          let ticks = "";
-          for (let i = 0; i < N; i++) {
-            const a = (i * step * Math.PI) / 180, on = i === n - 1;
-            const r1 = on ? 334 : 344, r2 = 366;
-            ticks += `<line x1="${380 + Math.sin(a) * r1}" y1="${380 - Math.cos(a) * r1}" x2="${380 + Math.sin(a) * r2}" y2="${380 - Math.cos(a) * r2}" stroke="${on ? "var(--acc)" : i < n - 1 ? "rgba(238,231,217,.45)" : "rgba(238,231,217,.18)"}" stroke-width="${on ? 9 : 5}" stroke-linecap="round"/>`;
-          }
-          ring.innerHTML = `<svg viewBox="0 0 760 760" width="760" height="760"><circle cx="380" cy="380" r="356" fill="none" stroke="rgba(238,231,217,.1)" stroke-width="2"/>${ticks}</svg>`;
-          tl.fromTo(ring, { rotation: -(n - 2) * step }, { rotation: -(n - 1) * step, duration: 0.9, ease: IO }, t0);
-          const dash = mk("div", "dash", m);
-          dash.innerHTML = `<svg viewBox="0 0 760 760" width="760" height="760"><circle cx="380" cy="380" r="318" fill="none" stroke="rgba(238,231,217,.16)" stroke-width="2" stroke-dasharray="4 14"/></svg>`;
-          tl.fromTo(dash, { rotation: t0 * 6 }, { rotation: t1 * 6, duration: t1 - t0, ease: "none" }, t0);
-          const orb = mk("div", "orbit", m);
-          orb.innerHTML = `<svg viewBox="0 0 760 760" width="760" height="760"><circle cx="380" cy="24" r="9" fill="var(--acc)"/><circle cx="380" cy="736" r="5" fill="rgba(238,231,217,.5)"/></svg>`;
-          tl.fromTo(orb, { rotation: t0 * 14 }, { rotation: t1 * 14, duration: t1 - t0, ease: "none" }, t0);
-          mk("div", "marker", m, null, `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M2 2 H22 L12 18 Z" fill="var(--acc)"/></svg>`);
-          const flip = mk("div", "flip", m);
-          mk("div", "disc", flip);
-          const sh = mk("div", "shake", flip);
-          const ic = svg(sh, iconSvg);
-          tl.fromTo(flip, { rotationY: 90, transformPerspective: 1400 }, { rotationY: 0, duration: 0.55, ease: OUT }, t0);
-          tl.to(flip, { rotationY: -90, duration: 0.28, ease: "power2.in" }, t1 - 0.3);
-          return { m, ic, sh };
+        function stage(p, inner, t0, t1) {
+          const s = svg(p, inner, null, "stage");
+          tl.fromTo(s, { scale: 1 }, { scale: 1.045, transformOrigin: "50% 60%", duration: t1 - t0, ease: "none" }, t0);
+          return s;
         }
 
-        // ---------- scene builders ----------
-        function buildItem(c, sc, si) {
-          c.parentNode.style.setProperty("--acc", ACC[sc.sec]);
-          chip(c, sc.sec, sc.n, sc.N);
-          const h = heading(c, sc.head, sc.n, sc.t0);
-          const md = medallion(c, sc.N, sc.n, sc.t0, sc.t1, ICONS[sc.icon]());
-          animIcon(md.ic, sc.t0 + 0.05, sc.s, sc.e, sc.t1, md.sh);
-          const d = mk("div", "desc", c);
-          speak(wordsInto(d, sc.text), [[sc.s, sc.e]]);
-          rail(c, sc.n, sc.N, sc.t0);
-          // exit
-          tl.to(h, { x: 70, opacity: 0, duration: 0.26, ease: "power2.in" }, sc.t1 - 0.3);
-          tl.to(d, { y: -24, opacity: 0, duration: 0.26, ease: "power2.in" }, sc.t1 - 0.3);
+        // ---------- scenes ----------
+        function buildItem(c, sc) {
+          stag(c, sc.sec, sc.n, sc.N);
+          heading(c, sc.head, sc.n, sc.t0);
+          const st = stage(c, SCENES[sc.icon](), sc.t0, sc.t1);
+          animate(st, sc.t0 + 0.12, sc.s, sc.e, sc.t1);
+          caption(c, sc.text, [[sc.s, sc.e]]);
+          prog(c, sc.n, sc.N, sc.t0);
         }
         function buildIntro(c, sc) {
-          c.parentNode.style.setProperty("--acc", ACC[1]);
-          const wrap = mk("div", "shake abs", c, { left: 0, top: 0, width: 1080, height: 1920 });
-          const ic = svg(wrap, ICONS.intro(), "art", { left: 190, top: 330, width: 700, height: 700 });
-          animIcon(ic, 0.0, 0.1, 4.15, sc.t1, wrap);
-          tl.fromTo(ic, { scale: 0.86, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: OUT }, 0);
-          const t = mk("div", "ttl", c, { top: 1170, fontSize: 76 });
+          const t = mk("div", "title", c);
           const ws = wordsInto(t, sc.text);
-          ws.forEach((w) => { if (/اختلاف|عوامل/.test(w.textContent)) w.classList.add("k2"); });
-          speak(ws, [[0.05, 4.1]], 0.16);
-          const ul = mk("div", "uline", c, { left: 390, width: 300, top: 1520 });
-          tl.fromTo(ul, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: OUT }, 3.2);
-          tl.to([t, ul], { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, sc.t1 - 0.28);
-          tl.to(ic, { scale: 1.25, opacity: 0, duration: 0.28, ease: "power2.in" }, sc.t1 - 0.3);
+          ws.forEach((w) => { if (/اختلاف|عوامل/.test(w.textContent)) w.classList.add("k"); });
+          const k = mk("div", "kick", c, { top: 1600 }, "<span>۱۴ عوامل · ۱۴ پایلې · ۱۰ پېښې</span>");
+          const st = svg(c, SCENES.intro(), "0 60 1000 820", "stage", { top: 600, height: 960 });
+          animate(st, 0, 0.3, 4.1, sc.t1);
+          tl.fromTo(ws, { y: 0 }, { y: -6, duration: 0.4, stagger: 0.25, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.1);
+          tl.fromTo(k, { scale: 1 }, { scale: 1.04, duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 0.5);
+          cue(1.9, "glass_break", -10);
         }
         function buildDiv(c, sc) {
-          c.parentNode.style.setProperty("--acc", ACC[sc.sec]);
-          chip(c, sc.sec);
+          stag(c, sc.sec);
           const bn = mk("div", "bignum", c, null, FA(sc.sec));
-          tl.fromTo(bn, { scale: 1.3, opacity: 0 }, { scale: 1, opacity: 0.16, duration: 1.2, ease: OUT }, sc.t0);
-          const h = heading(c, sc.head, 0, sc.t0 + 0.05, true);
-          const wrap = mk("div", "shake abs", c, { left: 0, top: 0, width: 1080, height: 1920 });
-          const ic = svg(wrap, ICONS[sc.icon](), "art", { left: 290, top: 640, width: 500, height: 500 });
-          animIcon(ic, sc.t0 + 0.2, sc.s, sc.e, sc.t1, wrap);
-          const t = mk("div", "ttl", c, { top: 1240, fontSize: 70 });
-          speak(wordsInto(t, sc.text), [[sc.s, sc.e]], 0.16);
-          tl.to([h, t, ic, bn], { opacity: 0, scale: 0.92, duration: 0.3, ease: "power2.in" }, sc.t1 - 0.32);
+          tl.fromTo(bn, { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 0.25, duration: 1.4, ease: EXPO }, sc.t0);
+          heading(c, sc.head, 0, sc.t0 + 0.05, true);
+          const st = stage(c, SCENES[sc.icon](), sc.t0, sc.t1);
+          st.style.top = "380px";
+          animate(st, sc.t0 + 0.2, sc.s, sc.e, sc.t1);
+          caption(c, sc.text, [[sc.s, sc.e]]);
+          cue(sc.t0 + 0.05, "deep_impact", -10);
         }
         function buildConcl(c, sc) {
-          const t0 = sc.t0;
-          c.parentNode.style.setProperty("--acc", ACC[2]);
+          const t0 = sc.t0, TB = 223.55;
           heading(c, sc.head, 0, t0, true);
-          // hall
-          const hallBox = mk("div", "abs", c, { left: 280, top: 600, width: 520, height: 520 });
-          const hs = svg(hallBox, "", "art", { left: 0, top: 0, width: 520, height: 520 });
-          const cols = [110, 170, 230, 290];
-          const prim = ICONS.prim;
-          hs.innerHTML = `<g class="hframe">${prim.pillarHall(200, 230, 260, 280)}</g>` + cols.map((x) => `<g class="hcol">${prim.column(x, 180, 352, 32)}</g>`).join("") + `<g class="hcrack">${prim.crackLine([[150, 130], [170, 180], [150, 230], [176, 290]])}${prim.crackLine([[250, 120], [236, 170], [258, 210]])}</g>`;
-          animIcon(hs, t0 + 0.2, t0 + 0.3, t0 + 1.4, sc.t1, hallBox);
-          const crk = [...hs.querySelectorAll(".hcrack path")];
-          crk.forEach((p) => { p.setAttribute("pathLength", "1"); p.style.strokeDasharray = "1"; gsap.set(p, { strokeDashoffset: 1 }); tl.to(p, { strokeDashoffset: 0, duration: 0.35 }, 222.5); });
-          tl.fromTo(hallBox, { x: -10 }, { x: 10, duration: 0.05, yoyo: true, repeat: 7, immediateRender: false }, 222.55).to(hallBox, { x: 0, duration: 0.05 }, 222.95);
-          // cause chips
-          const CH = [["crown", 150, 520, 214.5], ["coins", 730, 520, 216.26], ["diamond", 150, 1000, 217.16], ["globe", 730, 1000, 218.92]];
-          const lines = svg(c, "", "art", { left: 0, top: 0, width: 1080, height: 1920 });
-          lines.setAttribute("viewBox", "0 0 1080 1920");
-          const chipEls = [];
-          CH.forEach(([k, x, y, t]) => {
-            const ch = mk("div", "mchip", c, { left: x, top: y });
-            const s2 = svg(ch, ICONS.mini[k]());
-            chipEls.push(ch);
-            tl.fromTo(ch, { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: 0.55, ease: BACK }, t);
-            animIcon(s2, t, t, t + 1, sc.t1, null);
-            const cx = x + 100, cy = y + 100, hx = 540, hy = 860;
-            const ang = Math.atan2(hy - cy, hx - cx);
-            const x1 = cx + Math.cos(ang) * 115, y1 = cy + Math.sin(ang) * 115, x2 = hx - Math.cos(ang) * 200, y2 = hy - Math.sin(ang) * 200;
-            lines.insertAdjacentHTML("beforeend", `<g class="arr"><path class="a" d="M${x1} ${y1} L${x2} ${y2}"/><path class="a" d="M${x2 - Math.cos(ang - 0.5) * 24} ${y2 - Math.sin(ang - 0.5) * 24} L${x2} ${y2} L${x2 - Math.cos(ang + 0.5) * 24} ${y2 - Math.sin(ang + 0.5) * 24}"/></g>`);
-            lines.lastChild.querySelectorAll("path").forEach((p) => drawStroke(p, t + 0.35, 0.5));
+          const K = KIT, Cc = K.C;
+          const minis = {
+            crown: K.crown(200, 230, 1.25), cash: K.cash(200, 270, 220, 6), gem: K.P("M90 160 L150 90 H250 L310 160 L200 320 Z", Cc.am) + K.P("M90 160 H310 L200 320 Z", Cc.am2), globe: K.globe(200, 200, 140),
+            split: K.puzzle(130, 200, 1.1, Cc.am, -10) + K.puzzle(280, 220, 1.1, Cc.w, 10), weak: K.crown(200, 220, 1.2) + K.crack([[200, 120], [180, 190], [214, 240], [196, 300]], Cc.w, 10),
+            down: K.S("M60 110 L160 170 L240 230 L330 320", Cc.am, 22) + K.P("M290 330 L346 336 L336 280 Z", Cc.am), ruin: K.Rc(70, 160, 50, 190, 6, Cc.w) + K.Rc(170, 230, 50, 120, 6, Cc.w2) + `<g transform="rotate(32 300 350)">${K.Rc(270, 160, 50, 190, 6, Cc.w3)}</g>` + K.Rc(40, 340, 320, 20, 6, Cc.w3),
+          };
+          const CH = [["crown", "د واک انحصار", 80, 400, 214.5], ["cash", "مالي سیالي", 544, 400, 216.26], ["gem", "شخصي ګټې", 80, 572, 217.16], ["globe", "بهرنۍ اړیکې", 544, 572, 218.92]];
+          const cards = CH.map(([k, txt, x, y, t]) => {
+            const cd = mk("div", "ccard", c, { left: x, top: y });
+            svg(cd, minis[k], "0 0 400 400");
+            mk("div", "", cd, null, txt);
+            tl.from(cd, { x: x < 400 ? -120 : 120, opacity: 0, duration: 0.5, ease: EXPO }, t);
+            cue(t, "pop_whoosh", -6);
+            return cd;
           });
-          const ta = mk("div", "desc", c, { top: 1290 });
-          speak(wordsInto(ta, sc.textA), sc.spanA);
-          // phase B: collapse and result list
-          const TB = 223.55;
-          tl.to([ta, lines, ...chipEls], { opacity: 0, y: -20, duration: 0.4, ease: "power2.in" }, TB);
-          hs.querySelectorAll(".hcol").forEach((g, i) => tl.to(g, { rotation: [-24, 14, -10, 30][i], y: [60, 90, 70, 50][i], opacity: 0.35, duration: 0.8, ease: "power2.in", transformOrigin: "50% 100%" }, TB + 0.1 + i * 0.07));
-          tl.to(hs.querySelector(".hframe"), { y: 70, rotation: 6, opacity: 0.5, duration: 0.8, ease: "bounce.out", transformOrigin: "50% 50%" }, TB + 0.15);
-          tl.to(hallBox, { x: 0, y: -205, scale: 0.55, duration: 0.8, ease: IO }, TB + 0.2);
-          const lead = mk("div", "lead", c, { top: 892 }, "پایله یې");
-          tl.fromTo(lead, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: OUT }, 223.9);
-          sc.rows.forEach(([txt, t, k], i) => {
-            const r = mk("div", "row", c, { top: 990 + i * 172 });
-            const ico = mk("div", "ico", r);
-            const s3 = svg(ico, ICONS.mini[k]());
-            mk("div", "tx", r, null, txt);
+          const H = K.columnHall(500, 860, 0.9);
+          const hs = svg(c, `<g class="hb">${H.base}</g>` + H.cols.map((cc) => `<g class="hc">${cc}</g>`).join("") + `<g class="hr">${H.roof}</g><g class="hk">${K.crack([[380, 520], [410, 600], [384, 680], [420, 760]], Cc.am, 10)}${K.crack([[620, 500], [600, 580], [636, 640]], Cc.am, 9)}</g>`, "0 0 1000 900", "stage", { top: 420 });
+          tl.from(hs, { y: 80, opacity: 0, duration: 0.7, ease: EXPO }, t0 + 0.3);
+          tl.set(hs.querySelector(".hk"), { opacity: 0 }, t0).set(hs.querySelector(".hk"), { opacity: 1 }, 222.4);
+          drawStrokes(hs.querySelector(".hk"), 222.45, 0.4);
+          tl.to(hs, { x: "+=12", duration: 0.05, yoyo: true, repeat: 7, ease: "none" }, 222.5);
+          cue(222.45, "glass_break", -9);
+          const capA = caption(c, sc.textA, sc.spanA);
+          tl.to([...cards, capA], { opacity: 0, y: -24, duration: 0.35, ease: "power2.in" }, TB);
+          hs.querySelectorAll(".hc").forEach((g, i) => tl.to(g, { rotation: [-26, 18, -12, 22, -30][i], y: [90, 120, 80, 110, 70][i], opacity: 0.3, duration: 0.8, ease: "power2.in", transformOrigin: "50% 100%" }, TB + 0.05 + i * 0.06));
+          tl.to(hs.querySelector(".hr"), { y: 160, rotation: 8, opacity: 0.35, duration: 0.8, ease: "bounce.out", transformOrigin: "50% 50%" }, TB + 0.1);
+          tl.to(hs, { opacity: 0, duration: 0.4 }, TB + 0.9);
+          cue(TB, "crumple_quick", -6);
+          const keys = ["split", "weak", "down", "ruin"];
+          sc.rows.forEach(([txt, t], i) => {
+            const r = mk("div", "row", c, { top: 420 + i * 196 });
+            svg(r, minis[keys[i]], "0 0 400 400");
+            mk("div", "tx2", r, null, txt);
             mk("div", "no", r, null, pad(i + 1));
-            tl.fromTo(r, { x: 90, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: OUT }, t);
-            animIcon(s3, t + 0.05, t, t + 1, sc.t1, null);
+            tl.from(r, { x: 140, opacity: 0, duration: 0.5, ease: EXPO }, t);
+            cue(t, "fast_swoosh", -8);
           });
-          tl.to(c, { opacity: 0, duration: 0.3 }, sc.t1 - 0.32);
+          const capB = caption(c, sc.textB, sc.spanB);
+          tl.fromTo(capB, { opacity: 0 }, { opacity: 1, duration: 0.3 }, TB + 0.3);
+          tl.to(c, { opacity: 0, duration: 0.3 }, sc.t1 - 0.3);
         }
         function buildOutro(c, sc) {
           const t0 = sc.t0;
-          c.parentNode.style.setProperty("--acc", ACC[1]);
-          const pn = mk("div", "panel", c);
-          tl.fromTo(pn, { clipPath: "circle(0% at 50% 45%)" }, { clipPath: "circle(80% at 50% 45%)", duration: 0.9, ease: IO }, t0);
-          const ring = svg(c, `<circle class="a" cx="200" cy="200" r="180"/><circle class="m" cx="200" cy="200" r="150" style="stroke-dasharray:3 12"/>`, "art", { left: 40, top: 500, width: 1000, height: 1000 });
-          ring.querySelectorAll("circle").forEach((p, i) => { if (!i) drawStroke(p, t0 + 0.3, 1.2); });
-          tl.fromTo(ring, { rotation: -60, opacity: 0 }, { rotation: 0, opacity: 0.55, duration: 1.4, ease: OUT }, t0 + 0.2);
-          const lg = mk("img", "abs", c, { left: 170, top: 770, width: 740 });
-          lg.src = "assets/img/logo-white.png";
-          tl.fromTo(lg, { clipPath: "inset(0% 0% 0% 100%)", scale: 1.06 }, { clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: 1.0, ease: OUT }, t0 + 0.45);
-          const sl = mk("div", "slogan", c);
-          const ws = wordsInto(sl, sc.text);
-          tl.fromTo(ws, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: OUT }, t0 + 1.2);
-          const hd = mk("div", "hdl", c, null, "@hindukush");
-          tl.fromTo(hd, { opacity: 0 }, { opacity: 1, duration: 0.6 }, t0 + 2.0);
-          tl.to(lg, { scale: 1.03, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: 1 }, t0 + 1.6);
+          const disc = (col) => mk("div", "abs", c, { left: 540 - 1200, top: 960 - 1200, width: 2400, height: 2400, borderRadius: "50%", background: col });
+          const r1 = disc("#EAA500"), r2 = disc("#ffffff"), r3 = disc("#051449");
+          tl.fromTo(r1, { scale: 0 }, { scale: 1, duration: 0.7, ease: "power3.inOut" }, t0 + 0.05);
+          tl.fromTo(r2, { scale: 0 }, { scale: 1, duration: 0.7, ease: "power3.inOut" }, t0 + 0.5);
+          tl.fromTo(r3, { scale: 0 }, { scale: 1, duration: 0.75, ease: "power3.inOut" }, t0 + 0.95);
+          mk("div", "abs", c, { left: 0, top: 0, width: 1080, height: 1920, opacity: 0.035, backgroundImage: "linear-gradient(#E4E4EA 1px, transparent 1px), linear-gradient(90deg, #E4E4EA 1px, transparent 1px)", backgroundSize: "120px 120px" });
+          const L = mk("div", "abs", c, { left: 160, top: 800, width: 760, height: 232 });
+          const lc = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760 }); lc.src = "assets/img/logo-color.png";
+          const gr = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760, opacity: 0, mixBlendMode: "screen", filter: "hue-rotate(300deg) saturate(3)" }); gr.src = "assets/img/logo-white.png";
+          const gb = mk("img", "", L, { position: "absolute", left: 0, top: 0, width: 760, opacity: 0, mixBlendMode: "screen", filter: "hue-rotate(160deg) saturate(3)" }); gb.src = "assets/img/logo-white.png";
+          const T = t0 + 1.65;
+          tl.fromTo(L, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: EXPO }, T);
+          tl.fromTo([gr, gb], { opacity: 0 }, { opacity: 0.55, duration: 0.06, ease: "steps(1)", yoyo: true, repeat: 7 }, T + 0.05);
+          tl.fromTo(gr, { x: 0 }, { keyframes: { x: [0, -14, 9, -6, 12, 0] }, duration: 0.5, ease: "steps(5)" }, T + 0.05);
+          tl.fromTo(gb, { x: 0 }, { keyframes: { x: [0, 12, -10, 7, -12, 0] }, duration: 0.5, ease: "steps(5)" }, T + 0.05);
+          tl.fromTo(lc, { clipPath: "inset(0% 0% 0% 0%)" }, { keyframes: { clipPath: ["inset(10% 0% 55% 0%)", "inset(60% 0% 8% 0%)", "inset(30% 0% 40% 0%)", "inset(0% 0% 0% 0%)"] }, duration: 0.45, ease: "steps(4)" }, T + 0.1);
+          const soc = mk("div", "", c, { position: "absolute", left: 0, top: 1090, width: 1080, textAlign: "center", fontSize: 44, fontWeight: 700, color: "#a7a9c2", direction: "ltr" }, "@hindukush");
+          tl.fromTo(soc, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: EXPO }, T + 0.7);
+          tl.to(L, { y: -10, duration: END - T - 1, ease: "sine.out" }, T + 0.8);
+          cue(t0 + 0.05, "cine_whoosh", -4); cue(t0 + 0.5, "air_woosh", -8); cue(t0 + 0.95, "fast_whoosh", -6); cue(T, "logo_impact", -3); cue(T + 0.05, "glitch_buzz", -10);
         }
 
-        // ---------- background motion (whole film) ----------
-        tl.to("#b1", { x: 260, y: 180, duration: END / 2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
-        tl.to("#b2", { x: -300, y: -220, duration: END / 3, ease: "sine.inOut", yoyo: true, repeat: 2 }, 0);
-        tl.to("#b3", { x: 360, y: -140, duration: END / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
-        tl.fromTo("#logo", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: OUT }, 0.2);
-        tl.fromTo("#handle", { opacity: 0 }, { opacity: 0.75, duration: 0.8 }, 0.6);
-        tl.to("#brand", { opacity: 0, duration: 0.4 }, 232.85 - 0.4);
+        // ---------- full-screen wipes between scenes (four kinds, rotating) ----------
+        function wipe(b, k) {
+          const W = document.getElementById("wipes");
+          const kind = ["slash", "blinds", "iris", "push"][k % 4];
+          const A = b - 0.28, Z = b + 0.02;
+          if (kind === "slash") {
+            const g = mk("div", "wp", W, { left: 0, top: -200, width: 2300, height: 2400, background: "#051449" });
+            mk("div", "wp", g, { left: 0, top: 0, width: 46, height: 2400, background: "#EAA500" });
+            mk("div", "wp", g, { right: 0, top: 0, width: 18, height: 2400, background: "#E4E4EA" });
+            gsap.set(g, { skewX: -16, x: 2100 });
+            tl.to(g, { x: -600, duration: 0.3, ease: "power2.in" }, A).to(g, { x: -3400, duration: 0.32, ease: "power2.out" }, Z);
+            cue(A, k % 8 < 4 ? "fast_swoosh" : "cine_whoosh", -5);
+          } else if (kind === "blinds") {
+            for (let i = 0; i < 8; i++) {
+              const s = mk("div", "wp", W, { left: i * 135, top: 0, width: 136, height: 1920, background: i % 3 === 1 ? "#0b2063" : "#051449" });
+              if (i === 4) mk("div", "wp", s, { left: 0, top: 0, width: 136, height: 14, background: "#EAA500" });
+              tl.fromTo(s, { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.24, ease: "power2.in" }, A + i * 0.012);
+              tl.to(s, { scaleY: 0, transformOrigin: "50% 100%", duration: 0.26, ease: "power2.out" }, Z + i * 0.015);
+            }
+            cue(A, "sweep_small", -4); cue(Z, "tw_soft", -10);
+          } else if (kind === "iris") {
+            const r = mk("div", "wp", W, { left: 540 - 1250, top: 960 - 1250, width: 2500, height: 2500, borderRadius: "50%", background: "#051449", border: "40px solid #EAA500" });
+            tl.fromTo(r, { scale: 0 }, { scale: 1, duration: 0.3, ease: "power2.in" }, A);
+            tl.to(r, { opacity: 0, scale: 1.15, duration: 0.3, ease: "power1.out" }, Z);
+            cue(A, "air_zoom", -6);
+          } else {
+            const g = mk("div", "wp", W, { left: 0, top: 0, width: 1080, height: 1920, background: "#051449" });
+            mk("div", "wp", g, { left: 0, top: 0, width: 1080, height: 22, background: "#EAA500" });
+            tl.fromTo(g, { y: 1940 }, { y: 0, duration: 0.3, ease: "power2.in" }, A);
+            tl.to(g, { y: -1960, duration: 0.32, ease: "power2.out" }, Z);
+            cue(A, "air_woosh", -5);
+          }
+        }
 
-        const fontsP = Promise.all([600, 700, 800, 900].map((w) => document.fonts.load(w + ' 40px "Quds"', "ښږډ")));
+        // ---------- background (whole film): dotted world map, slow beams ----------
+        (function () {
+          const polys = [[[60, 90], [200, 55], [310, 80], [330, 140], [270, 200], [235, 262], [180, 240], [120, 170], [62, 140]], [[240, 270], [300, 280], [332, 330], [300, 420], [270, 462], [252, 400], [232, 320]], [[440, 92], [540, 68], [585, 100], [545, 140], [480, 152], [455, 122]], [[455, 180], [560, 168], [602, 232], [580, 322], [530, 384], [500, 330], [468, 262]], [[560, 70], [800, 58], [905, 110], [882, 182], [800, 222], [742, 262], [682, 232], [620, 192], [582, 142]], [[780, 330], [872, 320], [892, 382], [820, 402], [780, 372]]];
+          const inside = (x, y, p) => { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) { if ((p[i][1] > y) !== (p[j][1] > y) && x < ((p[j][0] - p[i][0]) * (y - p[i][1])) / (p[j][1] - p[i][1]) + p[i][0]) c = !c; } return c; };
+          let d = "";
+          for (let y = 40; y < 480; y += 11) for (let x = 20; x < 990; x += 11) if (polys.some((p) => inside(x, y, p))) d += `<circle cx="${x}" cy="${y}" r="3" fill="#8EA4DE"/>`;
+          document.getElementById("map").innerHTML = d;
+        })();
+        tl.fromTo("#map", { x: 0 }, { x: 260, duration: END, ease: "none" }, 0);
+        tl.to("#bm1", { x: 560, duration: END / 2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+        tl.to("#bm2", { x: -520, duration: END / 3, ease: "sine.inOut", yoyo: true, repeat: 2 }, 0);
+        tl.to("#brand", { opacity: 0, duration: 0.3 }, OUT_T);
+
+        const fontsP = Promise.all([600, 700, 800, 900].map((wt) => document.fonts.load(wt + ' 40px "Quds"', "ښږډ")));
         fontsP.then(() => document.fonts.ready).then(() => {
           D.forEach((sc, i) => {
             const c = document.getElementById("c" + i);
-            if (sc.kind === "item") buildItem(c, sc, i);
+            if (sc.kind === "item") buildItem(c, sc);
             else if (sc.kind === "intro") buildIntro(c, sc);
             else if (sc.kind === "div") buildDiv(c, sc);
             else if (sc.kind === "concl") buildConcl(c, sc);
             else if (sc.kind === "outro") buildOutro(c, sc);
+            if (i > 0 && sc.kind !== "outro") wipe(sc.t0, i);
           });
           tl.set({}, {}, END);
+          CUES.sort((a, b) => a[0] - b[0]);
           window.__timelines = window.__timelines || {};
           window.__timelines["main"] = tl;
+          window.__ready = true;
           if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
         });
       })();

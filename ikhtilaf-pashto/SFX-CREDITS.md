@@ -1,7 +1,10 @@
-# Sound effects
+# Audio credits
 
-All sound effects are from Mixkit (https://mixkit.co/free-sound-effects/), used under the Mixkit Free License.
-They are mixed by `tools/sfx_mix.py` into `assets/audio/sfx.m4a`:
-swoosh_fast, sci_click, ui_select, glitch_buzz, electric_whoosh, pop_light, tunnel, sweep, bubble_pop, crumple, papers_moved, sparkle, confirm.
+- Voiceover: provided by the user (used unchanged).
+- Music bed: "Echoes" from Mixkit (https://mixkit.co/free-stock-music/), Mixkit Free License; arranged and kept low under the voice by `tools/sfx_mix.py`.
+- Sound effects: Mixkit (https://mixkit.co/free-sound-effects/), Mixkit Free License — coins, glass break, camera shutter,
+  reporters' flashes, paper, door/key lock, footsteps, keyboard typing, notification pops, light rain, electric sparks,
+  whooshes/swooshes/transitions, deep impact, wood hit, logo impact, typewriter hits, glitch.
+  Cue times come from the composition itself (`tools/cues.json`, exported from `window.__sfxCues`).
 
-Voiceover: provided by the user. Font: Quds (provided by the user). Logo: Hindukush.
+Font: Quds (provided by the user). Logo: Hindukush.
