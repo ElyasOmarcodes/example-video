@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="lib/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Regular.ttf") format("truetype"); font-weight: 400; }
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Bold.ttf") format("truetype"); font-weight: 700; }
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-ExtraBold.ttf") format("truetype"); font-weight: 800; }
+      @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Black.ttf") format("truetype"); font-weight: 900; }
+      :root { --org: #ff9f2e; --red: #ff3b5c; --cyan: #3fe0e8; --ink: #f3f1ec; --mut: #b9b4ab; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0d0c0b; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Vazir", sans-serif; color: var(--ink); }
+      .clip { position: absolute; inset: 0; }
+      .cam { position: absolute; inset: 0; overflow: hidden; }
+      .abs { position: absolute; }
+      .shot { position: absolute; left: -40px; top: -70px; width: 1160px; height: 2060px; object-fit: cover; filter: contrast(1.06) saturate(0.82) brightness(0.96); }
+      .grade { position: absolute; inset: 0; background: radial-gradient(85% 60% at 50% 45%, rgba(0, 0, 0, 0) 50%, rgba(8, 6, 5, 0.72) 100%), linear-gradient(180deg, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0) 22%, rgba(10, 8, 6, 0) 55%, rgba(10, 8, 6, 0.6) 100%); }
+      /* chip */
+      #chip { position: absolute; left: 0; right: 0; top: 64px; display: flex; justify-content: center; }
+      #chip span { direction: rtl; font-size: 26px; font-weight: 700; color: #e9e6e1; background: rgba(28, 26, 24, 0.62); border: 1.5px solid rgba(255, 255, 255, 0.14); border-radius: 30px; padding: 8px 24px; display: flex; gap: 12px; align-items: center; }
+      #chip i { width: 12px; height: 12px; border-radius: 6px; background: var(--red); display: inline-block; }
+      /* overlays */
+      .ttl { position: absolute; left: 50px; right: 50px; top: 170px; text-align: center; direction: rtl; text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6); }
+      .ttl .l { font-size: 84px; font-weight: 900; line-height: 1.3; }
+      .ttl .d { font-size: 64px; font-weight: 800; margin-top: 10px; }
+      .ttl .p { font-size: 28px; font-weight: 400; color: var(--mut); margin-top: 8px; }
+      .o { color: var(--org); } .r { color: var(--red); } .c { color: var(--cyan); }
+      .place { position: absolute; right: 60px; top: 180px; direction: rtl; text-align: right; border-right: 7px solid var(--red); padding-right: 18px; text-shadow: 0 3px 18px rgba(0, 0, 0, 0.6); }
+      .place b { display: block; font-size: 50px; font-weight: 800; }
+      .place span { display: block; font-size: 28px; color: var(--mut); margin-top: 4px; }
+      .quote { position: absolute; left: 90px; right: 90px; top: 560px; direction: rtl; text-align: center; background: rgba(24, 22, 20, 0.78); border: 1.5px solid rgba(255, 255, 255, 0.12); border-radius: 28px; padding: 40px 44px 34px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5); }
+      .quote .who { display: inline-block; background: var(--org); color: #1a1209; font-size: 26px; font-weight: 800; border-radius: 10px; padding: 4px 16px; }
+      .quote .q { font-size: 56px; font-weight: 900; line-height: 1.5; margin-top: 18px; }
+      .quote .src { font-size: 24px; color: var(--mut); margin-top: 14px; }
+      .counter { position: absolute; left: 0; right: 0; top: 560px; text-align: center; direction: rtl; text-shadow: 0 6px 30px rgba(0, 0, 0, 0.7); }
+      .counter .n { font-size: 220px; font-weight: 900; line-height: 1; color: var(--red); }
+      .counter .u { font-size: 40px; font-weight: 700; color: var(--ink); margin-top: 6px; }
+      .stamp { position: absolute; left: 50%; top: 520px; width: 330px; margin-left: -165px; background: #f4f1ea; border-radius: 26px; overflow: hidden; text-align: center; direction: rtl; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55); }
+      .stamp .h { background: var(--cyan); color: #0c2c30; font-size: 26px; font-weight: 800; padding: 8px 0; }
+      .stamp .b { color: #151311; font-size: 92px; font-weight: 900; line-height: 1.25; padding: 14px 0 0; }
+      .stamp .s { color: #6b655d; font-size: 24px; padding: 0 0 18px; }
+      .choice { position: absolute; left: 0; right: 0; top: 760px; display: flex; justify-content: center; align-items: center; gap: 30px; direction: rtl; }
+      .choice b { font-size: 50px; font-weight: 900; border-radius: 40px; padding: 10px 40px; }
+      .choice .x { background: var(--red); color: #fff; } .choice .y { background: var(--cyan); color: #082a2d; }
+      .choice span { font-size: 34px; color: var(--mut); }
+      .next { position: absolute; left: 50%; top: 620px; width: 560px; margin-left: -280px; background: rgba(22, 20, 18, 0.82); border: 1.5px solid rgba(255, 255, 255, 0.14); border-radius: 30px; text-align: center; direction: rtl; padding: 34px 20px 30px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55); }
+      .next .k { font-size: 30px; font-weight: 800; color: var(--org); }
+      .next .t { font-size: 104px; font-weight: 900; line-height: 1.2; }
+      .next .s { font-size: 26px; color: var(--mut); }
+      .follow { position: absolute; left: 50%; top: 940px; width: 240px; margin-left: -120px; text-align: center; background: var(--red); color: #fff; font-size: 40px; font-weight: 900; border-radius: 40px; padding: 8px 0; direction: rtl; box-shadow: 0 0 40px rgba(255, 59, 92, 0.6); }
+      /* big word caption */
+      .cap { position: absolute; left: 40px; right: 40px; top: 1250px; height: 160px; text-align: center; direction: rtl; }
+      .cw { position: absolute; left: 0; right: 0; top: 0; font-size: 100px; font-weight: 900; line-height: 1.4; color: #fff; text-shadow: 0 6px 30px rgba(0, 0, 0, 0.75), 0 0 2px rgba(0, 0, 0, 0.9); white-space: nowrap; }
+      /* map */
+      .mapbg { position: absolute; inset: 0; background: radial-gradient(90% 70% at 50% 45%, #2b2925 0%, #141311 70%, #0b0a09 100%); }
+      .mapsvg { position: absolute; overflow: visible; }
+      .pin { position: absolute; direction: rtl; font-size: 26px; font-weight: 700; color: #e9e6e1; background: rgba(28, 26, 24, 0.78); border: 1.5px solid rgba(255, 255, 255, 0.18); border-radius: 20px; padding: 2px 14px; white-space: nowrap; }
+      .pin::before { content: ""; position: absolute; right: -16px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 5px; background: var(--org); }
+      .mlabel { position: absolute; left: 0; right: 0; top: 230px; text-align: center; direction: rtl; }
+      .mlabel b { display: inline-block; font-size: 58px; font-weight: 900; background: rgba(24, 22, 20, 0.8); border-radius: 18px; padding: 8px 30px; }
+      .mlabel span { display: block; font-size: 30px; color: var(--mut); margin-top: 12px; }
+      .grain { position: absolute; inset: 0; opacity: 0.08; mix-blend-mode: overlay; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="%%END%%">
+%%SECTIONS%%
+      <div id="ui" class="clip" data-start="0" data-duration="%%END%%" data-track-index="5">
+        <div id="chip"><span><i></i>%%CHIP%%</span></div>
+      </div>
+      <audio id="vo" src="assets/audio/voiceover.mp3" data-start="0" data-duration="%%END%%" data-track-index="10" data-volume="1"></audio>
+      <audio id="bed" src="assets/audio/music.m4a" data-start="0" data-duration="%%END%%" data-track-index="11" data-volume="1"></audio>
+      <audio id="sfx" src="assets/audio/sfx.m4a" data-start="0" data-duration="%%END%%" data-track-index="12" data-volume="1"></audio>
+    </div>
+    <script>
+      (function () {
+        const D = %%DATA%%;
+        const MAP = %%MAP%%;
+        const END = %%END%%;
+        const tl = gsap.timeline({ paused: true });
+        const OUT = "power3.out", EXPO = "expo.out", IO = "power2.inOut";
+        const CUES = [];
+        window.__sfxCues = CUES;
+        const cue = (t, n, db) => CUES.push([+t.toFixed(3), n, db || 0]);
+        function mk(tag, cls, p, css, html) {
+          const el = document.createElement(tag);
+          if (cls) el.className = cls;
+          if (css) Object.keys(css).forEach((k) => (el.style[k] = typeof css[k] === "number" ? css[k] + "px" : css[k]));
+          if (html != null) el.innerHTML = html;
+          if (p) p.appendChild(el);
+          return el;
+        }
+        const hl = (s) => s.replace(/\{([^}]*)\}/g, '<span class="r">$1</span>');
+        const KEY = { "سلطان": "o", "عبدالحمید": "o", "تبعید": "r", "شورش": "r", "شوریدند": "r", "خلع": "r", "برکناری": "r", "سالونیک": "c", "سالونیک.": "c", "قطار": "c", "قطاری": "c", "فلسطین": "o", "وجب": "r", "جاسوس": "r", "سربازان": "r", "فتوایی": "o", "یلدز": "o", "یلدز.": "o", "ملت،": "o", "ارتش": "r", "قانون": "c", "مجلس": "o" };
+        const GLUE = new Set(["و", "از", "در", "به", "را", "با", "که", "تا", "این", "آن", "یک", "هم"]);
+
+        // big centre caption: one or two words at a time, timed to the narration
+        function captions(c, r) {
+          const words = r.vo.replace(/[«»]/g, "").split(/\s+/).filter(Boolean);
+          const groups = [];
+          for (let i = 0; i < words.length; i++) {
+            const g = [words[i]];
+            if (GLUE.has(words[i]) && i + 1 < words.length) g.push(words[++i]);
+            groups.push(g);
+          }
+          const tot = groups.reduce((a, g) => a + g.join(" ").length + 2, 0);
+          const box = mk("div", "cap", c);
+          let acc = 0;
+          groups.forEach((g, i) => {
+            const t = r.vs + (acc / tot) * r.vd;
+            acc += g.join(" ").length + 2;
+            const t2 = i + 1 < groups.length ? r.vs + (acc / tot) * r.vd : r.vs + r.vd + 0.25;
+            const html = g.map((w) => { const k = KEY[w] || KEY[w.replace(/[،.:]/g, "")]; return k ? `<span class="${k}">${w}</span>` : w; }).join(" ");
+            const el = mk("div", "cw", box, null, html);
+            tl.set(el, { opacity: 0 }, 0);
+            tl.fromTo(el, { opacity: 0, scale: 0.86, y: 14 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: OUT }, t);
+            tl.to(el, { opacity: 0, duration: 0.06 }, Math.max(t + 0.12, t2 - 0.02));
+          });
+        }
+        function shotImage(c, r, i) {
+          const img = mk("img", "shot", c);
+          img.src = "assets/img/" + r.img + ".jpg";
+          const mv = [{ s0: 1.0, s1: 1.1, x0: 0, x1: 0, y0: 0, y1: -20 }, { s0: 1.12, s1: 1.02, x0: -20, x1: 20, y0: 0, y1: 0 }, { s0: 1.04, s1: 1.14, x0: 20, x1: -20, y0: 10, y1: -10 }][i % 3];
+          tl.fromTo(img, { scale: mv.s0, x: mv.x0, y: mv.y0 }, { scale: mv.s1, x: mv.x1, y: mv.y1, duration: r.t1 - r.t0, ease: "none" }, r.t0);
+          mk("div", "grade", c);
+          if (i > 0) tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "none" }, r.t0);
+        }
+        function mapScene(c, r, loss) {
+          mk("div", "mapbg", c);
+          const W = MAP.w, H = MAP.h;
+          const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("class", "mapsvg");
+          Object.assign(s.style, { left: "-310px", top: "380px", width: "1700px", height: (1700 * H / W) + "px" });
+          s.innerHTML = MAP.land.map((p) => `<path d="${p}" fill="#3a3733" stroke="#56524b" stroke-width="1.2"/>`).join("") +
+            `<g class="core">${MAP.core.concat(MAP.partial).map((p) => `<path d="${p}" fill="#ff9f2e" fill-opacity=".42" stroke="#ffb45c" stroke-width="1.6"/>`).join("")}</g>` +
+            `<g class="lost">${MAP.lost.map((p) => `<path d="${p}" fill="${loss ? "#ff3b5c" : "#ff9f2e"}" fill-opacity="${loss ? ".55" : ".42"}" stroke="${loss ? "#ff7088" : "#ffb45c"}" stroke-width="1.6"/>`).join("")}</g>`;
+          c.appendChild(s);
+          const pins = [];
+          Object.entries(MAP.cities).forEach(([n, [x, y]]) => {
+            if (loss && !["استانبول", "قاهره", "سالونیک"].includes(n)) return;
+            const p = mk("div", "pin", c, { left: -310 + (x * 1700) / W + 22, top: 380 + (y * 1700) / W - 20 }, n);
+            pins.push(p);
+          });
+          const lab = mk("div", "mlabel", c, null, loss ? "<b class='r'>سرزمین‌های از دست رفته</b><span>قبرس ۱۸۷۸ · مصر ۱۸۸۲ · بالکان</span>" : "<b>امپراتوری عثمانی</b><span>۱۸۷۶</span>");
+          tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.25 }, r.t0);
+          if (!loss) {
+            tl.fromTo(s, { scale: 2.1, x: -200, y: -260, transformOrigin: "40% 40%" }, { scale: 1, x: 0, y: 0, duration: r.t1 - r.t0, ease: "power2.inOut" }, r.t0);
+            tl.from(s.querySelectorAll(".core path, .lost path"), { opacity: 0, duration: 0.6, stagger: 0.12 }, r.t0 + 0.6);
+            tl.from(pins, { opacity: 0, x: 20, duration: 0.4, stagger: 0.18 }, r.t0 + 1.4);
+            cue(r.t0 + 0.6, "map_draw", -2);
+          } else {
+            tl.fromTo(s, { scale: 1 }, { scale: 1.12, transformOrigin: "40% 40%", duration: r.t1 - r.t0, ease: "none" }, r.t0);
+            tl.fromTo(s.querySelectorAll(".lost path"), { fillOpacity: 0.15 }, { fillOpacity: 0.7, duration: 0.45, yoyo: true, repeat: 7, ease: "sine.inOut" }, r.t0 + 0.3);
+            cue(r.t0 + 0.3, "glitch_buzz", -10);
+          }
+          tl.from(lab, { opacity: 0, y: -20, duration: 0.5, ease: OUT }, r.t0 + 0.3);
+        }
+        function overlay(c, r) {
+          const o = r.overlay, T = r.t0 + 0.15;
+          let el = null;
+          if (o.kind === "title") {
+            el = mk("div", "ttl", c, null, o.lines.map((l) => `<div class="l">${l.replace(/\{([^}]*)\}/g, '<span class="' + (r.id === "s01" ? "o" : "r") + '">$1</span>')}</div>`).join("") + (o.date ? `<div class="d">${o.date}</div>` : "") + (o.place ? `<div class="p">${o.place}</div>` : ""));
+            tl.from(el.children, { opacity: 0, y: 30, duration: 0.5, stagger: 0.15, ease: EXPO }, T);
+            cue(T, "deep_impact", -8);
+          } else if (o.kind === "place") {
+            el = mk("div", "place", c, null, `<b>${o.place}</b><span>${o.sub || ""}</span>`);
+            tl.from(el, { opacity: 0, x: 40, duration: 0.5, ease: EXPO }, T);
+            cue(T, "sweep_small", -8);
+          } else if (o.kind === "quote") {
+            el = mk("div", "quote", c, null, `<div class="who">${o.who}</div><div class="q">${hl(o.text)}</div><div class="src">${o.src}</div>`);
+            tl.from(el, { opacity: 0, scale: 0.9, duration: 0.45, ease: EXPO }, r.t0 + 0.05);
+            cue(r.t0 + 0.05, "tw_hit", -6);
+          } else if (o.kind === "counter") {
+            el = mk("div", "counter", c, null, `<div class="n">${o.num}</div><div class="u">${o.unit}</div>`);
+            tl.from(el, { opacity: 0, scale: 1.4, duration: 0.5, ease: EXPO }, T);
+            cue(T, "deep_impact", -10);
+          } else if (o.kind === "stamp") {
+            el = mk("div", "stamp", c, null, `<div class="h">${o.small}</div><div class="b">${o.big}</div><div class="s">۱۹۰۹</div>`);
+            tl.from(el, { opacity: 0, y: -60, rotation: -6, duration: 0.6, ease: "back.out(1.6)" }, T);
+            cue(T, "pop_whoosh", -6);
+          } else if (o.kind === "choice") {
+            el = mk("div", "choice", c, null, `<b class="x">${o.a}</b><span>یا</span><b class="y">${o.b}</b>`);
+            tl.from(el.children, { opacity: 0, scale: 0.6, duration: 0.4, stagger: 0.2, ease: "back.out(1.8)" }, r.vs + r.vd * 0.5);
+          } else if (o.kind === "next") {
+            el = mk("div", "next", c, null, `<div class="k">${o.part}</div><div class="t">${o.title}</div><div class="s">${o.sub}</div>`);
+            const f = mk("div", "follow", c, null, "+ فالو");
+            tl.from(el, { opacity: 0, y: 40, duration: 0.6, ease: EXPO }, r.t0 + 0.2);
+            tl.from(f, { opacity: 0, scale: 0.5, duration: 0.5, ease: "back.out(2)" }, r.t0 + 0.9);
+            tl.to(f, { scale: 1.08, duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" }, r.t0 + 1.5);
+            cue(r.t0 + 0.9, "dry_pop", -4);
+          }
+        }
+
+        document.fonts.ready.then(() => Promise.all([400, 700, 900].map((w) => document.fonts.load(w + ' 40px "Vazir"', "سلطان")))).then(() => {
+          D.forEach((r, i) => {
+            const c = document.getElementById("c" + i);
+            if (r.img === "map") mapScene(c, r, r.overlay.kind === "map_loss");
+            else shotImage(c, r, i);
+            overlay(c, r);
+            captions(c, r);
+            if (i > 0 && r.img !== "map") cue(r.t0, i % 2 ? "fast_whoosh" : "air_woosh", -14);
+          });
+          tl.fromTo("#chip", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: OUT }, 0.2);
+          tl.set({}, {}, END);
+          CUES.sort((a, b) => a[0] - b[0]);
+          window.__timelines = window.__timelines || {};
+          window.__timelines["main"] = tl;
+          window.__ready = true;
+          if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+        });
+      })();
+    </script>
+  </body>
+</html>

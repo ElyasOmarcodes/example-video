@@ -1,0 +1,9 @@
+{"render_rule":"Every person is a smooth matte white clay/plaster statue; environments realistic and warmly lit.",
+ "characters":[
+  {"id":"abdulhamid","name":"Sultan Abdul Hamid II (age 66 in 1909)","look":"elderly man, short beard, prominent nose, fez, long dark frock coat (stambouline)"},
+  {"id":"esad","name":"Esad Pasha Toptani","look":"tall, moustache, fez, military uniform"},
+  {"id":"herzl","name":"Theodor Herzl","look":"long full beard, 19th-century suit, holding documents"},
+  {"id":"officers","name":"Young Turk officers (1908)","look":"young men with moustaches, kalpak hats, uniforms"},
+  {"id":"soldiers","name":"Ottoman soldiers (1909)","look":"fezzes, rifles, greatcoats"}],
+ "image_model":"stabilityai/sdxl-turbo via OpenMontage tools/graphics/local_diffusion.py (CPU, bf16)",
+ "voice":"Piper fa_IR-ganji-medium via OpenMontage tools/audio/piper_tts.py backend (local)"}
