@@ -1,19 +1,23 @@
 {
-"style": "cinematic 3D render, all human figures are smooth matte white clay statues, unpainted white plaster sculptures with no color on people, realistic moody environment, warm practical lighting, soft volumetric light, shallow depth of field, film still, documentary reconstruction, highly detailed, 35mm",
-"negative": "color on skin, painted faces, cartoon, anime, text, watermark, logo, blurry, deformed, extra limbs, modern clothes, cars",
-"shots": {
-"sultan_desk_morning": "an elderly Ottoman sultan with a short beard wearing a fez and long frock coat sitting behind a large carved wooden desk in an ornate 19th century palace study, tall window with morning light, red carpet, brass desk lamp",
-"night_train_guarded": "night, old steam train at a dim railway platform, soldiers with rifles and fez standing guard at a carriage door, an old man in fez and long coat stepping into the carriage, steam and lantern light",
-"spies_corridor": "dark ornate palace corridor at night, two men in fez whispering and eavesdropping at a half open door, long shadows, oil lamp",
-"herzl_offer": "palace reception room, a bearded man in a 19th century suit holding documents and bowing toward an ottoman official in fez seated in an armchair, ornate interior",
-"sultan_window": "an elderly ottoman sultan in fez and frock coat standing at a tall palace window looking out over the Bosphorus and minarets, back view, dramatic backlight",
-"young_officers": "a crowd of young ottoman army officers with mustaches and kalpak hats raising their arms in a town square with old buildings, 1908 revolution, flags, daylight",
-"mutiny_crowd": "a large crowd of ottoman soldiers with rifles and fezzes gathered in front of a great mosque with minarets, protest, tense, overcast",
-"army_train": "old steam locomotive pulling wagons crowded with ottoman soldiers with rifles, crossing open countryside, smoke plume, wide shot",
-"soldiers_istanbul": "ottoman soldiers marching with rifles into a narrow istanbul street with wooden houses and a minaret, smoke in the air, low angle",
-"assembly_vote": "a grand parliament hall with rows of men in fezzes raising their hands to vote, chandeliers, tall windows, wide shot",
-"delegation": "four men in fez and military uniforms standing in front of an elderly seated sultan in fez in a dim palace room, tense moment",
-"sultan_dark_office": "an elderly sultan in fez sitting alone at a wooden desk in a dark palace office lit only by a single green banker lamp, head lowered, dramatic shadows",
-"station_night": "dark old railway station at night, steam, a few guards with lanterns, an old man in fez and long coat walking toward a waiting train carriage",
-"train_departs": "steam train leaving a station into the night, rear lantern glowing red, smoke, rails, melancholic wide shot"
-}}
+ "style": "dark cinematic lighting, realistic interior, film still",
+ "negative": "colorful clothes, red, painted, skin tone, realistic people, cartoon, text, watermark, blurry, deformed, duplicate",
+ "shots": {
+  "sultan_desk_morning": "an elderly Ottoman sultan with a short beard wearing a fez and long frock coat sitting behind a large carved wooden desk in an ornate 19th century palace study, tall window with morning light, red carpet, brass desk lamp",
+  "night_train_guarded": "night, old steam train at a dim railway platform, soldiers with rifles and fez standing guard at a carriage door, an old man in fez and long coat stepping into the carriage, steam and lantern light",
+  "spies_corridor": "dark ornate palace corridor at night, two men in fez whispering and eavesdropping at a half open door, long shadows, oil lamp",
+  "herzl_offer": "palace reception room, a bearded man in a 19th century suit holding documents and bowing toward an ottoman official in fez seated in an armchair, ornate interior",
+  "sultan_window": "an elderly ottoman sultan in fez and frock coat standing at a tall palace window looking out over the Bosphorus and minarets, back view, dramatic backlight",
+  "young_officers": "a crowd of young ottoman army officers with mustaches and kalpak hats raising their arms in a town square with old buildings, 1908 revolution, flags, daylight",
+  "mutiny_crowd": "a large crowd of ottoman soldiers with rifles and fezzes gathered in front of a great mosque with minarets, protest, tense, overcast",
+  "army_train": "old steam locomotive pulling wagons crowded with ottoman soldiers with rifles, crossing open countryside, smoke plume, wide shot",
+  "soldiers_istanbul": "ottoman soldiers marching with rifles into a narrow istanbul street with wooden houses and a minaret, smoke in the air, low angle",
+  "assembly_vote": "a grand parliament hall with rows of men in fezzes raising their hands to vote, chandeliers, tall windows, wide shot",
+  "delegation": "four men in fez and military uniforms standing in front of an elderly seated sultan in fez in a dim palace room, tense moment",
+  "sultan_dark_office": "an elderly sultan in fez sitting alone at a wooden desk in a dark palace office lit only by a single green banker lamp, head lowered, dramatic shadows",
+  "station_night": "dark old railway station at night, steam, a few guards with lanterns, an old man in fez and long coat walking toward a waiting train carriage",
+  "train_departs": "steam train leaving a station into the night, rear lantern glowing red, smoke, rails, melancholic wide shot",
+  "t_marble": "white marble statues of an elderly ottoman sultan with fez seated behind a wooden desk in a dark palace study, warm desk lamp",
+  "t_clay": "elderly ottoman sultan with fez seated behind a wooden desk in a dark palace study, warm desk lamp"
+ },
+ "prefix": "untextured white clay render, 3d character models with plain white material, ambient occlusion, "
+}
