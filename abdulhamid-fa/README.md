@@ -9,3 +9,7 @@ Persian documentary short in the style of the user's reference reel: white clay 
 - Music: "Silent Descent" (Mixkit, Mixkit Free License). SFX: Mixkit, plus the user's map-draw sound
 - Font: Vazirmatn (OFL)
 - Composition: HyperFrames (`tools/build.py` + `tools/template.html` → `index.html`); audio: `tools/audio_mix.py`
+
+## v2: animated 3D (Three.js)
+- `lib/world.js`: every shot is a real-time 3D scene (Three.js r170) drawn from timeline time (`hf-seek`). Rigged, animated human figures use `models/Xbot.glb` (Mixamo rig, from the three.js examples) in white clay, with added fez, beard, robe, rifle and lantern. Animations: walk, idle, agree, headShake, plus bone-driven sitting, arm raising and bowing. Sets are procedural: Yildiz office, station and trains, corridor, Salonica square, mosque, street, parliament hall, delegation room.
+- The Sultan's close-ups come from his real 1907 likeness (`openmontage/ref_abdulhamid_1907.jpg`, public domain). Pipeline: SDXL-Turbo img2img into a plaster bust (`tools/bust.py`), clay pass, then Depth-Anything-V2 depth (`tools/depth.py`). The bust is displaced into a 3D relief, and the camera orbits it.

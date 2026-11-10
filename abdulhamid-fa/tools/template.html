@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1920" />
     <script src="lib/gsap.min.js"></script>
+    <script type="importmap">{"imports":{"three":"./lib/three/three.module.js","three/addons/":"./lib/three/addons/"}}</script>
     <style>
       @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Regular.ttf") format("truetype"); font-weight: 400; }
       @font-face { font-family: "Vazir"; src: url("assets/fonts/Vazirmatn-Bold.ttf") format("truetype"); font-weight: 700; }
@@ -67,6 +68,7 @@
   </head>
   <body>
     <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-duration="%%END%%">
+      <div id="world" class="clip" data-start="0" data-duration="%%END%%" data-track-index="0"><canvas id="gl" width="1080" height="1920" style="position:absolute;inset:0;width:1080px;height:1920px"></canvas></div>
 %%SECTIONS%%
       <div id="ui" class="clip" data-start="0" data-duration="%%END%%" data-track-index="5">
         <div id="chip"><span><i></i>%%CHIP%%</span></div>
@@ -121,18 +123,14 @@
           });
         }
         function shotImage(c, r, i) {
-          const img = mk("img", "shot", c);
-          img.src = "assets/img/" + r.img + ".jpg";
-          const mv = [{ s0: 1.0, s1: 1.1, x0: 0, x1: 0, y0: 0, y1: -20 }, { s0: 1.12, s1: 1.02, x0: -20, x1: 20, y0: 0, y1: 0 }, { s0: 1.04, s1: 1.14, x0: 20, x1: -20, y0: 10, y1: -10 }][i % 3];
-          tl.fromTo(img, { scale: mv.s0, x: mv.x0, y: mv.y0 }, { scale: mv.s1, x: mv.x1, y: mv.y1, duration: r.t1 - r.t0, ease: "none" }, r.t0);
           mk("div", "grade", c);
-          if (i > 0) tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "none" }, r.t0);
         }
         function mapScene(c, r, loss) {
           mk("div", "mapbg", c);
           const W = MAP.w, H = MAP.h;
           const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
           s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("class", "mapsvg");
+          c.style.perspective = "1600px";
           Object.assign(s.style, { left: "-310px", top: "380px", width: "1700px", height: (1700 * H / W) + "px" });
           s.innerHTML = MAP.land.map((p) => `<path d="${p}" fill="#3a3733" stroke="#56524b" stroke-width="1.2"/>`).join("") +
             `<g class="core">${MAP.core.concat(MAP.partial).map((p) => `<path d="${p}" fill="#ff9f2e" fill-opacity=".42" stroke="#ffb45c" stroke-width="1.6"/>`).join("")}</g>` +
@@ -147,12 +145,12 @@
           const lab = mk("div", "mlabel", c, null, loss ? "<b class='r'>سرزمین‌های از دست رفته</b><span>قبرس ۱۸۷۸ · مصر ۱۸۸۲ · بالکان</span>" : "<b>امپراتوری عثمانی</b><span>۱۸۷۶</span>");
           tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.25 }, r.t0);
           if (!loss) {
-            tl.fromTo(s, { scale: 2.1, x: -200, y: -260, transformOrigin: "40% 40%" }, { scale: 1, x: 0, y: 0, duration: r.t1 - r.t0, ease: "power2.inOut" }, r.t0);
+            tl.fromTo(s, { scale: 2.1, x: -200, y: -260, rotationX: 0, transformOrigin: "40% 40%" }, { scale: 1, x: 0, y: 0, rotationX: 32, duration: r.t1 - r.t0, ease: "power2.inOut" }, r.t0);
             tl.from(s.querySelectorAll(".core path, .lost path"), { opacity: 0, duration: 0.6, stagger: 0.12 }, r.t0 + 0.6);
             tl.from(pins, { opacity: 0, x: 20, duration: 0.4, stagger: 0.18 }, r.t0 + 1.4);
             cue(r.t0 + 0.6, "map_draw", -2);
           } else {
-            tl.fromTo(s, { scale: 1 }, { scale: 1.12, transformOrigin: "40% 40%", duration: r.t1 - r.t0, ease: "none" }, r.t0);
+            tl.fromTo(s, { scale: 1, rotationX: 32, rotationZ: 0 }, { scale: 1.12, rotationX: 38, rotationZ: -4, transformOrigin: "40% 40%", duration: r.t1 - r.t0, ease: "none" }, r.t0);
             tl.fromTo(s.querySelectorAll(".lost path"), { fillOpacity: 0.15 }, { fillOpacity: 0.7, duration: 0.45, yoyo: true, repeat: 7, ease: "sine.inOut" }, r.t0 + 0.3);
             cue(r.t0 + 0.3, "glitch_buzz", -10);
           }
@@ -194,6 +192,9 @@
           }
         }
 
+        window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};
+        let worldDone; window.__hf.buildReady.world = new Promise((res) => (worldDone = res));
+        window.__worldShots = D; window.__worldDone = () => worldDone();
         document.fonts.ready.then(() => Promise.all([400, 700, 900].map((w) => document.fonts.load(w + ' 40px "Vazir"', "سلطان")))).then(() => {
           D.forEach((r, i) => {
             const c = document.getElementById("c" + i);
@@ -212,6 +213,18 @@
           if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
         });
       })();
+    </script>
+    <script type="module">
+      import { createWorld } from "./lib/world.js";
+      const shots = window.__worldShots.map((r, i, all) => {
+        const prev = all[i - 1];
+        return Object.assign({}, r, prev && prev.img === r.img && r.img !== "map" ? { cont: { t0: prev.t0, t1: r.t1 }, shareWith: prev.id } : {});
+      });
+      createWorld(document.getElementById("gl"), shots).then((renderAt) => {
+        window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));
+        renderAt(0);
+        window.__worldDone();
+      }).catch((e) => { console.error("world failed", e); window.__worldDone(); });
     </script>
   </body>
 </html>
