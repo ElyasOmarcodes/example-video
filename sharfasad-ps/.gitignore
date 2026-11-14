@@ -1,0 +1,10 @@
+node_modules/
+out/
+.remotion/
+public/sfx.wav
+__pycache__/
+.mcp.json
+.env
+drafts/
+sims/dist/
+public/final.wav
