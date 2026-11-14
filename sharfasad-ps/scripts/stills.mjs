@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 const [dir, ...ts] = process.argv.slice(2);
 const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
 const browserExecutable = '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell';
-const comp = await selectComposition({serveUrl, id: 'Main', browserExecutable});
+const comp = await selectComposition({serveUrl, id: process.env.COMP || 'Main', browserExecutable});
 const files = [];
 for (const t of ts) {
   const f = `${dir}/t${t}.png`;

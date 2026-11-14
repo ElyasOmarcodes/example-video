@@ -24,14 +24,14 @@ export const C = {
   accDeep: '#C97A00',
 };
 
-// Quds ExtraBlack is reserved for titles; everything else uses the lighter Vazirmatn cuts.
+// Quds only (the brand face): ExtraBlack for titles, Bold for reading text, ExtraBold for keywords/tags.
 export const F = {
   title: 'QudsXK',
   head: 'QudsB',
-  light: 'VazL',
-  body: 'VazR',
-  medium: 'VazM',
-  semi: 'VazSB',
+  light: 'QudsB',
+  body: 'QudsB',
+  medium: 'QudsB',
+  semi: 'QudsXB',
   mono: 'monospace',
 };
 
@@ -75,3 +75,7 @@ export const wordTimes = (words: string[], a: number, b: number) => {
     return {t0, t1: a + ((b - a) * acc) / tot};
   });
 };
+
+const ORD = ['لومړۍ', 'دوهمه', 'دریمه', 'څلورمه', 'پنځمه'];
+/** "له پنځو برخو لومړۍ برخه" */
+export const partLabel = (n: number) => `له پنځو برخو ${ORD[n - 1]} برخه`;

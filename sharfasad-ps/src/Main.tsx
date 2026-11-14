@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
-import {C, F, FPS, TL, clamp01, easeIn, easeInOut, easeOut, fa, lerp, prog, soft, spT} from './lib';
+import {C, F, FPS, TL, partLabel, clamp01, easeIn, easeInOut, easeOut, fa, lerp, prog, soft, spT} from './lib';
 import {useFonts} from './text/fonts';
 import {Type} from './text/Type';
 import {Backdrop, Dust, Finish, Shimmer, World, glass} from './stage/stage';
@@ -30,7 +30,7 @@ const Chrome: React.FC<{t: number}> = ({t}) => {
   const total = TL.end.t1;
   return (
     <AbsoluteFill style={{opacity: on}}>
-      <Img src={staticFile('img/logo-white.png')} style={{position: 'absolute', top: 58, right: 58, height: 74}} />
+      <Img src={staticFile('img/logo-color.png')} style={{position: 'absolute', top: 58, right: 58, height: 74}} />
       <div style={{position: 'absolute', top: 70, left: 58, padding: '8px 26px 10px', borderRadius: 30, border: '1.5px solid rgba(255,255,255,0.22)', background: 'rgba(255,255,255,0.06)', fontFamily: F.light, fontSize: 28, color: C.dim, direction: 'rtl'}}>تحلیلي ګرافیک</div>
       <div style={{position: 'absolute', bottom: 62, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 12, direction: 'rtl'}}>
         {TL.sections.map((s, i) => {
@@ -118,7 +118,7 @@ export const Title: React.FC<{t: number}> = ({t}) => {
 };
 
 // ─── extruded 3D glyph (stacked faces along Z) ───────────────────────────────────────
-const Glyph3D: React.FC<{ch: string; size: number; depth?: number; yaw: number; pitch?: number; shimmer?: number}> = ({ch, size, depth = 16, yaw, pitch = -6, shimmer = 0}) => (
+export const Glyph3D: React.FC<{ch: string; size: number; depth?: number; yaw: number; pitch?: number; shimmer?: number}> = ({ch, size, depth = 16, yaw, pitch = -6, shimmer = 0}) => (
   <div style={{position: 'absolute', left: -size, top: -size * 0.75, width: size * 2, height: size * 1.5, perspective: 1800}}>
   <div style={{position: 'absolute', left: size, top: size * 0.75, width: 0, height: 0, transformStyle: 'preserve-3d', transform: `rotateX(${pitch}deg) rotateY(${yaw}deg)`}}>
     {Array.from({length: depth}).map((_, j) => {
@@ -171,7 +171,7 @@ const Hero: React.FC<{s: Sec; t: number}> = ({s, t}) => {
       </div>
       <div style={{position: 'absolute', top: 380, left: 0, right: 0, display: 'flex', justifyContent: 'center', transform: 'translateZ(40px)', opacity: prog(t, s.t0 + 0.1, s.t0 + 0.6)}}>
         <div style={{padding: '10px 40px 14px', borderRadius: 40, ...glass(40, 0.4), fontFamily: F.medium, fontSize: 38, color: C.white, direction: 'rtl', position: 'relative'}}>
-          برخه {fa(s.n)} له {fa(5)}
+          {partLabel(s.n)}
           <Shimmer k={prog(t, s.t0 + 0.4, s.t0 + 1.3, soft)} radius={40} />
         </div>
       </div>
@@ -371,7 +371,7 @@ const Closing: React.FC<{t: number}> = ({t}) => {
 };
 
 // ─── outro: the same end card as the earlier Hindukush infographic ───────────────────
-const Outro: React.FC<{t: number}> = ({t}) => {
+export const Outro: React.FC<{t: number; discs?: [string, string, string]; logo?: string; ghost?: string; user?: string}> = ({t, discs = ['#EAA500', '#ffffff', '#051449'], logo = 'img/logo-color.png', ghost = 'img/logo-white.png', user = '#a7a9c2'}) => {
   const t0 = TL.outro.t0;
   const p3 = Easing3(prog(t, t0 + 0.05, t0 + 0.75, (x) => x));
   const p4 = Easing3(prog(t, t0 + 0.5, t0 + 1.2, (x) => x));
@@ -389,19 +389,19 @@ const Outro: React.FC<{t: number}> = ({t}) => {
   const disc = (col: string, p: number) => <div style={{position: 'absolute', left: 540 - 1200, top: 960 - 1200, width: 2400, height: 2400, borderRadius: '50%', background: col, transform: `scale(${p})`}} />;
   return (
     <AbsoluteFill>
-      {disc('#EAA500', p3)}
-      {disc('#ffffff', p4)}
-      {disc('#051449', p5)}
+      {disc(discs[0], p3)}
+      {disc(discs[1], p4)}
+      {disc(discs[2], p5)}
       <div style={{position: 'absolute', left: 160, top: 800 - prog(t, T + 0.8, TL.outro.t1, easeOut) * 10, width: 760, height: 232, opacity: lk, transform: `scale(${lerp(0.9, 1, lk)})`}}>
-        <Img src={staticFile('img/logo-color.png')} style={{position: 'absolute', left: 0, top: 0, width: 760, clipPath: clip}} />
+        <Img src={staticFile(logo)} style={{position: 'absolute', left: 0, top: 0, width: 760, clipPath: clip}} />
         {g && step >= 0 && step < 6 && (
           <>
-            <Img src={staticFile('img/logo-white.png')} style={{position: 'absolute', left: gx[step], top: 0, width: 760, opacity: flick ? 0.55 : 0, mixBlendMode: 'screen', filter: 'hue-rotate(300deg) saturate(3)'}} />
-            <Img src={staticFile('img/logo-white.png')} style={{position: 'absolute', left: bx[step], top: 0, width: 760, opacity: flick ? 0.55 : 0, mixBlendMode: 'screen', filter: 'hue-rotate(160deg) saturate(3)'}} />
+            <Img src={staticFile(ghost)} style={{position: 'absolute', left: gx[step], top: 0, width: 760, opacity: flick ? 0.55 : 0, mixBlendMode: 'screen', filter: 'hue-rotate(300deg) saturate(3)'}} />
+            <Img src={staticFile(ghost)} style={{position: 'absolute', left: bx[step], top: 0, width: 760, opacity: flick ? 0.55 : 0, mixBlendMode: 'screen', filter: 'hue-rotate(160deg) saturate(3)'}} />
           </>
         )}
       </div>
-      <div style={{position: 'absolute', left: 0, top: 1090 + (1 - sk) * 20, width: 1080, textAlign: 'center', fontFamily: 'sans-serif', fontSize: 44, fontWeight: 700, color: '#a7a9c2', opacity: sk}}>@hindukush</div>
+      <div style={{position: 'absolute', left: 0, top: 1090 + (1 - sk) * 20, width: 1080, textAlign: 'center', fontFamily: 'sans-serif', fontSize: 44, fontWeight: 700, color: user, opacity: sk}}>@hindukush</div>
     </AbsoluteFill>
   );
 };

@@ -17,7 +17,7 @@ export const Thumb: React.FC = () => {
       <Dust t={T} />
       <Title t={T} />
       <Finish frame={0} />
-      <Img src={staticFile('img/logo-white.png')} style={{position: 'absolute', top: 58, right: 58, height: 92}} />
+      <Img src={staticFile('img/logo-color.png')} style={{position: 'absolute', top: 58, right: 58, height: 92}} />
     </AbsoluteFill>
   );
 };
@@ -46,7 +46,7 @@ export const ThumbWide: React.FC = () => {
       <div style={{position: 'absolute', right: 56, top: 190, width: 700}}>
         <Type text={TL.title.text} a={-10} b={-5} t={10} size={78} maxW={700} fit={1.2} family={F.title} align="center" lh={1.5} hl={['شر', 'فساد', 'اجیر', 'مشران']} maxKashidaEm={0.62} />
       </div>
-      <Img src={staticFile('img/logo-white.png')} style={{position: 'absolute', top: 44, right: 56, height: 74}} />
+      <Img src={staticFile('img/logo-color.png')} style={{position: 'absolute', top: 44, right: 56, height: 74}} />
       <div style={{position: 'absolute', bottom: 46, right: 56, padding: '8px 30px 12px', borderRadius: 30, border: '1.5px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.08)', fontFamily: F.medium, fontSize: 30, color: C.white, direction: 'rtl'}}>تحلیلي ګرافیک</div>
       <Finish frame={0} />
     </AbsoluteFill>

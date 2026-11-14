@@ -28,8 +28,11 @@ export const Type: React.FC<{
   space?: number;
   fit?: number;
   minScale?: number;
+  pill?: [string, string];
+  pillGlow?: string;
+  hlInk?: string;
   maxLines?: number;
-}> = ({text, a, b, t, size: size0, maxW, fit = 1, minScale = 0.8, maxLines = 5, family = F.body, hlFamily, hl = [], align = 'right', color = C.white, lh = 1.75, out = 0, lead = 0.14, maxKashidaEm, space}) => {
+}> = ({text, a, b, t, size: size0, maxW, fit = 1, minScale = 0.8, pill = [C.acc2, C.acc], pillGlow = 'rgba(245,160,0,', hlInk = C.deep, maxLines = 5, family = F.body, hlFamily, hl = [], align = 'right', color = C.white, lh = 1.75, out = 0, lead = 0.14, maxKashidaEm, space}) => {
   // Pick the line count whose lines are most even (least kashida needed), scaling the type between
   // minScale and fit so the justified block fills maxW and no margin is left empty.
   const {lay, size} = useMemo(() => {
@@ -105,46 +108,48 @@ export const Type: React.FC<{
                 maskImage: mask,
               }}
             >
-              {ws.map((w) => {
+              {ws.map((w, q) => {
+                const px = size * 0.1;
                 const {t0, t1} = wt[w.idx];
                 const k = spT(t, t0 - 0.05, {damping: 20, stiffness: 150, mass: 0.7});
                 const p = w.hl ? prog(t, t1 - 0.12, t1 + 0.42, easeOut) : 0;
-                const sh = w.hl ? prog(t, t1 + 0.25, t1 + 1.1, soft) : 0;
-                const px = size * 0.1;
-                const pw = w.w + px * 2;
                 return (
                   <React.Fragment key={w.idx}>
-                    {w.hl && p > 0 && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          right: w.x + padX - px,
-                          top: pad + lineH * 0.13,
-                          width: pw,
-                          height: lineH * 0.76,
-                          borderRadius: lineH * 0.3,
-                          background: `linear-gradient(100deg, ${C.acc2}, ${C.acc} 70%)`,
-                          transform: `scaleX(${p})`,
-                          transformOrigin: '100% 50%',
-                          boxShadow: `0 0 ${size * 0.7}px rgba(245,160,0,${0.28 + 0.4 * Math.sin(Math.PI * clamp01(sh * 1.2))}), inset 0 2px 0 rgba(255,255,255,0.45)`,
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {sh > 0 && sh < 1 && (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: -10,
-                              bottom: -10,
-                              width: pw * 0.5,
-                              left: pw * (1.1 - 1.8 * sh),
-                              transform: 'skewX(-22deg)',
-                              background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.85), rgba(255,255,255,0))',
-                            }}
-                          />
-                        )}
-                      </div>
-                    )}
+                    {w.hl && (q === 0 || !ws[q - 1].hl) && (() => {
+                      // one pill for a run of neighbouring keywords; it grows word by word
+                      let qq = q;
+                      while (qq + 1 < ws.length && ws[qq + 1].hl) qq++;
+                      const run = ws.slice(q, qq + 1);
+                      let left = 0;
+                      let shK = 0;
+                      for (const r of run) {
+                        const rt = wt[r.idx].t1;
+                        const rp = prog(t, rt - 0.12, rt + 0.42, easeOut);
+                        if (rp > 0) left = r.x + r.w * rp;
+                        shK = prog(t, rt + 0.25, rt + 1.1, soft);
+                      }
+                      if (left <= 0) return null;
+                      const pw = left - w.x + px * 2;
+                      return (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            right: w.x + padX - px,
+                            top: pad + lineH * 0.14,
+                            width: pw,
+                            height: lineH * 0.74,
+                            borderRadius: lineH * 0.12,
+                            background: `linear-gradient(100deg, ${pill[0]}, ${pill[1]} 70%)`,
+                            boxShadow: `0 0 ${size * 0.6}px ${pillGlow}${(0.22 + 0.35 * Math.sin(Math.PI * clamp01(shK * 1.2))).toFixed(2)}), inset 0 2px 0 rgba(255,255,255,0.4)`,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {shK > 0 && shK < 1 && (
+                            <div style={{position: 'absolute', top: -10, bottom: -10, width: Math.min(pw * 0.5, size * 3), left: pw * (1.1 - 1.8 * shK), transform: 'skewX(-22deg)', background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,0))'}} />
+                          )}
+                        </div>
+                      );
+                    })()}
                     <span
                       style={{
                         position: 'absolute',
@@ -156,7 +161,7 @@ export const Type: React.FC<{
                         direction: 'rtl',
                         fontFamily: w.hl && hlFamily ? hlFamily : family,
                         fontSize: size,
-                        color: w.hl ? interpolateColors(p, [0, 1], [color, C.deep]) : color,
+                        color: w.hl ? interpolateColors(p, [0, 1], [color, hlInk]) : color,
                         transform: `translateY(${(1 - k) * size * 0.2}px)`,
                       }}
                     >

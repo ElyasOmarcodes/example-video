@@ -4,10 +4,7 @@ import {cancelRender, continueRender, delayRender, staticFile} from 'remotion';
 const FACES: [string, string][] = [
   ['QudsB', 'quds_bold.ttf'],
   ['QudsXK', 'quds_extrablack.ttf'],
-  ['VazL', 'Vazirmatn-Light.ttf'],
-  ['VazR', 'Vazirmatn-Regular.ttf'],
-  ['VazM', 'Vazirmatn-Medium.ttf'],
-  ['VazSB', 'Vazirmatn-SemiBold.ttf'],
+  ['QudsXB', 'quds_extrabold.ttf'],
 ];
 
 /** Loads every face, then flips to true. Text is measured on a canvas, so nothing renders before this. */
