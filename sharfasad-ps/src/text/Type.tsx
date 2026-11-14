@@ -3,6 +3,7 @@ import {interpolateColors} from 'remotion';
 import {C, F, clamp01, easeOut, lerp, prog, soft, spT, strip, wordTimes} from '../lib';
 import {layoutText} from './kashida';
 
+
 /**
  * Kashida-justified RTL text that writes itself on, right to left, in step with the voice.
  * Each line is unveiled by a soft-edged mask whose edge tracks the word being spoken; a warm
@@ -25,11 +26,27 @@ export const Type: React.FC<{
   lead?: number;
   maxKashidaEm?: number;
   space?: number;
-}> = ({text, a, b, t, size, maxW, family = F.body, hlFamily, hl = [], align = 'right', color = C.white, lh = 1.75, out = 0, lead = 0.14, maxKashidaEm, space}) => {
-  const lay = useMemo(
-    () => layoutText(text, {size, family, hlFamily, maxW, hl: (w) => hl.includes(strip(w)), maxKashidaEm, space}),
-    [text, size, family, hlFamily, maxW, hl.join('|'), maxKashidaEm, space],
-  );
+  fit?: number;
+  minScale?: number;
+  maxLines?: number;
+}> = ({text, a, b, t, size: size0, maxW, fit = 1, minScale = 0.8, maxLines = 5, family = F.body, hlFamily, hl = [], align = 'right', color = C.white, lh = 1.75, out = 0, lead = 0.14, maxKashidaEm, space}) => {
+  // Pick the line count whose lines are most even (least kashida needed), scaling the type between
+  // minScale and fit so the justified block fills maxW and no margin is left empty.
+  const {lay, size} = useMemo(() => {
+    const base = {family, hlFamily, maxW, hl: (w: string) => hl.includes(strip(w)), maxKashidaEm, space, center: align === 'center'};
+    const n = text.split(' ').filter(Boolean).length;
+    let best: {L: number; s: number; score: number} | null = null;
+    for (let L = 1; L <= Math.min(maxLines, n); L++) {
+      const l0 = layoutText(text, {...base, size: size0, lines: L});
+      const s = Math.min(fit, (maxW / l0.width) * 0.995);
+      if (s < minScale) continue;
+      const score = l0.ragged * 1.4 + Math.max(0, 1 - s) * 0.6 - Math.min(s, 1.4) * 0.12 + L * 0.015;
+      if (!best || score < best.score) best = {L, s, score};
+    }
+    const pick = best ?? {L: maxLines, s: minScale};
+    const size = size0 * pick.s;
+    return {lay: layoutText(text, {...base, size, lines: pick.L}), size};
+  }, [text, size0, family, hlFamily, maxW, hl.join('|'), maxKashidaEm, space, fit, minScale, maxLines, align]);
   const wt = useMemo(() => wordTimes(text.split(' ').filter(Boolean), a - lead, b - lead), [text, a, b, lead]);
   const lineH = size * lh;
   const pad = size * 0.45;
@@ -93,7 +110,7 @@ export const Type: React.FC<{
                 const k = spT(t, t0 - 0.05, {damping: 20, stiffness: 150, mass: 0.7});
                 const p = w.hl ? prog(t, t1 - 0.12, t1 + 0.42, easeOut) : 0;
                 const sh = w.hl ? prog(t, t1 + 0.25, t1 + 1.1, soft) : 0;
-                const px = size * 0.16;
+                const px = size * 0.1;
                 const pw = w.w + px * 2;
                 return (
                   <React.Fragment key={w.idx}>

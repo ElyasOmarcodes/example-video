@@ -53,7 +53,7 @@ const measure = (s: string, font: string) => {
 
 export type LWord = {text: string; raw: string; idx: number; x: number; w: number; hl: boolean};
 export type LLine = {words: LWord[]; width: number};
-export type Layout = {lines: LLine[]; width: number};
+export type Layout = {lines: LLine[]; width: number; ragged: number};
 
 export type LayoutOpts = {
   size: number;
@@ -64,12 +64,14 @@ export type LayoutOpts = {
   hl?: (w: string) => boolean;
   maxKashidaEm?: number; // longest single elongation
   justify?: boolean;
+  lines?: number; // force this many lines (maxW is then ignored; the caller scales the type to fit)
+  center?: boolean; // where a line that cannot be fully justified sits
 };
 
 const cache = new Map<string, Layout>();
 
 export const layoutText = (text: string, o: LayoutOpts): Layout => {
-  const key = JSON.stringify([text, o.size, o.family, o.hlFamily, o.maxW, o.space, o.maxKashidaEm, o.justify]) + (o.hl ? text.split(' ').map((w) => +o.hl!(w)).join('') : '');
+  const key = JSON.stringify([text, o.size, o.family, o.hlFamily, o.maxW, o.space, o.maxKashidaEm, o.justify, o.lines, o.center]) + (o.hl ? text.split(' ').map((w) => +o.hl!(w)).join('') : '');
   const hit = cache.get(key);
   if (hit) return hit;
 
@@ -89,7 +91,8 @@ export const layoutText = (text: string, o: LayoutOpts): Layout => {
 
   // balanced breaking: fewest lines that fit, then minimise the squared deviation between lines
   const total = span(0, n - 1);
-  let L = Math.max(1, Math.ceil(total / o.maxW));
+  const maxW = o.lines ? Infinity : o.maxW;
+  let L = o.lines ? Math.min(o.lines, n) : Math.max(1, Math.ceil(total / o.maxW));
   let breaks: number[] | null = null;
   for (; L <= n && !breaks; L++) {
     const target = total / L;
@@ -99,7 +102,7 @@ export const layoutText = (text: string, o: LayoutOpts): Layout => {
       for (let j = 1; j <= n; j++)
         for (let i = l - 1; i < j; i++) {
           const w = span(i, j - 1);
-          if (w > o.maxW && j - i > 1) continue;
+          if (w > maxW && j - i > 1) continue;
           const c = best[i][l - 1].cost + (w - target) ** 2 * (j - i === 1 && n > 2 ? 3 : 1);
           if (c < best[j][l].cost) best[j][l] = {cost: c, prev: i};
         }
@@ -120,7 +123,8 @@ export const layoutText = (text: string, o: LayoutOpts): Layout => {
     ranges.push([s, e - 1]);
     s = e;
   }
-  const block = Math.min(o.maxW, Math.max(...ranges.map(([i, j]) => span(i, j))));
+  const block = Math.min(maxW, Math.max(...ranges.map(([i, j]) => span(i, j))));
+  const ragged = Math.max(...ranges.map(([i, j]) => (block - span(i, j)) / block));
   const tw = (f: string) => measure('بـب', f) - measure('بب', f);
   const maxK = o.maxKashidaEm ?? 0.5;
 
@@ -151,9 +155,9 @@ export const layoutText = (text: string, o: LayoutOpts): Layout => {
     const nat = w2.reduce((a, b) => a + b, 0) + gap * (out.length - 1);
     const rest = block - nat;
     // the remainder (less than one tatweel when justified) is shared by the gaps; a lone word is centred
-    const g = out.length > 1 ? gap + Math.min(rest / (out.length - 1), o.justify === false ? 0 : gap * 0.9) : gap;
+    const g = out.length > 1 ? gap + Math.min(rest / (out.length - 1), o.justify === false ? 0 : gap * 0.45) : gap;
     const used = w2.reduce((a, b) => a + b, 0) + g * (out.length - 1);
-    let x = (block - used) / 2; // distance from the right edge
+    let x = o.center ? (block - used) / 2 : 0; // distance from the right edge
     const lw: LWord[] = out.map((text, q) => {
       const r = {text, raw: words[idxs[q]], idx: idxs[q], x, w: w2[q], hl: isHl[idxs[q]]};
       x += w2[q] + g;
@@ -162,7 +166,7 @@ export const layoutText = (text: string, o: LayoutOpts): Layout => {
     return {words: lw, width: used};
   });
 
-  const res = {lines, width: block};
+  const res = {lines, width: block, ragged};
   cache.set(key, res);
   return res;
 };

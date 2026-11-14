@@ -14,7 +14,7 @@ export const sectionMix = (t: number) => {
 export const camera = (t: number) => {
   const beat = TL.sections.reduce((acc, s) => acc + Math.exp(-Math.pow((t - s.t0 - 0.3) / 0.9, 2)), 0);
   return {
-    ry: Math.sin(t * 0.31) * 5.5 + Math.sin(t * 0.13 + 1) * 2.5,
+    ry: Math.sin(t * 0.31) * 3.8 + Math.sin(t * 0.13 + 1) * 1.6,
     rx: Math.sin(t * 0.23 + 0.7) * 2.4 - 1,
     z: Math.sin(t * 0.17) * 40 - beat * 120,
     x: Math.sin(t * 0.21 + 2) * 14,
