@@ -1,0 +1,9 @@
+{
+  "name": "lalmasjid-ps",
+  "private": true,
+  "scripts": {
+    "audio": "python3 audio/build.py",
+    "render": "remotion render Main out/silent.mp4 --muted",
+    "mux": "ffmpeg -loglevel error -y -i out/silent.mp4 -i public/final.wav -map 0:v -map 1:a -c:v copy -af loudnorm=I=-14:TP=-1.5:LRA=11 -ar 48000 -c:a aac -b:a 256k -movflags +faststart -shortest out/lalmasjid-ps.mp4"
+  }
+}
