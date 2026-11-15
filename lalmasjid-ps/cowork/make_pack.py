@@ -86,3 +86,14 @@ w('\n## When finished\n')
 w('Give me `lalmasjid-clips.zip` (all `<shot>.mp4`) plus `A1…A8` and the start frames, and report any shot that failed.')
 open(os.path.join(ROOT, 'cowork', 'PROMPT.md'), 'w').write('\n'.join(L) + '\n')
 print('written', len(shots), 'shots;', len(os.listdir(os.path.join(PK, 'motion'))), 'motion clips staged')
+
+# Per-shot, fully written prompts (also usable by hand on higgsfield.ai)
+P = ['# Per-shot prompts\n', 'Each shot: 1) upload `first/<shot>.jpg` (screenshot) and generate the start image with the IMAGE prompt; 2) generate the clip with the VIDEO prompt, start image = step 1 result, video reference = `motion/<shot>.mp4`.\n']
+for s in shots:
+    a, d = SCENE[s['scene']]
+    P.append(f"## {s['id']}  ({s['scene']}, {s['gen_dur']} s, {MOVE[s['move']]})\n")
+    P.append(f"- Screenshot: `first/{s['id']}.jpg` · Motion: `motion/{s['id']}.mp4` · Look: `plates/{s['scene']}.jpg` + {a}")
+    P.append(f"- IMAGE (nano_banana_pro, 2k, 9:16): Photoreal re-render of the reference screenshot, keeping its exact camera angle, framing and object layout. {d} {LOOK}")
+    P.append(f"- VIDEO (seedance_2_5, omni_reference, 720p, 9:16, {s['gen_dur']} s, no audio): Follow the exact camera motion and timing of the reference video: {MOVE[s['move']]}. Photoreal, every object consistent with the start image; subtle natural motion only (smoke drift, flickering light, dust). {d} {LOOK}\n")
+open(os.path.join(ROOT, 'cowork', 'SHOT-PROMPTS.md'), 'w').write('\n'.join(P))
+print('SHOT-PROMPTS.md written')

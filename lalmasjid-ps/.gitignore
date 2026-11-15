@@ -5,3 +5,5 @@ renders/shots/*/
 cowork/pack/
 *.zip
 renders/shots/*.done
+public/bg.mp4
+public/clips/

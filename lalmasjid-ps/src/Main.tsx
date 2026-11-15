@@ -1,10 +1,12 @@
 import React from 'react';
-import {AbsoluteFill, Easing, Img, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Easing, Img, OffthreadVideo, staticFile, useCurrentFrame} from 'remotion';
 import tl from '../timeline.json';
 import {useFonts} from './fonts';
 
 /* ------------------------------------------------------------------ basics */
 export const FPS = 30;
+/** true: background is the assembled shot video (public/bg.mp4); false: still plates with camera moves. */
+export const USE_BG = true;
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const eio = Easing.bezier(0.65, 0, 0.35, 1);
@@ -341,9 +343,11 @@ export const Main: React.FC = () => {
   const fire = FIRE.has(cur.scene) ? prog(t, cur.a, cur.a + 1.5) : 0;
   return (
     <AbsoluteFill style={{background: '#02040C', overflow: 'hidden'}}>
-      {vis.map((b) => (
-        <Plate key={b.i} b={b} t={t} />
-      ))}
+      {USE_BG ? (
+        <OffthreadVideo src={staticFile('bg.mp4')} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+      ) : (
+        vis.map((b) => <Plate key={b.i} b={b} t={t} />)
+      )}
       <Particles t={t} fire={fire} />
       <Finish frame={frame} />
       <CutFlash t={t} />
