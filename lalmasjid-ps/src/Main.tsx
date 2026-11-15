@@ -127,7 +127,7 @@ const Plate: React.FC<{b: Block; t: number}> = ({b, t}) => {
           position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
           transformOrigin: `${ox}% ${oy}%`,
           transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(${scale})`,
-          filter: `blur(${(1 - inK) * 10 + outK * 6}px) saturate(1.06) contrast(1.05)`,
+          filter: inK < 1 || outK > 0 ? `blur(${(1 - inK) * 10 + outK * 6}px)` : undefined,
         }}
       />
     </AbsoluteFill>
@@ -145,10 +145,10 @@ const Particles: React.FC<{t: number; fire: number}> = ({t, fire}) => (
       const r = ember ? 2 + depth * 4 : 2 + depth * depth * 12;
       return (
         <div key={i} style={{position: 'absolute', left: x, top: y, width: r * 2, height: r * 2, borderRadius: '50%',
-          background: ember ? '#FFB060' : 'rgba(220,230,255,1)',
+          background: ember ? '#FFB060' : 'radial-gradient(circle, rgba(220,230,255,1) 0%, rgba(220,230,255,0) 70%)',
           boxShadow: ember ? '0 0 12px 3px rgba(255,140,40,0.8)' : 'none',
           opacity: ember ? fire * (0.5 + 0.5 * Math.sin(t * 3 + i)) : (0.08 + (1 - depth) * 0.2),
-          filter: `blur(${ember ? 0.5 : depth * depth * 6}px)`}} />
+          }} />
       );
     })}
   </AbsoluteFill>
@@ -185,7 +185,7 @@ const Chrome: React.FC<{t: number; b: Block}> = ({t, b}) => {
   const show = prog(t, 0.6, 1.6) * (1 - prog(t, tl.total - 3.4, tl.total - 2.6));
   return (
     <AbsoluteFill style={{opacity: show}}>
-      <Img src={staticFile('img/logo-color.png')} style={{position: 'absolute', top: 70, right: 64, height: 74}} />
+      <Img src={staticFile('img/logo-nahzat.png')} style={{position: 'absolute', top: 56, right: 56, height: 118, filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.6))'}} />
       <div style={{position: 'absolute', top: 92, left: 64, display: 'flex', gap: 9, direction: 'ltr', alignItems: 'center'}}>
         {BLOCKS.map((x) => (
           <div key={x.i} style={{width: x.i === b.i ? 26 : 9, height: 9, borderRadius: 5, background: x.i < b.i ? C.gold : x.i === b.i ? C.amber : 'rgba(255,255,255,0.28)', transition: 'none'}} />
@@ -322,7 +322,7 @@ const EndCard: React.FC<{t: number}> = ({t}) => {
   if (k <= 0) return null;
   return (
     <AbsoluteFill style={{background: `rgba(3,6,20,${0.92 * k})`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 40}}>
-      <Img src={staticFile('img/logo-color.png')} style={{height: 170, opacity: k, transform: `scale(${lerp(0.9, 1, k)})`}} />
+      <Img src={staticFile('img/logo-nahzat.png')} style={{height: 300, opacity: k, transform: `scale(${lerp(0.9, 1, k)})`}} />
       <div style={{fontFamily: 'QudsXB', fontSize: 56, color: C.white, direction: 'rtl', opacity: prog(t, a + 0.5, a + 1.3)}}>دولت د قانون مالک نه دی</div>
       <div style={{fontFamily: 'QudsB', fontSize: 40, color: C.gold, direction: 'rtl', opacity: prog(t, a + 0.8, a + 1.6)}}>د قانون د پلي کولو مسئول دی</div>
     </AbsoluteFill>

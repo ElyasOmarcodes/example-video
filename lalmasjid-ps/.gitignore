@@ -1,3 +1,6 @@
 node_modules
 out
 renders/lalmasjid-ps.mp4
+renders/shots/*/
+cowork/pack/
+*.zip

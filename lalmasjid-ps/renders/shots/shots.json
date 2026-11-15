@@ -1,0 +1,551 @@
+[
+ {
+  "id": "L01_1",
+  "line": "L01",
+  "scene": "s01",
+  "move": "descend",
+  "t0": 2.2,
+  "dur": 7.156,
+  "gen_dur": 8
+ },
+ {
+  "id": "L02_1",
+  "line": "L02",
+  "scene": "s01",
+  "move": "orbitL",
+  "t0": 9.356,
+  "dur": 5.405,
+  "gen_dur": 6
+ },
+ {
+  "id": "L03_1",
+  "line": "L03",
+  "scene": "s02",
+  "move": "push",
+  "t0": 14.761,
+  "dur": 6.747,
+  "gen_dur": 7
+ },
+ {
+  "id": "L04_1",
+  "line": "L04",
+  "scene": "s01",
+  "move": "orbitR",
+  "t0": 21.508,
+  "dur": 7.154,
+  "gen_dur": 8
+ },
+ {
+  "id": "L04_2",
+  "line": "L04",
+  "scene": "s01",
+  "move": "truck",
+  "t0": 28.662,
+  "dur": 7.154,
+  "gen_dur": 8
+ },
+ {
+  "id": "L04_3",
+  "line": "L04",
+  "scene": "s01",
+  "move": "pull",
+  "t0": 35.816,
+  "dur": 7.154,
+  "gen_dur": 8
+ },
+ {
+  "id": "L05_1",
+  "line": "L05",
+  "scene": "s03",
+  "move": "descend",
+  "t0": 42.97,
+  "dur": 7.246,
+  "gen_dur": 8
+ },
+ {
+  "id": "L05_2",
+  "line": "L05",
+  "scene": "s03",
+  "move": "push",
+  "t0": 50.216,
+  "dur": 7.246,
+  "gen_dur": 8
+ },
+ {
+  "id": "L06_1",
+  "line": "L06",
+  "scene": "s03",
+  "move": "orbitL",
+  "t0": 57.462,
+  "dur": 7.199,
+  "gen_dur": 8
+ },
+ {
+  "id": "L06_2",
+  "line": "L06",
+  "scene": "s03",
+  "move": "crane",
+  "t0": 64.661,
+  "dur": 7.199,
+  "gen_dur": 8
+ },
+ {
+  "id": "L07_1",
+  "line": "L07",
+  "scene": "s04",
+  "move": "orbitR",
+  "t0": 71.86,
+  "dur": 6.869,
+  "gen_dur": 7
+ },
+ {
+  "id": "L07_2",
+  "line": "L07",
+  "scene": "s04",
+  "move": "truck",
+  "t0": 78.729,
+  "dur": 6.869,
+  "gen_dur": 7
+ },
+ {
+  "id": "L07_3",
+  "line": "L07",
+  "scene": "s04",
+  "move": "pull",
+  "t0": 85.599,
+  "dur": 6.869,
+  "gen_dur": 7
+ },
+ {
+  "id": "L08_1",
+  "line": "L08",
+  "scene": "s05",
+  "move": "descend",
+  "t0": 92.468,
+  "dur": 5.081,
+  "gen_dur": 6
+ },
+ {
+  "id": "L08_2",
+  "line": "L08",
+  "scene": "s05",
+  "move": "push",
+  "t0": 97.549,
+  "dur": 5.081,
+  "gen_dur": 6
+ },
+ {
+  "id": "L09_1",
+  "line": "L09",
+  "scene": "s06",
+  "move": "orbitL",
+  "t0": 102.631,
+  "dur": 6.549,
+  "gen_dur": 7
+ },
+ {
+  "id": "L09_2",
+  "line": "L09",
+  "scene": "s06",
+  "move": "crane",
+  "t0": 109.18,
+  "dur": 6.549,
+  "gen_dur": 7
+ },
+ {
+  "id": "L09_3",
+  "line": "L09",
+  "scene": "s06",
+  "move": "orbitR",
+  "t0": 115.73,
+  "dur": 6.549,
+  "gen_dur": 7
+ },
+ {
+  "id": "L10_1",
+  "line": "L10",
+  "scene": "s06",
+  "move": "truck",
+  "t0": 122.279,
+  "dur": 6.452,
+  "gen_dur": 7
+ },
+ {
+  "id": "L10_2",
+  "line": "L10",
+  "scene": "s06",
+  "move": "pull",
+  "t0": 128.731,
+  "dur": 6.452,
+  "gen_dur": 7
+ },
+ {
+  "id": "L11_1",
+  "line": "L11",
+  "scene": "s07",
+  "move": "descend",
+  "t0": 135.183,
+  "dur": 7.577,
+  "gen_dur": 8
+ },
+ {
+  "id": "L11_2",
+  "line": "L11",
+  "scene": "s07",
+  "move": "push",
+  "t0": 142.76,
+  "dur": 7.577,
+  "gen_dur": 8
+ },
+ {
+  "id": "L12_1",
+  "line": "L12",
+  "scene": "s08",
+  "move": "pull",
+  "t0": 150.336,
+  "dur": 3.982,
+  "gen_dur": 4
+ },
+ {
+  "id": "L13_1",
+  "line": "L13",
+  "scene": "s09",
+  "move": "crane",
+  "t0": 154.318,
+  "dur": 6.245,
+  "gen_dur": 7
+ },
+ {
+  "id": "L13_2",
+  "line": "L13",
+  "scene": "s09",
+  "move": "orbitR",
+  "t0": 160.563,
+  "dur": 6.245,
+  "gen_dur": 7
+ },
+ {
+  "id": "L13_3",
+  "line": "L13",
+  "scene": "s09",
+  "move": "truck",
+  "t0": 166.809,
+  "dur": 6.245,
+  "gen_dur": 7
+ },
+ {
+  "id": "L14_1",
+  "line": "L14",
+  "scene": "s08",
+  "move": "push",
+  "t0": 173.054,
+  "dur": 3.73,
+  "gen_dur": 4
+ },
+ {
+  "id": "L15_1",
+  "line": "L15",
+  "scene": "s10",
+  "move": "push",
+  "t0": 176.784,
+  "dur": 7.618,
+  "gen_dur": 8
+ },
+ {
+  "id": "L15_2",
+  "line": "L15",
+  "scene": "s10",
+  "move": "push",
+  "t0": 184.402,
+  "dur": 7.618,
+  "gen_dur": 8
+ },
+ {
+  "id": "L15_3",
+  "line": "L15",
+  "scene": "s10",
+  "move": "orbitL",
+  "t0": 192.019,
+  "dur": 7.618,
+  "gen_dur": 8
+ },
+ {
+  "id": "L16_1",
+  "line": "L16",
+  "scene": "s11",
+  "move": "crane",
+  "t0": 199.637,
+  "dur": 7.295,
+  "gen_dur": 8
+ },
+ {
+  "id": "L16_2",
+  "line": "L16",
+  "scene": "s11",
+  "move": "orbitR",
+  "t0": 206.932,
+  "dur": 7.295,
+  "gen_dur": 8
+ },
+ {
+  "id": "L17_1",
+  "line": "L17",
+  "scene": "s10",
+  "move": "truck",
+  "t0": 214.227,
+  "dur": 7.452,
+  "gen_dur": 8
+ },
+ {
+  "id": "L17_2",
+  "line": "L17",
+  "scene": "s10",
+  "move": "pull",
+  "t0": 221.679,
+  "dur": 7.452,
+  "gen_dur": 8
+ },
+ {
+  "id": "L18_1",
+  "line": "L18",
+  "scene": "s12",
+  "move": "descend",
+  "t0": 229.131,
+  "dur": 7.677,
+  "gen_dur": 8
+ },
+ {
+  "id": "L18_2",
+  "line": "L18",
+  "scene": "s12",
+  "move": "push",
+  "t0": 236.808,
+  "dur": 7.677,
+  "gen_dur": 8
+ },
+ {
+  "id": "L19_1",
+  "line": "L19",
+  "scene": "s12",
+  "move": "orbitL",
+  "t0": 244.484,
+  "dur": 7.498,
+  "gen_dur": 8
+ },
+ {
+  "id": "L19_2",
+  "line": "L19",
+  "scene": "s12",
+  "move": "crane",
+  "t0": 251.982,
+  "dur": 7.498,
+  "gen_dur": 8
+ },
+ {
+  "id": "L20_1",
+  "line": "L20",
+  "scene": "s13",
+  "move": "orbitR",
+  "t0": 259.48,
+  "dur": 6.852,
+  "gen_dur": 7
+ },
+ {
+  "id": "L20_2",
+  "line": "L20",
+  "scene": "s13",
+  "move": "truck",
+  "t0": 266.332,
+  "dur": 6.852,
+  "gen_dur": 7
+ },
+ {
+  "id": "L20_3",
+  "line": "L20",
+  "scene": "s13",
+  "move": "pull",
+  "t0": 273.184,
+  "dur": 6.852,
+  "gen_dur": 7
+ },
+ {
+  "id": "L21_1",
+  "line": "L21",
+  "scene": "s14",
+  "move": "descend",
+  "t0": 280.036,
+  "dur": 7.898,
+  "gen_dur": 8
+ },
+ {
+  "id": "L21_2",
+  "line": "L21",
+  "scene": "s14",
+  "move": "push",
+  "t0": 287.933,
+  "dur": 7.898,
+  "gen_dur": 8
+ },
+ {
+  "id": "L22_1",
+  "line": "L22",
+  "scene": "s06",
+  "move": "orbitL",
+  "t0": 295.831,
+  "dur": 6.545,
+  "gen_dur": 7
+ },
+ {
+  "id": "L22_2",
+  "line": "L22",
+  "scene": "s06",
+  "move": "crane",
+  "t0": 302.376,
+  "dur": 6.545,
+  "gen_dur": 7
+ },
+ {
+  "id": "L22_3",
+  "line": "L22",
+  "scene": "s06",
+  "move": "orbitR",
+  "t0": 308.92,
+  "dur": 6.545,
+  "gen_dur": 7
+ },
+ {
+  "id": "L23_1",
+  "line": "L23",
+  "scene": "s11",
+  "move": "truck",
+  "t0": 315.465,
+  "dur": 4.062,
+  "gen_dur": 5
+ },
+ {
+  "id": "L24_1",
+  "line": "L24",
+  "scene": "s11",
+  "move": "pull",
+  "t0": 319.527,
+  "dur": 4.043,
+  "gen_dur": 5
+ },
+ {
+  "id": "L24_2",
+  "line": "L24",
+  "scene": "s11",
+  "move": "descend",
+  "t0": 323.57,
+  "dur": 4.043,
+  "gen_dur": 5
+ },
+ {
+  "id": "L25_1",
+  "line": "L25",
+  "scene": "s13",
+  "move": "push",
+  "t0": 327.612,
+  "dur": 7.113,
+  "gen_dur": 8
+ },
+ {
+  "id": "L26_1",
+  "line": "L26",
+  "scene": "s13",
+  "move": "orbitL",
+  "t0": 334.725,
+  "dur": 6.545,
+  "gen_dur": 7
+ },
+ {
+  "id": "L26_2",
+  "line": "L26",
+  "scene": "s13",
+  "move": "crane",
+  "t0": 341.27,
+  "dur": 6.545,
+  "gen_dur": 7
+ },
+ {
+  "id": "L27_1",
+  "line": "L27",
+  "scene": "s14",
+  "move": "orbitR",
+  "t0": 347.815,
+  "dur": 5.977,
+  "gen_dur": 6
+ },
+ {
+  "id": "L27_2",
+  "line": "L27",
+  "scene": "s14",
+  "move": "truck",
+  "t0": 353.792,
+  "dur": 5.977,
+  "gen_dur": 6
+ },
+ {
+  "id": "L27_3",
+  "line": "L27",
+  "scene": "s14",
+  "move": "pull",
+  "t0": 359.769,
+  "dur": 5.977,
+  "gen_dur": 6
+ },
+ {
+  "id": "L28_1",
+  "line": "L28",
+  "scene": "s13",
+  "move": "crane",
+  "t0": 365.746,
+  "dur": 7.122,
+  "gen_dur": 8
+ },
+ {
+  "id": "L29_1",
+  "line": "L29",
+  "scene": "s14",
+  "move": "push",
+  "t0": 372.868,
+  "dur": 7.651,
+  "gen_dur": 8
+ },
+ {
+  "id": "L29_2",
+  "line": "L29",
+  "scene": "s14",
+  "move": "orbitL",
+  "t0": 380.519,
+  "dur": 7.651,
+  "gen_dur": 8
+ },
+ {
+  "id": "L30_1",
+  "line": "L30",
+  "scene": "s01",
+  "move": "pull",
+  "t0": 388.17,
+  "dur": 6.113,
+  "gen_dur": 7
+ },
+ {
+  "id": "L30_2",
+  "line": "L30",
+  "scene": "s01",
+  "move": "orbitR",
+  "t0": 394.283,
+  "dur": 6.113,
+  "gen_dur": 7
+ },
+ {
+  "id": "L30_3",
+  "line": "L30",
+  "scene": "s01",
+  "move": "truck",
+  "t0": 400.397,
+  "dur": 6.113,
+  "gen_dur": 7
+ }
+]

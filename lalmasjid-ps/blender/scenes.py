@@ -4,7 +4,7 @@ Usage: python3 scenes.py OUTDIR [scene ...]"""
 import bpy, math, random, json, sys, os
 from mathutils import Vector
 
-OUT = sys.argv[1]
+OUT = sys.argv[1] if len(sys.argv) > 1 else '.'
 ONLY = sys.argv[2:]
 HERE = os.path.dirname(os.path.abspath(__file__))
 COUNTRIES = json.load(open(os.path.join(HERE, '..', 'data', 'countries.json')))
@@ -411,8 +411,9 @@ def s14_dawn():
     camera((6, -26, 1.8), (0, 16, 7), 30)
     render('s14_dawn')
 
-SCENES = [s01_siege, s02_map, s03_standoff, s04_zia, s05_brothers, s06_escalation, s07_china,
+if __name__ == '__main__':
+  SCENES = [s01_siege, s02_map, s03_standoff, s04_zia, s05_brothers, s06_escalation, s07_china,
           s08_clashes, s09_escape, s10_operation, s11_hall, s12_numbers, s13_court, s14_dawn]
-for fn in SCENES:
+  for fn in SCENES:
     if ONLY and fn.__name__ not in ONLY: continue
     fn()
