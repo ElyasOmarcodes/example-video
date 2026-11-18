@@ -1,0 +1,57 @@
+#ov { position: absolute; inset: 0; pointer-events: none; overflow: hidden; direction: rtl; font-family: 'QudsXB', 'Inter', sans-serif; color: #fff; }
+#ov .shade { position: absolute; inset: 0; background:
+  linear-gradient(to bottom, rgba(3,6,18,0.82) 0%, rgba(3,6,18,0) 17%, rgba(3,6,18,0) 58%, rgba(3,6,18,0.75) 76%, rgba(3,6,18,0.94) 100%),
+  radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.5) 100%); }
+#ov .logo { position: absolute; top: 46px; right: 52px; height: 112px; filter: drop-shadow(0 4px 14px rgba(0,0,0,0.6)); }
+#ov .dots { position: absolute; top: 96px; left: 56px; display: flex; gap: 9px; direction: ltr; }
+#ov .dot { width: 9px; height: 9px; border-radius: 5px; background: rgba(255,255,255,0.25); }
+#ov .dot.done { background: #c9a44a; }
+#ov .dot.cur { width: 30px; background: #f2c46a; box-shadow: 0 0 12px rgba(242,196,106,0.8); }
+#ov .kicker { position: absolute; top: 196px; left: 50%; white-space: nowrap; font-family: 'QudsB', 'Inter', sans-serif; font-size: 34px; color: #f2c46a;
+  padding: 8px 26px 10px; border-radius: 30px; background: rgba(8,14,34,0.55); border: 1px solid rgba(242,196,106,0.35); text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+#ov .date { position: absolute; top: 290px; left: 50%; display: flex; flex-direction: column; align-items: center; transform-origin: 50% 0; }
+#ov .date b { font-family: 'QudsXK'; font-size: 150px; line-height: 1.1; color: #fff; padding: 0 34px; border-radius: 22px;
+  background: linear-gradient(180deg,#1b2449 0%,#0f1735 50%,#0a1029 50%,#141c40 100%); border: 1.5px solid rgba(255,255,255,0.18); box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+#ov .date span { margin-top: 18px; font-size: 46px; color: #f2c46a; text-shadow: 0 3px 16px rgba(0,0,0,0.85); }
+#ov .labels { position: absolute; inset: 0; }
+#ov .lab { position: absolute; left: 0; top: 0; white-space: nowrap; font-family: 'QudsB'; font-size: 34px; padding: 4px 16px 6px; border-radius: 10px;
+  background: rgba(6,12,30,0.72); border: 1px solid rgba(255,255,255,0.18); color: #fff; }
+#ov .lab.hot { background: rgba(242,154,0,0.92); color: #10162c; border-color: #ffd27a; font-family: 'QudsXB'; }
+#ov .lab.country { background: none; border: none; font-family: 'QudsXK'; font-size: 54px; color: rgba(255,255,255,0.92); text-shadow: 0 4px 18px rgba(0,0,0,0.9); }
+#ov .lab.tag { font-size: 40px; font-family: 'QudsXB'; background: rgba(242,196,106,0.95); color: #10162c; }
+#ov .hero { position: absolute; top: 300px; left: 50%; display: flex; flex-direction: column; align-items: center; white-space: nowrap; }
+#ov .hero .num { font-family: 'QudsXK'; font-size: 190px; line-height: 1.15; color: #f2c46a; text-shadow: 0 0 40px rgba(242,180,60,0.45), 0 10px 40px rgba(0,0,0,0.8); direction: ltr; }
+#ov .hero .cap { font-size: 44px; color: rgba(255,255,255,0.9); text-shadow: 0 4px 18px rgba(0,0,0,0.9); }
+#ov .hero.red .num { color: #ff6a55; text-shadow: 0 0 40px rgba(255,80,60,0.45), 0 10px 40px rgba(0,0,0,0.8); }
+#ov .hero.blue .num { color: #8cc4ff; }
+#ov .hero.teal .num { color: #7fe0d4; }
+#ov .hero.q .num { font-size: 360px; color: #f2c46a; }
+#ov .list { position: absolute; top: 300px; left: 60px; display: flex; flex-direction: column; gap: 16px; }
+#ov .item { display: flex; align-items: center; gap: 18px; font-size: 46px; padding: 10px 26px 14px; border-radius: 16px; background: rgba(8,14,34,0.78); border: 1.5px solid rgba(255,255,255,0.14); }
+#ov .tick { width: 50px; height: 50px; border-radius: 12px; background: #f29a00; color: #0b1024; display: flex; align-items: center; justify-content: center; font-family: 'Inter'; font-weight: 800; font-size: 32px; }
+#ov .stamp { position: absolute; top: 1080px; left: 50%; font-family: 'QudsXK'; font-size: 84px; color: #ff4b3a; border: 8px solid #ff4b3a; border-radius: 18px; padding: 4px 40px 16px; background: rgba(40,0,0,0.25); }
+#ov .card { position: absolute; top: 300px; left: 50%; font-family: 'QudsXK'; font-size: 56px; color: #0b1024; background: #f2c46a; padding: 8px 40px 16px; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+#ov .basecard { position: absolute; top: 290px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+#ov .basecard span { font-family: 'QudsB'; font-size: 36px; color: #f2c46a; }
+#ov .basecard b { font-family: 'QudsXK'; font-size: 110px; line-height: 1.25; text-shadow: 0 8px 30px rgba(0,0,0,0.9); }
+#ov .basecard em { font-style: normal; font-size: 40px; color: rgba(255,255,255,0.85); }
+#ov .opts { position: absolute; top: 330px; left: 60px; right: 60px; display: flex; gap: 30px; justify-content: center; }
+#ov .opt { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 26px 10px 30px; border-radius: 26px; background: rgba(8,14,34,0.82); border: 2px solid rgba(255,255,255,0.18); }
+#ov .opt b { font-family: 'QudsXK'; font-size: 60px; }
+#ov .opt i { font-style: normal; font-family: 'QudsXK'; font-size: 90px; color: #f2c46a; line-height: 1.1; }
+#ov .opt.hot { border-color: #ff6a55; box-shadow: 0 0 40px rgba(255,90,60,0.35); }
+#ov .opt.hot b { color: #ff8a75; }
+#ov .phrase { position: absolute; left: 70px; right: 70px; top: 1440px; text-align: center; font-size: 66px; line-height: 1.55; text-shadow: 0 6px 24px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9); }
+#ov .phrase.big { top: 1260px; font-size: 76px; }
+#ov .phrase.brand { top: 1080px; font-family: 'QudsXK'; font-size: 150px; color: #f2c46a; }
+#ov .phrase span { display: inline-block; }
+#ov .k-actor { color: #7fd0ff; }
+#ov .k-hot { color: #ff6a55; }
+#ov .k-place { color: #f2c46a; }
+#ov .k-num { color: #f2c46a; }
+#ov .wipe { position: absolute; top: -10%; height: 120%; left: 0; width: 1944px; display: none;
+  background: linear-gradient(90deg, #0a1129 0%, #121c42 50%, #0a1129 100%); border-left: 10px solid #f2c46a; border-right: 10px solid #f2c46a;
+  box-shadow: 0 0 60px rgba(242,196,106,0.5); }
+#ov .wlogo { position: absolute; top: 50%; left: 50%; height: 260px; transform: translate(-50%, -50%) skewX(14deg); opacity: 0.9; }
+#ov .grain { position: absolute; inset: 0; opacity: 0.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"); background-size: 240px; }
