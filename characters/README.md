@@ -19,5 +19,19 @@ python3 characters/build/build_body.py           # bodies + rigs  → out/<id>_b
 python3 characters/build/build_char.py <id>       # look + clothes → out/<id>_char.blend
 python3 characters/build/render_sheet.py <id>     # Cycles turnarounds/details → out/sheets/<id>/
 python3 characters/build/export_glb.py <id>       # three.js GLB → out/glb/<id>.glb
+python3 characters/build/make_sheets.py           # sheet pages (Pashto labels) → out/sheets/<id>_{turnaround,details}.html
+python3 -m http.server 8765 --bind 127.0.0.1 --directory characters &
+node characters/build/sheets.cjs                  # sheet images → out/sheets/<id>_{turnaround,details}.png
 ```
+
+Deliverables:
+
+| File | What |
+|---|---|
+| `out/sheets/<id>_turnaround.png` | 8 angles (every 45°) on one sheet |
+| `out/sheets/<id>_details.png` | face front / three-quarter / profile, chest, hand, raised-arm pose, skeleton X-ray |
+| `out/sheets/<id>/*.png` | every render on its own (1000×1600 / 1000×1250) |
+| `out/<id>_char.blend` | the full character for Blender (rig, shape keys, hair curves, clothes, Cycles materials) |
+| `out/glb/<id>.glb` | the same character for three.js (baked skin, 163 bones, 10 morphs): president 19.7 MB, general 24.4 MB |
+
 three.js check: `characters/viewer/` (bundle with `node build.mjs`, serve `characters/`, open `viewer/index.html`).
