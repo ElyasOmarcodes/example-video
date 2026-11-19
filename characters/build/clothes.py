@@ -816,6 +816,27 @@ def belt_from(ob_src, name, z0, z1, off=0.004, allow=None):
     return link(bpy.data.objects.new(name, me))
 
 
+def belt_ring(bvh, name, z, height=0.044, off=0.004, n=96, cy=0.0):
+    """A closed belt: rays from outside toward the waist axis at 96 angles, two rows, welded seam."""
+    rows = [[], []]
+    for k in range(n + 1):
+        th = 2 * math.pi * k / n
+        d = Vector((math.sin(th), -math.cos(th), 0))
+        for r, dz in ((0, -height / 2), (1, height / 2)):
+            o = Vector((0, cy, z + dz)) + d * 0.6
+            loc, nrm = cast(bvh, o, -d, 1.2)
+            if loc is None:
+                loc, nrm = Vector((0, cy, z + dz)) + d * 0.16, d
+            rows[r].append(loc + nrm * off)
+    ob = ribbon(name, rows)
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+    bm.to_mesh(ob.data)
+    bm.free()
+    return ob
+
+
 def buckle(name, loc, nrm, mat, w=0.06, h=0.045):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
@@ -1007,10 +1028,11 @@ def dress(spec):
         scol, wings = shirt_collar(B, f'{cid}_scollar', neck_front, neck_back + 0.022)
         blade, knot = tie(B, f'{cid}_tie', neck_front + 0.004, z_button - 0.06)
         # belt over the jacket at the waist
-        nj = len(jk.data.vertices)
-        allow = np.ones(nj, bool)
-        allow[:len(used)] = B.arm_w[used] + B.hand_w[used] < 0.15
-        bl = belt_from(jk, f'{cid}_belt', z_waist - 0.025, z_waist + 0.025, 0.004, allow)
+        Vj, _ = mesh_arrays(jk)
+        torso_v = np.ones(len(Vj), bool)
+        torso_v[:len(used)] = (B.arm_w[used] + B.hand_w[used]) < 0.2
+        jb_torso = BVHTree.FromPolygons([Vector(v) for v in Vj], [list(p.vertices) for p in jk.data.polygons if all(torso_v[v] for v in p.vertices)])
+        bl = belt_ring(jb_torso, f'{cid}_belt', z_waist, 0.046, 0.0045, cy=float(B.h('spine04')[1]))
         loc, nrm = cast(jb, (0, -0.6, z_waist), (0, 1, 0))
         bk = buckle(f'{cid}_buckle', loc + nrm * 0.004, nrm, brass, 0.055, 0.05)
         # pockets with flaps and buttons, ribbons, rank boards, collar tabs

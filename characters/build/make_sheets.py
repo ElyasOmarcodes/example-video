@@ -11,7 +11,7 @@ CSS = """
 @font-face{font-family:QK;src:url(../../fonts/quds_extrablack.ttf)}
 *{box-sizing:border-box;margin:0;padding:0} body{background:#0f131b;color:#fff;font-family:QB;direction:rtl;padding:48px 56px}
 h1{font-family:QK;font-size:76px;color:#fff;line-height:1.3} h1 span{color:#f2c46a}
-.sub{font-size:30px;color:#c9cfdb;margin:6px 0 30px} .row{display:flex;gap:18px;direction:ltr;align-items:flex-end}
+.sub{font-size:30px;color:#c9cfdb;margin:6px 0 30px} .row{display:flex;gap:18px;direction:ltr;align-items:flex-end;justify-content:flex-end}
 figure{display:flex;flex-direction:column;align-items:center;gap:10px} figure img{display:block;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
 figcaption{font-family:QXB;font-size:28px;color:#f2c46a;direction:rtl} .stats{direction:rtl;display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
 .chip{background:#1b2231;border:1px solid #2e3a52;border-radius:40px;padding:10px 26px;font-size:26px;color:#e8ecf4} .chip b{color:#f2c46a;font-family:QXB}
