@@ -1,0 +1,4 @@
+out/preview/
+viewer/bundle.js
+build/__pycache__/
+*.blend1

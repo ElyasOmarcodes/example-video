@@ -1,0 +1,18 @@
+{
+ "president": {
+  "height": "1.83",
+  "hair": "49٬073",
+  "garments": 20,
+  "bones": 163,
+  "base_tris": 51336,
+  "glb_mb": 19.7
+ },
+ "general": {
+  "height": "1.74",
+  "hair": "42٬882",
+  "garments": 42,
+  "bones": 163,
+  "base_tris": 54756,
+  "glb_mb": 24.6
+ }
+}
