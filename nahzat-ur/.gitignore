@@ -1,0 +1,7 @@
+geo/dl/
+blender/out/*/
+renders/test*
+web/bundle.js
+web/assets/clips/
+web/assets/glb
+voice/tests/

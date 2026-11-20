@@ -1,0 +1,37 @@
+@font-face{font-family:'Nastaliq';src:url(assets/fonts/NotoNastaliqUrdu-400-ar.woff2) format('woff2');font-weight:400 700;font-display:block}
+@font-face{font-family:'Nastaliq';src:url(assets/fonts/NotoNastaliqUrdu-400-lat.woff2) format('woff2');font-weight:400 700;font-display:block;unicode-range:U+0000-00FF}
+@font-face{font-family:'Naskh';src:url(assets/fonts/NotoNaskhArabic-700-ar.woff2) format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'Inter';src:url(assets/fonts/Inter-500-lat.woff2) format('woff2');font-weight:100 900;font-display:block}
+:root{--acc:#f5a623;--hot:#ff5a4f;--ink:#f4f5f7;--mute:#9aa3b2;--bg:#16181d}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
+#app{position:relative;width:1080px;height:1920px;overflow:hidden}
+#gl{position:absolute;inset:0;width:1080px;height:1920px;display:block}
+.type-layer{position:absolute;inset:0;pointer-events:none;direction:rtl;color:var(--ink)}
+.headline{position:absolute;left:70px;right:70px;top:150px;height:330px}
+.chunk{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:0 4px;
+  font-family:'Nastaliq';font-weight:700;font-size:76px;line-height:1.95;text-align:center;
+  text-shadow:0 6px 30px rgba(0,0,0,.55),0 2px 4px rgba(0,0,0,.4)}
+.chunk .w{display:inline-block;position:relative;will-change:transform,filter}
+.chunk .w.acc{color:var(--acc)}
+.chunk.hot .w.acc{color:var(--hot)}
+.chunk .w.acc::after{content:'';position:absolute;left:4%;right:4%;bottom:.32em;height:6px;border-radius:3px;background:currentColor;opacity:.85;
+  transform-origin:right center;transform:scaleX(var(--u,0))}
+.chunk.quote{font-weight:600}
+.chunk .qm{font-family:'Inter';font-weight:800;color:var(--acc);font-size:96px;line-height:1;align-self:flex-start;margin-top:30px;opacity:.95}
+.quote-chip{position:absolute;top:96px;left:50%;translate:-50% 0;display:none;align-items:center;gap:14px;padding:8px 26px 10px;border-radius:40px;
+  background:rgba(22,24,29,.78);border:1px solid rgba(255,255,255,.12);font-family:'Nastaliq';font-weight:600;font-size:30px;line-height:1.9;color:#dfe3ea;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);white-space:nowrap}
+.quote-chip i{width:14px;height:14px;border-radius:50%;display:block}
+.watermark{position:absolute;bottom:58px;left:50%;translate:-50% 0;display:flex;align-items:center;gap:12px;direction:ltr}
+.watermark img{height:34px;opacity:.9}
+.watermark span{font-family:'Inter';font-weight:700;font-size:15px;letter-spacing:.42em;color:#c9b56a}
+.label{position:absolute;display:none}
+/* chips used by the scenes */
+.chip{display:inline-flex;align-items:center;gap:14px;padding:10px 28px 12px;border-radius:44px;background:rgba(18,20,25,.82);border:1px solid rgba(255,255,255,.14);
+  font-family:'Nastaliq';font-weight:600;font-size:34px;line-height:1.85;color:#e9ecf1;box-shadow:0 12px 34px rgba(0,0,0,.38);white-space:nowrap;direction:rtl}
+.chip b{font-family:'Inter';font-weight:800;font-size:30px;color:var(--acc);letter-spacing:.02em}
+.chip .dot{width:14px;height:14px;border-radius:50%;background:var(--acc);box-shadow:0 0 14px var(--acc)}
+.chip.red .dot{background:var(--hot);box-shadow:0 0 14px var(--hot)}
+.scrim{position:absolute;left:0;right:0;top:0;height:720px;background:linear-gradient(180deg,rgba(8,10,14,.92) 0%,rgba(8,10,14,.72) 38%,rgba(8,10,14,0) 100%);opacity:0}
+.scrim::after{content:'';position:absolute;left:0;right:0;top:1200px;height:720px;background:linear-gradient(0deg,rgba(8,10,14,.85),rgba(8,10,14,0))}

@@ -1,0 +1,14 @@
+import {chromium} from '/home/user/example-video/claude-motion/node_modules/playwright/index.mjs';
+const [q, ...ts] = process.argv.slice(2);
+const browser = await chromium.launch({args: ['--ignore-gpu-blocklist', '--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']});
+const page = await browser.newPage({viewport: {width: 1080, height: 1920}});
+await page.goto('http://127.0.0.1:8770/index.html?capture=1&' + q);
+await page.waitForFunction(() => window.SIM && window.SIM.ready, null, {timeout: 300000});
+for (const t of ts) await page.evaluate((x) => window.SIM.render(x), Number(t));
+let a = Date.now();
+for (let i = 0; i < 8; i++) await page.evaluate((x) => window.SIM.render(x), Number(ts[0]) + i / 30);
+const r = (Date.now() - a) / 8;
+a = Date.now();
+for (let i = 0; i < 8; i++) await page.screenshot({type: 'jpeg', quality: 95});
+console.log(q, 'render', r.toFixed(0), 'ms  shot', ((Date.now() - a) / 8).toFixed(0), 'ms');
+await browser.close();
