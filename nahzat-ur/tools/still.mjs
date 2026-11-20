@@ -1,6 +1,8 @@
 // node tools/still.mjs out.png t1 [t2 ...]  → renders stills (tiled if several) from the running server
-import {chromium} from '/home/user/example-video/claude-motion/node_modules/playwright/index.mjs';
 import fs from 'node:fs';
+import {fileURLToPath} from 'node:url';
+const MODS = process.env.NAHZAT_MODULES || new URL('../../claude-motion/node_modules', import.meta.url).pathname;
+const {chromium} = await import(MODS + '/playwright/index.mjs');
 const [out, ...ts] = process.argv.slice(2);
 const browser = await chromium.launch({args: ['--ignore-gpu-blocklist', '--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']});
 const page = await browser.newPage({viewport: {width: 1080, height: 1920}, deviceScaleFactor: 1});

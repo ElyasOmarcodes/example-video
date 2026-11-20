@@ -1,10 +1,12 @@
 // node tools/capture.mjs --from 0 --to 10 --out renders/part.mp4 [--fps 30] [--scale 1]
 // Steps SIM.render(t) for every frame in headless Chromium (served by the local http server),
 // screenshots, pipes JPEGs into ffmpeg.
-import {chromium} from '/home/user/example-video/claude-motion/node_modules/playwright/index.mjs';
 import {spawn} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const MODS = process.env.NAHZAT_MODULES || new URL('../../claude-motion/node_modules', import.meta.url).pathname;
+const {chromium} = await import(MODS + '/playwright/index.mjs');
 const arg = (k, d) => {
   const i = process.argv.indexOf('--' + k);
   return i < 0 ? d : process.argv[i + 1];

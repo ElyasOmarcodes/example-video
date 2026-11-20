@@ -7,3 +7,4 @@ web/assets/glb
 voice/tests/
 audio/mix.wav
 renders/parts/
+node_modules/
