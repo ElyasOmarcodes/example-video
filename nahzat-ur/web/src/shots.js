@@ -1205,7 +1205,7 @@ export async function buildShots(ctx) {
   }
 
   // ================================================================ 9 · OUTRO (Higgsfield clip → exact logo end card)
-  S.outro = clipShot(eng, 'outro', {a: 244.85, b: 251.8, start: 0, rate: 5 / 6.4, zoom: [1.0, 1.0]});
+  S.outro = clipShot(eng, 'outro_hf', {a: 244.85, b: 251.8, start: 0, rate: 5 / 6.4, zoom: [1.0, 1.0]});
   {
     const a = 250.9, b = TL.duration + 0.5;
     const {scene, camera} = cardScene();
