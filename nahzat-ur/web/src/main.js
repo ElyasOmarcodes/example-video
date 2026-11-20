@@ -37,11 +37,13 @@ async function boot() {
     if (S.after) await S.after(t);
     return true;
   };
+  if (q.has('nodom')) for (const el of app.querySelectorAll('div')) if (el.parentElement === app) el.style.visibility = 'hidden';
   window.SIM = {ready: true, duration: TL.duration, fps: TL.fps, render};
   if (q.has('t')) await render(Number(q.get('t')));
 }
 boot().catch((e) => {
   console.error(e);
   document.body.insertAdjacentHTML('beforeend', `<pre style="position:absolute;top:0;left:0;color:#f55;font:20px monospace;z-index:9;white-space:pre-wrap">${e.stack || e}</pre>`);
+  if (q.has('nodom')) for (const el of app.querySelectorAll('div')) if (el.parentElement === app) el.style.visibility = 'hidden';
   window.SIM = {ready: true, error: String(e.stack || e)};
 });

@@ -80,10 +80,11 @@ export async function buildShots(ctx) {
 
   // ================================================================ 0 · INTRO (Higgsfield title clip + type)
   const T0 = TL.lines[0];
-  S.intro = clipShot(eng, 'title', {a: 0, b: 6.95, start: 0, rate: 5 / 6.6, zoom: [1.0, 1.08]});
+  S.intro = clipShot(eng, 'title_hf', {a: 0, b: 6.95, start: 0, rate: 5 / 6.6, zoom: [1.0, 1.08]});
   scrim(0, 6.9, 0.65);
   dom.custom(
     `<div style="position:absolute;left:0;right:0;top:0;height:1920px;direction:rtl">
+      <div style="position:absolute;left:-200px;right:-200px;top:520px;height:900px;background:radial-gradient(ellipse at center,rgba(6,8,12,.72) 0%,rgba(6,8,12,.45) 45%,rgba(6,8,12,0) 72%)"></div>
       <div class="i-kick" style="position:absolute;top:640px;left:0;right:0;text-align:center"><span class="chip" style="font-size:30px"><span class="dot"></span>نہضت · خصوصی رپورٹ</span></div>
       <div class="i-t1" style="position:absolute;top:735px;left:0;right:0;text-align:center;font-family:Nastaliq;font-weight:700;font-size:168px;line-height:1.75;color:#fff;text-shadow:0 14px 60px rgba(0,0,0,.65)">پاکستان</div>
       <div class="i-rule" style="position:absolute;top:1080px;left:240px;right:240px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#f5a623,transparent);transform-origin:center"></div>
@@ -275,6 +276,13 @@ export async function buildShots(ctx) {
         o.frustumCulled = false;
       }
     });
+    const env = envMap(eng.renderer);
+    root.traverse((o) => {
+      if (o.isMesh && o.material && 'envMap' in o.material) {
+        o.material.envMap = env;
+        o.material.envMapIntensity = 0.45;
+      }
+    });
     const rest = new Map();
     root.traverse((o) => o.isBone && rest.set(o, o.quaternion.clone()));
     const bone = (n) => root.getObjectByName(n.replace(/[.\[\]:\/]/g, ''));
@@ -309,6 +317,9 @@ export async function buildShots(ctx) {
     return {root, reset, morph, aim, rot, bone};
   };
   const pres = prepChar(presG), gen = prepChar(genG);
+  const QS = new URLSearchParams(location.search);
+  if (QS.has('hidechar')) pres.root.visible = gen.root.visible = false;
+  if (QS.has('nohair')) for (const c of [pres, gen]) c.root.traverse((o) => o.isMesh && /hair|brows|lash|mustache/.test(o.name) && (o.visible = false));
   const mouthFor = (id, t) => {
     // syllable-rate jaw motion inside each spoken word
     for (const [w, t0, t1] of LN[id].words) if (t >= t0 && t <= t1) return 0.35 + 0.3 * Math.abs(Math.sin((t - t0) * 17));
@@ -357,7 +368,7 @@ export async function buildShots(ctx) {
   }
   function wavingFlag(kind, w = 1.5, h = 1.0) {
     const geo = new THREE.PlaneGeometry(w, h, 40, 20);
-    const mat = new THREE.MeshStandardMaterial({map: flagTex(kind), roughness: 0.7, side: THREE.DoubleSide});
+    const mat = new THREE.MeshLambertMaterial({map: flagTex(kind), side: THREE.DoubleSide});
     const m = new THREE.Mesh(geo, mat);
     const base = geo.attributes.position.array.slice();
     m.userData.wave = (t) => {
@@ -378,8 +389,6 @@ export async function buildShots(ctx) {
     const a = 24.45, b = 38.35;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#0d1424');
-    scene.environment = envMap(eng.renderer);
-    scene.environmentIntensity = 0.45;
     scene.fog = new THREE.Fog('#0d1424', 8, 22);
     const camera = new THREE.PerspectiveCamera(26, W / H, 0.05, 60);
     scene.add(new THREE.HemisphereLight('#c9d6ff', '#2a2420', 0.9));
@@ -394,11 +403,11 @@ export async function buildShots(ctx) {
     rim.position.set(2.5, 3, -3);
     scene.add(rim);
     // chamber wall: navy panels with gold pilasters
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(16, 9), new THREE.MeshStandardMaterial({color: '#18233a', roughness: 0.85}));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(16, 9), new THREE.MeshLambertMaterial({color: '#18233a'}));
     wall.position.set(0, 3, -3.2);
     scene.add(wall);
     for (let i = -4; i <= 4; i++) {
-      const pil = new THREE.Mesh(new THREE.BoxGeometry(0.18, 7, 0.12), new THREE.MeshStandardMaterial({color: '#7a6640', roughness: 0.4, metalness: 0.6}));
+      const pil = new THREE.Mesh(new THREE.BoxGeometry(0.18, 7, 0.12), new THREE.MeshLambertMaterial({color: '#7a6640'}));
       pil.position.set(i * 1.6, 2.5, -3.1);
       scene.add(pil);
     }
@@ -406,7 +415,7 @@ export async function buildShots(ctx) {
     flag.position.set(0, 3.15, -2.95);
     scene.add(flag);
     // rostrum tiers (wood) + podium with a generic seal
-    const wood = new THREE.MeshStandardMaterial({color: '#5a3a24', roughness: 0.55, metalness: 0.05});
+    const wood = new THREE.MeshLambertMaterial({color: '#3d2617'});
     const tier = new THREE.Mesh(new THREE.BoxGeometry(6, 1.0, 0.9), wood);
     tier.position.set(0, 0.5, -2.2);
     tier.receiveShadow = true;
@@ -446,7 +455,7 @@ export async function buildShots(ctx) {
       g.closePath();
       g.fill();
     }).tex;
-    const seal = new THREE.Mesh(new THREE.CircleGeometry(0.28, 48), new THREE.MeshStandardMaterial({map: sealT, roughness: 0.4, metalness: 0.3}));
+    const seal = new THREE.Mesh(new THREE.CircleGeometry(0.2, 48), new THREE.MeshLambertMaterial({map: sealT}));
     seal.position.set(0, 0.68, 0.70);
     scene.add(seal);
     for (const x of [-0.12, 0.12]) {
@@ -455,7 +464,7 @@ export async function buildShots(ctx) {
       mic.rotation.x = -0.5;
       scene.add(mic);
     }
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), new THREE.MeshStandardMaterial({color: '#2a1d16', roughness: 0.7}));
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), new THREE.MeshLambertMaterial({color: '#2a1d16'}));
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
@@ -618,8 +627,6 @@ export async function buildShots(ctx) {
     const a = 67.75, b = 90.95;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#141a17');
-    scene.environment = envMap(eng.renderer);
-    scene.environmentIntensity = 0.5;
     scene.fog = new THREE.Fog('#141a17', 7, 18);
     const camera = new THREE.PerspectiveCamera(28, W / H, 0.05, 60);
     scene.add(new THREE.HemisphereLight('#d9e6dc', '#2a241e', 0.9));
@@ -633,21 +640,21 @@ export async function buildShots(ctx) {
     const rim = new THREE.DirectionalLight('#b6ffd0', 1.4);
     rim.position.set(-2.5, 3, -3);
     scene.add(rim);
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), new THREE.MeshStandardMaterial({color: '#1f2a24', roughness: 0.9}));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), new THREE.MeshLambertMaterial({color: '#1f2a24'}));
     wall.position.set(0, 3, -2.6);
     scene.add(wall);
     for (let i = -3; i <= 3; i++) {
-      const pnl = new THREE.Mesh(new THREE.BoxGeometry(1.5, 5.4, 0.04), new THREE.MeshStandardMaterial({color: '#25322b', roughness: 0.6}));
+      const pnl = new THREE.Mesh(new THREE.BoxGeometry(1.5, 5.4, 0.04), new THREE.MeshLambertMaterial({color: '#25322b'}));
       pnl.position.set(i * 1.75, 2.9, -2.55);
       scene.add(pnl);
     }
     const flag = wavingFlag('pk', 1.5, 1.0);
     flag.position.set(-1.25, 2.25, -1.4);
     scene.add(flag);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 2.9), new THREE.MeshStandardMaterial({color: '#c9b16a', metalness: 0.8, roughness: 0.3}));
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 2.9), new THREE.MeshLambertMaterial({color: '#c9b16a'}));
     pole.position.set(-2.02, 1.45, -1.4);
     scene.add(pole);
-    const wood = new THREE.MeshStandardMaterial({color: '#4a2e1c', roughness: 0.45});
+    const wood = new THREE.MeshLambertMaterial({color: '#4a2e1c'});
     const desk = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.08, 1.0), wood);
     desk.position.set(0, 0.78, 0.55);
     desk.castShadow = desk.receiveShadow = true;
@@ -655,7 +662,7 @@ export async function buildShots(ctx) {
     const front = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.74, 0.06), wood);
     front.position.set(0, 0.39, 1.02);
     scene.add(front);
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), new THREE.MeshStandardMaterial({color: '#1d1915', roughness: 0.8}));
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 12), new THREE.MeshLambertMaterial({color: '#1d1915'}));
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
@@ -683,7 +690,7 @@ export async function buildShots(ctx) {
       g.fillStyle = '#7d7666';
       g.fillRect(100, 840, 360, 4);
     });
-    const doc = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.54), new THREE.MeshStandardMaterial({map: docTex, roughness: 0.8}));
+    const doc = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.54), new THREE.MeshLambertMaterial({map: docTex}));
     doc.rotation.x = -Math.PI / 2;
     doc.rotation.z = 0.12;
     doc.position.set(0.32, 0.825, 0.62);
@@ -869,7 +876,8 @@ export async function buildShots(ctx) {
       const Lb = L(bs.line);
       dom.infoCard({title: bs.name + ' ایئربیس', sub: bs.sub, icon: bs.planes === 'drone' ? 'radar' : 'plane-takeoff', red: bs.id === 'shamsi', tags: bs.tags.map(([text, icon, w]) => ({text, icon, t: wt(bs.line, w)})), a: Lb.a + 0.35, b: Lb.b + 0.25, top: 1240});
     }
-    dom.counter({a: wt('L19', 'کانگریس') - 0.3, b: T19.b + 0.5, top: 1290, from: 0, to: 57000, t0: wt('L19', 'ستاون') - 0.4, t1: wt('L19', 'زائد') + 0.2, label: 'فوجی پروازیں · پاکستان سے افغانستان', suffix: '+', accent: true, src: 'ماخذ: امریکی کانگریس ریسرچ سروس (CRS)'});
+    dom.chip({html: '<span class="dot"></span>ماخذ: امریکی کانگریس ریسرچ سروس <b>CRS</b>', a: wt('L19', 'کانگریس') - 0.3, b: wt('L19', 'ستاون') - 0.9, top: 1560});
+    dom.counter({a: wt('L19', 'ستاون') - 1.0, b: T19.b + 0.5, top: 1290, from: 0, to: 57000, t0: wt('L19', 'ستاون') - 0.4, t1: wt('L19', 'زائد') + 0.2, label: 'فوجی پروازیں · پاکستان سے افغانستان', suffix: '+', accent: true, src: 'ماخذ: امریکی کانگریس ریسرچ سروس (CRS)'});
     dom.infoCard({title: 'بمباری کے اہداف', sub: 'افغانستان بھر میں', icon: 'target', red: true, tagCls: 'red', tags: [{text: 'اہم صوبے', icon: 'map', t: wt('L20', 'صوبوں')}, {text: 'فوجی مراکز', icon: 'crosshair', t: wt('L20', 'مراکز')}, {text: 'سرکاری ادارے', icon: 'landmark', t: wt('L20', 'سرکاری')}, {text: 'عوامی تنصیبات', icon: 'building-2', t: wt('L20', 'عوامی')}], a: T20.a + 0.3, b: b - 0.15, top: 1300});
   }
 

@@ -90,10 +90,12 @@ export function createDom(root) {
       render(t) {
         if (!show(el, t, a, b, {rx: 14})) return;
         for (const {s, t: t0} of tg) {
+          // tags wait faintly in place, then light up with a small pop when spoken
           const k = E.out(prog(t, t0 - 0.15, t0 + 0.35));
-          s.style.opacity = String(k);
-          s.style.transform = `translateY(${(1 - k) * 18}px) scale(${0.9 + 0.1 * k})`;
-          s.style.filter = k < 0.99 ? `blur(${(1 - k) * 8}px)` : 'none';
+          const pop = Math.sin(Math.PI * prog(t, t0 - 0.15, t0 + 0.45));
+          s.style.opacity = String(0.22 + 0.78 * k);
+          s.style.transform = `scale(${0.96 + 0.04 * k + 0.06 * pop})`;
+          s.style.filter = k < 0.99 ? `saturate(${0.2 + 0.8 * k})` : 'none';
         }
       },
     });
