@@ -172,7 +172,7 @@ export function makePin(label, opts = {}) {
   if (label) {
     const fs = opts.size || 44;
     const {tex, cv} = canvasTex(640, 150, (c, w, h) => {
-      c.font = `700 ${fs}px Nastaliq`;
+      c.font = `700 ${fs}px Quds`;
       const tw = c.measureText(label).width;
       const bw = Math.min(w - 8, tw + 92), bx = (w - bw) / 2;
       c.fillStyle = 'rgba(17,19,24,0.86)';

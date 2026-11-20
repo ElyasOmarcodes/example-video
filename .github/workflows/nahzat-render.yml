@@ -1,10 +1,14 @@
-# Renders a Nahzat episode in parallel: the timeline is split into N frame-exact parts, each part
-# runs on its own runner (headless Chromium + SwiftShader), then one job joins them and adds the mix.
+# Renders the Nahzat Urdu episode in parallel: the timeline is split into 10 frame-exact parts,
+# each part runs on its own runner (headless Chromium + SwiftShader), then one job joins them,
+# adds the mix and publishes the video as a (pre)release.
+# Start it from Actions → nahzat-render → Run workflow, or by pushing a change to nahzat-ur/render.request.
 name: nahzat-render
 on:
   workflow_dispatch:
-    inputs:
-      project: {description: 'project folder', default: 'nahzat-ur'}
+  push:
+    paths: ['nahzat-ur/render.request']
+permissions:
+  contents: write
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -16,25 +20,29 @@ jobs:
         run: |
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import json, math
-          tl = json.load(open('${{ inputs.project }}/data/timeline.json'))
-          n = math.ceil(tl['duration'] * tl['fps']); P = 8
+          tl = json.load(open('nahzat-ur/data/timeline.json'))
+          n = math.ceil(tl['duration'] * tl['fps']); P = 10
           parts = [{'i': i, 'from': round((i * n // P) / tl['fps'], 4), 'to': round(((i + 1) * n // P) / tl['fps'], 4)} for i in range(P)]
           print('parts=' + json.dumps(parts))
           PY
   render:
     needs: plan
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
         part: ${{ fromJson(needs.plan.outputs.parts) }}
-    defaults: {run: {working-directory: '${{ inputs.project }}'}}
-    env: {NAHZAT_MODULES: '${{ github.workspace }}/${{ inputs.project }}/node_modules'}
+    defaults:
+      run:
+        working-directory: nahzat-ur
+    env:
+      NAHZAT_MODULES: ${{ github.workspace }}/nahzat-ur/node_modules
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 22}
+        with:
+          node-version: 22
       - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
       - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
       - run: bash tools/clips.sh && cp data/timeline.json web/assets/timeline.json && node tools/build.mjs
@@ -43,20 +51,37 @@ jobs:
           sleep 2
           node tools/capture.mjs --from ${{ matrix.part.from }} --to ${{ matrix.part.to }} --out renders/parts/p${{ matrix.part.i }}.mp4
       - uses: actions/upload-artifact@v4
-        with: {name: 'part-${{ matrix.part.i }}', path: '${{ inputs.project }}/renders/parts/p${{ matrix.part.i }}.mp4', retention-days: 3}
+        with:
+          name: part-${{ matrix.part.i }}
+          path: nahzat-ur/renders/parts/p${{ matrix.part.i }}.mp4
+          retention-days: 3
   assemble:
     needs: render
     runs-on: ubuntu-latest
-    defaults: {run: {working-directory: '${{ inputs.project }}'}}
+    defaults:
+      run:
+        working-directory: nahzat-ur
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg && pip install numpy
       - uses: actions/download-artifact@v4
-        with: {path: '${{ inputs.project }}/renders/parts', pattern: 'part-*', merge-multiple: true}
+        with:
+          path: nahzat-ur/renders/parts
+          pattern: part-*
+          merge-multiple: true
       - run: |
           python3 tools/sound.py
           ls renders/parts/p*.mp4 | sort -V | sed "s|renders/parts/|file '|; s|$|'|" > renders/parts/list.txt
-          ffmpeg -v error -y -f concat -safe 0 -i renders/parts/list.txt -c copy renders/parts/silent.mp4
-          ffmpeg -v error -y -i renders/parts/silent.mp4 -i audio/mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 256k -ar 48000 -shortest -movflags +faststart renders/final.mp4
+          ffmpeg -v error -y -f concat -safe 0 -i renders/parts/list.txt -i audio/mix.wav -map 0:v -map 1:a -c:v libx264 -preset medium -b:v 8M -maxrate 11M -bufsize 16M -pix_fmt yuv420p -c:a aac -b:a 256k -ar 48000 -shortest -movflags +faststart renders/final.mp4
+          ffmpeg -v error -y -i renders/final.mp4 -c:v libx264 -preset slow -b:v 2600k -maxrate 3500k -bufsize 6M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart renders/final-share.mp4
       - uses: actions/upload-artifact@v4
-        with: {name: 'video', path: '${{ inputs.project }}/renders/final.mp4', retention-days: 14}
+        with:
+          name: video
+          path: nahzat-ur/renders/final*.mp4
+          retention-days: 14
+      - name: publish as a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="nahzat-ur-render-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" renders/final.mp4 renders/final-share.mp4 --target "$GITHUB_SHA" --title "Nahzat Urdu render #${GITHUB_RUN_NUMBER}" --notes "Rendered by the nahzat-render workflow from ${GITHUB_SHA}." --prerelease

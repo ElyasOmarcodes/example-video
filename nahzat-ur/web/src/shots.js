@@ -5,7 +5,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {E, clamp, env, lerp, prog, ramp, track, mulberry32, fmtInt} from './util.js';
 import {W, H} from './engine.js';
 import {P, PLACES, buildMap, makePin, animPin, arcPoints, trail, trailField, along, makeImpact, animImpact, makeLabel, xz, heightAt} from './map.js';
-import {ACC, HOT, INK, MUTE, BLUE, canvasTex, panel, text, texPlane, shadowPlane, iconTile, envMap, pop} from './cards.js';
+import {ACC, HOT, INK, MUTE, BLUE, canvasTex, panel, text, texPlane, shadowPlane, iconTile, envMap, pop, iconURL} from './cards.js';
 import {createDom} from './dom.js';
 import {cargoPlane, fighterJet, drone, truck, containerShip, airbase, containerGeo, towerMaterial, MAT} from './props.js';
 import {clipShot} from './clips.js';
@@ -24,6 +24,16 @@ export async function buildShots(ctx) {
   const scrims = []; // [a, b, strength]
   const scrim = (a, b, k = 1) => scrims.push([a, b, k]);
   const rngG = mulberry32(99);
+  // shot windows derived from the narration (each overlaps its neighbours for the transition)
+  const A = (id) => LN[id].a, B = (id) => LN[id].b;
+  const SH = {
+    intro: [0, A('L01') + 0.55], date: [A('L01') - 0.5, A('L02') + 0.35], nyc: [A('L02') - 0.35, A('L03') + 0.35],
+    toll: [A('L03') - 0.3, A('L04') + 0.3], blame: [A('L04') - 0.25, A('L05') + 0.3], congress: [A('L05') - 0.3, A('L07') + 0.7],
+    reply: [A('L07') + 0.2, A('L09') - 0.3], war: [A('L09') - 0.8, A('L13') + 0.3], mush: [A('L13') - 0.3, A('L15') + 0.2],
+    pak: [A('L15') - 0.4, A('L21') - 0.25], nato: [A('L21') - 0.75, A('L23') + 0.4], globe: [A('L23') - 0.3, A('L24') + 0.3],
+    supply: [A('L24') - 0.1, A('L28') - 0.1], boxes: [A('L28') - 0.6, A('L32') - 0.2], question: [A('L32') - 0.8, TL.outro[0] + 0.55],
+    outro: [TL.outro[0] + 0.05, TL.duration + 0.5],
+  };
 
   // ---------------------------------------------------------------- shared builders
   function rig(camera) {
@@ -55,7 +65,7 @@ export async function buildShots(ctx) {
     const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
     camera.position.set(0, 0, 11.5);
     scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-    const dl = new THREE.DirectionalLight(0xfff3e6, 2.4);
+    const dl = new THREE.DirectionalLight(0xfff3e6, 1.5);
     dl.position.set(-2.5, 3.5, 5);
     scene.add(dl);
     const rim = new THREE.DirectionalLight(0x9fc0ff, 1.2);
@@ -80,15 +90,15 @@ export async function buildShots(ctx) {
 
   // ================================================================ 0 · INTRO (Higgsfield title clip + type)
   const T0 = TL.lines[0];
-  S.intro = clipShot(eng, 'title_hf', {a: 0, b: 6.95, start: 0, rate: 5 / 6.6, zoom: [1.0, 1.08]});
+  S.intro = clipShot(eng, 'title_hf', {a: SH.intro[0], b: SH.intro[1], start: 0, rate: 5 / 6.6, zoom: [1.0, 1.08]});
   scrim(0, 6.9, 0.65);
   dom.custom(
     `<div style="position:absolute;left:0;right:0;top:0;height:1920px;direction:rtl">
       <div style="position:absolute;left:-200px;right:-200px;top:520px;height:900px;background:radial-gradient(ellipse at center,rgba(6,8,12,.72) 0%,rgba(6,8,12,.45) 45%,rgba(6,8,12,0) 72%)"></div>
       <div class="i-kick" style="position:absolute;top:640px;left:0;right:0;text-align:center"><span class="chip" style="font-size:30px"><span class="dot"></span>نہضت · خصوصی رپورٹ</span></div>
-      <div class="i-t1" style="position:absolute;top:735px;left:0;right:0;text-align:center;font-family:Nastaliq;font-weight:700;font-size:168px;line-height:1.75;color:#fff;text-shadow:0 14px 60px rgba(0,0,0,.65)">پاکستان</div>
+      <div class="i-t1" style="position:absolute;top:735px;left:0;right:0;text-align:center;font-family:Quds;font-weight:700;font-size:168px;line-height:1.75;color:#fff;text-shadow:0 14px 60px rgba(0,0,0,.65)">پاکستان</div>
       <div class="i-rule" style="position:absolute;top:1080px;left:240px;right:240px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#f5a623,transparent);transform-origin:center"></div>
-      <div class="i-t2" style="position:absolute;top:1110px;left:60px;right:60px;text-align:center;font-family:Nastaliq;font-weight:700;font-size:74px;line-height:1.95;color:#eef0f4;text-shadow:0 10px 40px rgba(0,0,0,.7)">خود مختار ملک… یا <span style="color:#f5a623">فوجی چھاؤنی؟</span></div>
+      <div class="i-t2" style="position:absolute;top:1110px;left:60px;right:60px;text-align:center;font-family:Quds;font-weight:700;font-size:74px;line-height:1.95;color:#eef0f4;text-shadow:0 10px 40px rgba(0,0,0,.7)">خود مختار ملک… یا <span style="color:#f5a623">فوجی چھاؤنی؟</span></div>
     </div>`,
     {left: '0', top: '0', width: '1080px', height: '1920px'},
     (el, t, show) => {
@@ -114,7 +124,7 @@ export async function buildShots(ctx) {
   // ================================================================ 1 · 11 SEPTEMBER
   // date card
   {
-    const a = 5.9, b = 8.55;
+    const [a, b] = SH.date;
     const {scene, camera} = cardScene();
     const tile = await iconTile(eng.renderer, 'calendar', {size: 0.95});
     scene.add(tile);
@@ -146,13 +156,13 @@ export async function buildShots(ctx) {
     });
   }
   // New York (Higgsfield clip)
-  S.nyc = clipShot(eng, 'nyc_hf', {a: 7.85, b: 13.75, start: 0, rate: 5 / 5.85, zoom: [1.0, 1.1]});
-  scrim(7.85, 13.75, 0.8);
-  dom.chip({html: '<span class="dot red"></span>نیویارک <b>·</b> ورلڈ ٹریڈ سینٹر', a: 9.5, b: 13.0, top: 1560, cls: 'red'});
+  S.nyc = clipShot(eng, 'nyc_hf', {a: SH.nyc[0], b: SH.nyc[1], start: 0, rate: 5 / (SH.nyc[1] - SH.nyc[0]), zoom: [1.0, 1.1]});
+  scrim(SH.nyc[0], SH.nyc[1], 0.8);
+  dom.chip({html: '<span class="dot red"></span>نیویارک <b>·</b> ورلڈ ٹریڈ سینٹر', a: A('L02') + 1.3, b: SH.nyc[1] - 0.6, top: 1560, cls: 'red'});
   // the toll: two towers collapse, counter
   {
     const T3 = L('L03');
-    const a = 13.1, b = 20.75;
+    const [a, b] = SH.toll;
     const {scene, camera} = cardScene();
     camera.position.set(0, 0.2, 12);
     const tm = towerMaterial();
@@ -208,7 +218,7 @@ export async function buildShots(ctx) {
   }
   // the accusation
   {
-    const a = 20.2, b = 25.05;
+    const [a, b] = SH.blame;
     const {scene, camera} = cardScene();
     const tile = await iconTile(eng.renderer, 'file-warning', {size: 1.0, color: '#e8483d'});
     scene.add(tile);
@@ -386,7 +396,7 @@ export async function buildShots(ctx) {
   }
   {
     const T5 = L('L05'), T6 = L('L06');
-    const a = 24.45, b = 38.35;
+    const [a, b] = SH.congress;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#0d1424');
     scene.fog = new THREE.Fog('#0d1424', 8, 22);
@@ -503,7 +513,7 @@ export async function buildShots(ctx) {
   }
   {
     const T7 = L('L07'), T8 = L('L08');
-    const a = 37.9, b = 48.95;
+    const [a, b] = SH.reply;
     const {scene, camera} = cardScene();
     const t1 = await iconTile(eng.renderer, 'scale', {size: 1.0});
     scene.add(t1);
@@ -523,7 +533,7 @@ export async function buildShots(ctx) {
   // ================================================================ 3 · 7 OCTOBER strikes → "but…" → where from?
   {
     const T9 = L('L09'), T10 = L('L10'), T11 = L('L11'), T12 = L('L12');
-    const a = 48.45, b = 68.35;
+    const [a, b] = SH.war;
     const {scene, map, camera, look} = mapScene({fogD: 0.03});
     const u = map.uniforms;
     const cities = ['kabul', 'kandahar', 'jalalabad'];
@@ -624,7 +634,7 @@ export async function buildShots(ctx) {
   // ================================================================ 4 · MUSHARRAF + the strategic agreement
   {
     const T13 = L('L13'), T14 = L('L14');
-    const a = 67.75, b = 90.95;
+    const [a, b] = SH.mush;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#141a17');
     scene.fog = new THREE.Fog('#141a17', 7, 18);
@@ -725,7 +735,6 @@ export async function buildShots(ctx) {
       },
     });
     scrim(a, b, 0.75);
-    dom.lower({name: 'جنرل پرویز مشرف', role: 'فوجی حکمران · پاکستان', a: T13.a + 0.3, b: T13.a + 5.2, top: 1500});
     dom.chip({html: '<span class="dot red"></span><b>1999</b> فوجی بغاوت', a: wt('L13', 'بغاوت') - 0.15, b: T13.b + 0.3, top: 1560, cls: 'red'});
     dom.chip({html: '<span class="dot"></span><b>2001</b> خود ساختہ صدر', a: wt('L13', 'صدر') - 0.15, b: T13.b + 0.3, top: 1680});
     dom.infoCard({title: 'اسٹریٹجک فوجی معاہدہ', sub: 'امریکہ کے حوالے', icon: 'signature', tags: items.map(([icon, text, w]) => ({text, icon, t: wt('L14', w)})), a: T14.a + 0.4, b: b - 0.15, top: 1250});
@@ -740,7 +749,7 @@ export async function buildShots(ctx) {
   ];
   {
     const T19 = L('L19'), T20 = L('L20'), T15 = L('L15'), T18 = L('L18');
-    const a = 90.35, b = 153.75;
+    const [a, b] = SH.pak;
     const {scene, map, camera, look} = mapScene({fogD: 0.022});
     const u = map.uniforms;
     const SC = 0.00016; // props: metres → world (≈ ×13 exaggeration so a base reads on the map)
@@ -778,10 +787,19 @@ export async function buildShots(ctx) {
       g.add(ab);
       const craft = [];
       for (let i = 0; i < 3; i++) {
-        const c = d.planes === 'cargo' ? cargoPlane() : d.planes === 'fighter' ? fighterJet() : drone();
-        const s = d.planes === 'drone' ? 0.0012 : d.planes === 'fighter' ? 0.0011 : 0.0008;
+        const c = d.planes === 'cargo' ? cargoPlane(MAT.white) : d.planes === 'fighter' ? fighterJet(MAT.white) : drone();
+        const s = d.planes === 'drone' ? 0.0042 : d.planes === 'fighter' ? 0.0042 : 0.003;
         c.scale.setScalar(s);
-        g.add(c);
+        const halo = glow('#ffd28a', 0.09);
+        c.userData.halo = halo;
+        const trailDots = [];
+        for (let k = 0; k < 14; k++) {
+          const dot = glow('#ffe0a8', 0.035 * (1 - k / 16));
+          trailDots.push(dot);
+          g.add(dot);
+        }
+        c.userData.trail = trailDots;
+        g.add(c, halo);
         craft.push(c);
       }
       const pin = makePin(d.name, {color: ACC, beam: 0.3, cardW: 0.2, size: 52});
@@ -789,28 +807,52 @@ export async function buildShots(ctx) {
       scene.add(g);
       return {...d, g, ab, craft, pin, lon, lat, t: L(d.line).a};
     });
-    // flight field: 4 bases → Afghan targets, launched across L19–L20
-    const rng = mulberry32(21);
-    const targets = ['kabul', 'kandahar', 'jalalabad', 'bagram', 'herat', 'mazar', 'kunduz', 'gardez', 'khost', 'ghazni', 'helmand', 'farah', 'bamyan', 'kunar'].map((k) => PLACES[k]);
+    // organised strike corridors: each base fans out to its own targets in timed waves
+    const CORR = {jacobabad: ['kandahar', 'ghazni', 'gardez', 'kabul'], pasni: ['helmand', 'kandahar', 'farah'], dalbandin: ['herat', 'farah', 'helmand', 'kandahar'], shamsi: ['kandahar', 'ghazni', 'khost', 'bagram']};
+    const tgtIds = [...new Set(Object.values(CORR).flat())];
     const flights = [];
-    const t19 = wt('L19', 'پاکستانی') - 0.6;
-    for (let i = 0; i < 260; i++) {
-      const bs = bases[i % 4];
-      const tg = targets[Math.floor(rng() * targets.length)];
-      const t0 = t19 + Math.pow(rng(), 0.7) * (T20.b - t19 - 1.5);
-      flights.push({pts: arcPoints([bs.lon, bs.lat], [tg[0] + (rng() - 0.5) * 0.6, tg[1] + (rng() - 0.5) * 0.5], 0.5 + rng() * 0.5, 40), t0, dur: 1.6 + rng() * 0.8});
-    }
-    const field = trailField(flights, ACC, 0.0045);
-    scene.add(field);
-    // strikes on provinces / bases / offices / facilities during L20
+    const t19 = wt('L19', 'پاکستانی') - 0.4;
     const hits = [];
-    for (let i = 0; i < 40; i++) {
-      const tg = targets[i % targets.length];
-      const imp = makeImpact();
-      imp.position.copy(P(tg[0] + (rng() - 0.5) * 0.8, tg[1] + (rng() - 0.5) * 0.6, 0.01));
-      scene.add(imp);
-      hits.push({imp, t: T20.a + 0.8 + rng() * (T20.b - T20.a - 1.2)});
-    }
+    bases.forEach((bs, bi) => {
+      const list = CORR[bs.id];
+      for (let w = 0; w * 0.85 < T20.b - t19 - 2.0; w++) {
+        const id = list[w % list.length];
+        const [tl, tb] = PLACES[id];
+        const dist = Math.hypot(tl - bs.lon, tb - bs.lat);
+        const t0 = t19 + w * 0.85 + bi * 0.21;
+        const dur = 1.1 + dist * 0.22;
+        flights.push({pts: arcPoints([bs.lon, bs.lat], [tl, tb], 0.18 + dist * 0.14, 48), t0, dur});
+        hits.push({id, t: t0 + dur});
+      }
+    });
+    const field = trailField(flights, ACC, 0.013);
+    field.material.uniforms.uLen.value = 0.32;
+    scene.add(field);
+    // target markers (crosshair rings) that flash on each arrival
+    const ringTex = canvasTex(256, 256, (c) => {
+      c.strokeStyle = '#ff5a4f';
+      c.lineWidth = 10;
+      c.beginPath();
+      c.arc(128, 128, 90, 0, 7);
+      c.stroke();
+      c.lineWidth = 8;
+      for (const [x0, y0, x1, y1] of [[128, 10, 128, 70], [128, 186, 128, 246], [10, 128, 70, 128], [186, 128, 246, 128]]) {
+        c.beginPath();
+        c.moveTo(x0, y0);
+        c.lineTo(x1, y1);
+        c.stroke();
+      }
+    }).tex;
+    const markers = Object.fromEntries(tgtIds.map((id) => {
+      const g = new THREE.Group();
+      const ring = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.42), new THREE.MeshBasicMaterial({map: ringTex, transparent: true, depthWrite: false, toneMapped: false}));
+      ring.rotation.x = -Math.PI / 2;
+      const fl = glow('#ff7a3c', 0.5);
+      g.add(ring, fl);
+      g.position.copy(P(PLACES[id][0], PLACES[id][1], 0.012));
+      scene.add(g);
+      return [id, {g, ring, fl, hits: hits.filter((h) => h.id === id).map((h) => h.t)}];
+    }));
     const afLabel = makeLabel('افغانستان', {size: 90, color: '#fff', worldW: 0.3});
     afLabel.material.sizeAttenuation = false;
     afLabel.position.copy(P(65.8, 34.1, 0.4));
@@ -826,7 +868,7 @@ export async function buildShots(ctx) {
       keys.push([t0 + 1.1, [bs.lon + 0.05, bs.lat - 0.3, 3.2, 44, -18 + i * 10]]);
       keys.push([t1 - 0.2, [bs.lon + 0.02, bs.lat - 0.25, 2.7, 38, -6 + i * 10]]);
     });
-    keys.push([T19.a + 1.6, [66.6, 31.0, 21, 58, 2]], [T20.a + 0.5, [66.8, 32.0, 17.5, 55, 0]], [b, [67.2, 32.6, 15.5, 52, -4]]);
+    keys.push([T19.a + 1.6, [66.4, 30.6, 15.5, 56, 2]], [T20.a + 0.5, [66.6, 31.6, 13.0, 52, 0]], [b, [67.0, 32.2, 12.0, 50, -4]]);
     const camT = track(keys);
     const ids = basesDef.map((d) => d.id);
     S.pak = eng.addShot({
@@ -847,26 +889,52 @@ export async function buildShots(ctx) {
           animPin(bs.pin, kAll, t);
           bs.ab.scale.setScalar(Math.max(0.001, kAll));
           bs.ab.visible = kAll > 0.001;
-          if (bs.pin.userData.card) bs.pin.userData.card.material.opacity = kAll * (1 - ramp(t, T19.a - 0.5, T19.a + 0.5));
-          // aircraft: taxi/take-off loops relative to each base's time
-          bs.craft.forEach((c, j) => {
-            const ph = (t - t0 + j * 1.9) / 5.7;
+          if (bs.pin.userData.card) bs.pin.userData.card.material.opacity = kAll * (t < T15.a + 0.2 || t > T18.b ? 1 : 0) * (1 - ramp(t, T19.a - 0.5, T19.a + 0.5));
+          // aircraft: roll along the runway, lift off and climb away north-west, with a glowing trail
+          const runway = new THREE.Vector3(Math.sin(0.6 + Math.PI / 2), 0, Math.cos(0.6 + Math.PI / 2));
+          const posAt = (tt, j) => {
+            const ph = (tt - t0 + j * 1.9) / 5.7;
             const f = ph - Math.floor(ph);
-            const along0 = -0.22 + f * 0.8;
-            const alt = f > 0.3 ? Math.pow((f - 0.3) / 0.7, 2) * 0.35 : 0;
-            const dir = new THREE.Vector3(Math.sin(0.6 + Math.PI / 2), 0, Math.cos(0.6 + Math.PI / 2));
-            c.position.copy(dir.clone().multiplyScalar(along0)).add(new THREE.Vector3(0, 0.01 + alt, 0));
             if (bs.planes === 'drone') {
-              const an = t * 0.5 + j * 2.1;
-              c.position.set(Math.cos(an) * 0.22, 0.06 + j * 0.02, Math.sin(an) * 0.22);
-              c.rotation.set(0, -an, -0.25);
-            } else c.rotation.set(-alt * 1.2, 0.6 + Math.PI / 2, 0);
-            c.visible = kAll > 0.5 && t < T19.a + 1.5;
+              const an = tt * 0.5 + j * 2.1;
+              return [new THREE.Vector3(Math.cos(an) * 0.26, 0.08 + j * 0.02, Math.sin(an) * 0.26), f, an];
+            }
+            const along0 = -0.24 + f * 0.95;
+            const alt = f > 0.28 ? Math.pow((f - 0.28) / 0.72, 1.8) * 0.45 : 0;
+            return [runway.clone().multiplyScalar(along0).add(new THREE.Vector3(0, 0.012 + alt, 0)), f, alt];
+          };
+          bs.craft.forEach((c, j) => {
+            const vis = kAll > 0.5 && t < T19.a + 1.5;
+            const [p, f, x] = posAt(t, j);
+            c.position.copy(p);
+            if (bs.planes === 'drone') c.rotation.set(0, -x, -0.25);
+            else c.rotation.set(-Math.min(0.35, x * 1.6), 0.6 + Math.PI / 2, 0);
+            c.visible = vis;
+            c.userData.halo.position.copy(p);
+            c.userData.halo.visible = vis;
+            c.userData.halo.material.opacity = 0.55;
+            c.userData.trail.forEach((dot, k) => {
+              const [q, fq] = posAt(t - (k + 1) * 0.07, j);
+              dot.position.copy(q);
+              dot.visible = vis && fq < f + 1e-6 && (bs.planes === 'drone' || fq > 0.05);
+              dot.material.opacity = 0.75 * (1 - k / 14);
+            });
           });
         });
         field.material.uniforms.uTime.value = t;
-        field.material.uniforms.uOpacity.value = 0.9;
-        for (const h of hits) animImpact(h.imp, t - h.t, 0.3);
+        field.material.uniforms.uOpacity.value = 1.0;
+        for (const id of tgtIds) {
+          const m = markers[id];
+          const vis = ramp(t, t19 - 0.2, t19 + 0.8);
+          let last = -99;
+          for (const h of m.hits) if (h <= t) last = h;
+          const age = t - last;
+          m.g.visible = vis > 0.01;
+          m.ring.material.opacity = vis * (0.55 + 0.45 * Math.exp(-age * 3));
+          m.ring.scale.setScalar(1 + 0.6 * Math.exp(-age * 4));
+          m.fl.material.opacity = vis * Math.exp(-age * 2.5) * 0.95;
+          m.fl.scale.setScalar(0.25 + 0.35 * Math.exp(-age * 2));
+        }
         afLabel.material.opacity = ramp(t, T19.a + 0.6, T19.a + 1.6);
         pkLabel.material.opacity = env(t, a + 0.3, T15.a + 1.0, 0.6, 0.5) + ramp(t, T19.a + 0.6, T19.a + 1.6);
       },
@@ -874,7 +942,7 @@ export async function buildShots(ctx) {
     scrim(a, b, 1);
     for (const bs of basesDef) {
       const Lb = L(bs.line);
-      dom.infoCard({title: bs.name + ' ایئربیس', sub: bs.sub, icon: bs.planes === 'drone' ? 'radar' : 'plane-takeoff', red: bs.id === 'shamsi', tags: bs.tags.map(([text, icon, w]) => ({text, icon, t: wt(bs.line, w)})), a: Lb.a + 0.35, b: Lb.b + 0.25, top: 1240});
+      dom.infoCard({title: 'اڈے کا کردار', sub: bs.name + ' · ' + bs.sub, icon: bs.planes === 'drone' ? 'radar' : 'plane-takeoff', red: bs.id === 'shamsi', tags: bs.tags.map(([text, icon, w]) => ({text, icon, t: wt(bs.line, w)})), a: Lb.a + 0.35, b: Lb.b + 0.25, top: 1240});
     }
     dom.chip({html: '<span class="dot"></span>ماخذ: امریکی کانگریس ریسرچ سروس <b>CRS</b>', a: wt('L19', 'کانگریس') - 0.3, b: wt('L19', 'ستاون') - 0.9, top: 1560});
     dom.counter({a: wt('L19', 'ستاون') - 1.0, b: T19.b + 0.5, top: 1290, from: 0, to: 57000, t0: wt('L19', 'ستاون') - 0.4, t1: wt('L19', 'زائد') + 0.2, label: 'فوجی پروازیں · پاکستان سے افغانستان', suffix: '+', accent: true, src: 'ماخذ: امریکی کانگریس ریسرچ سروس (CRS)'});
@@ -884,7 +952,7 @@ export async function buildShots(ctx) {
   // ================================================================ 6 · NATO supply: what, by sea, by road
   {
     const T21 = L('L21'), T22 = L('L22');
-    const a = 153.25, b = 173.25;
+    const [a, b] = SH.nato;
     const {scene, camera} = cardScene();
     const head = await iconTile(eng.renderer, 'truck', {size: 1.0});
     scene.add(head);
@@ -946,13 +1014,13 @@ export async function buildShots(ctx) {
     dom.chip({html: '<span class="dot"></span>راستہ: <b>·</b> پاکستان کی سرزمین', a: wt('L22', 'پاکستان') - 0.2, b: b - 0.2, top: 1640});
   }
   // globe: ships from the US and Europe to Karachi
-  const {globeShot} = await import('./globe.js');
-  S.globe = await globeShot({eng, TL, L, wt, a: 172.55, b: 178.85});
-  scrim(172.55, 178.85, 0.85);
+  const {seaRouteShot} = await import('./searoute.js');
+  S.globe = await seaRouteShot({eng, L, wt, a: SH.globe[0], b: SH.globe[1]});
+  scrim(SH.globe[0], SH.globe[1], 0.85);
   // Karachi → convoys → two routes
   {
     const T24 = L('L24'), T25 = L('L25'), T26 = L('L26'), T27 = L('L27');
-    const a = 178.4, b = 203.15;
+    const [a, b] = SH.supply;
     const {scene, map, camera, look} = mapScene({fogD: 0.02});
     const u = map.uniforms;
     // road polylines (lon, lat) along the real corridors
@@ -1042,111 +1110,141 @@ export async function buildShots(ctx) {
     dom.infoCard({title: 'شمالی روٹ', sub: 'کابل اور بگرام کے لیے', icon: 'waypoints', tagCls: 'blue', tags: [{text: 'کراچی بندرگاہ', icon: 'anchor', t: wt('L27', 'کراچی')}, {text: 'پشاور', icon: 'map-pin', t: wt('L27', 'پشاور')}, {text: 'درہ خیبر', icon: 'mountain', t: wt('L27', 'درہ')}, {text: 'طورخم', icon: 'map-pin', t: wt('L27', 'طورخم')}], a: T27.a - 0.1, b: b - 0.15, top: 1280});
   }
 
-  // ================================================================ 7 · CONTAINERS: 166,949 + 52,929 → ~400,000
+  // ================================================================ 7 · CONTAINERS: a port yard at dusk that fills as the numbers are read
   {
     const T28 = L('L28'), T29 = L('L29'), T30 = L('L30'), T31 = L('L31');
-    const a = 202.65, b = 235.0;
+    const [a, b] = SH.boxes;
     const scene = new THREE.Scene();
-    scene.environment = envMap(eng.renderer);
-    scene.environmentIntensity = 0.7;
-    const camera = new THREE.PerspectiveCamera(32, W / H, 0.05, 200);
-    scene.add(new THREE.HemisphereLight('#dfe6f2', '#2b241c', 1.0));
-    const dl = new THREE.DirectionalLight('#fff0dc', 2.6);
-    dl.position.set(-4, 7, 5);
-    scene.add(dl);
-    const doc = await iconTile(eng.renderer, 'file-text', {size: 1.0});
-    scene.add(doc);
-    const geo = containerGeo();
-    const ribT = canvasTex(512, 128, (g, w, h) => {
-      g.fillStyle = '#ffffff';
+    scene.background = new THREE.Color('#141821');
+    scene.fog = new THREE.Fog('#141821', 9, 34);
+    const camera = new THREE.PerspectiveCamera(34, W / H, 0.05, 200);
+    scene.add(new THREE.HemisphereLight('#c9d6ee', '#2a2116', 1.0));
+    const sunL = new THREE.DirectionalLight('#ffc98a', 2.2);
+    sunL.position.set(-12, 9, -6);
+    scene.add(sunL);
+    const fill = new THREE.DirectionalLight('#8fb4ff', 0.7);
+    fill.position.set(8, 6, 10);
+    scene.add(fill);
+    // asphalt with painted lanes
+    const asph = canvasTex(1024, 1024, (g, w, h) => {
+      g.fillStyle = '#23262c';
       g.fillRect(0, 0, w, h);
-      for (let x = 0; x < w; x += 14) {
-        g.fillStyle = 'rgba(0,0,0,0.28)';
-        g.fillRect(x, 0, 5, h);
-        g.fillStyle = 'rgba(255,255,255,0.5)';
-        g.fillRect(x + 6, 0, 2, h);
+      for (let i = 0; i < 4000; i++) {
+        g.fillStyle = `rgba(255,255,255,${Math.random() * 0.03})`;
+        g.fillRect(Math.random() * w, Math.random() * h, 2, 2);
       }
-      g.strokeStyle = 'rgba(0,0,0,0.55)';
-      g.lineWidth = 10;
-      g.strokeRect(0, 0, w, h);
+      g.fillStyle = 'rgba(240,210,120,0.55)';
+      for (let x = 0; x < w; x += 256) g.fillRect(x + 124, 0, 8, h);
+      g.fillStyle = 'rgba(255,255,255,0.35)';
+      for (let y = 0; y < h; y += 64) g.fillRect(0, y, w, 3);
     }).tex;
-    const mk = (color, n) => {
-      const m = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({color, map: ribT, roughness: 0.6, metalness: 0.2}), n);
+    asph.wrapS = asph.wrapT = THREE.RepeatWrapping;
+    asph.repeat.set(8, 8);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshLambertMaterial({map: asph}));
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+    // container: ribbed walls, door end with bars and a stencil
+    const ribTex = (base) => canvasTex(512, 128, (g, w, h) => {
+      g.fillStyle = base;
+      g.fillRect(0, 0, w, h);
+      for (let x = 0; x < w; x += 12) {
+        g.fillStyle = 'rgba(0,0,0,0.30)';
+        g.fillRect(x, 0, 4, h);
+        g.fillStyle = 'rgba(255,255,255,0.16)';
+        g.fillRect(x + 5, 0, 2, h);
+      }
+      g.fillStyle = 'rgba(0,0,0,0.45)';
+      g.fillRect(0, 0, w, 6);
+      g.fillRect(0, h - 6, w, 6);
+    }).tex;
+    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+    const yardMat = (c) => new THREE.MeshLambertMaterial({map: ribTex(c)});
+    const yard = (color, n) => {
+      const m = new THREE.InstancedMesh(boxGeo, yardMat(color), n);
       m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       scene.add(m);
       return m;
     };
-    // grid layout: rows along x, stacked up to 4 high; one box ≈ ~1,000 containers
-        const usM = mk('#7a7f4f', 168), natoM = mk('#3f64a0', 54), restM = mk('#8a4b38', 180);
-    // container yard: blocks of rows × columns × tiers (one box ≈ 1,000 containers)
-    const CS = 0.0135; // 12.2 m → 0.165 units
-    const slot = (i, x0, z0, cols, rows) => {
-      const c = i % cols, r = Math.floor(i / cols) % rows, h = Math.floor(i / (cols * rows));
-      return [x0 + c * 0.172, 0.018 + h * 0.036, z0 + r * 0.036];
-    };
-    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sv = new THREE.Vector3();
-    const place = (mesh, x0, z0, cols, rows, t0, t1, t) => {
-      for (let i = 0; i < mesh.count; i++) {
-        const [x, y, z] = slot(i, x0, z0, cols, rows);
-        const st = t0 + ((t1 - t0) * i) / mesh.count;
+    // one container = 12.2 × 2.6 × 2.44 m → 1.22 × 0.26 × 0.244 world; blocks of rows × tiers
+    const CL = 1.22, CH = 0.26, CW = 0.244;
+    const blocks = [
+      {m: yard('#6f7a46', 168), x0: -3.0, z0: -0.2, cols: 2, rows: 21, tiers: 4, t0: () => wt('L29', 'ایک') - 0.6, t1: () => wt('L29', 'انچاس') + 0.3},
+      {m: yard('#2f5f9e', 54), x0: 0.4, z0: -0.2, cols: 1, rows: 14, tiers: 4, t0: () => wt('L30', 'باون') - 0.5, t1: () => wt('L30', 'انتیس') + 0.3},
+      {m: yard('#9a4a35', 360), x0: -4.6, z0: -7.2, cols: 9, rows: 10, tiers: 4, t0: () => wt('L31', 'چار') - 0.6, t1: () => wt('L31', 'داخل')},
+    ];
+    const m4 = new THREE.Matrix4(), q0 = new THREE.Quaternion(), sv = new THREE.Vector3(CL * 0.985, CH * 0.97, CW * 0.95), pv = new THREE.Vector3();
+    const fillBlock = (B, t) => {
+      const n = B.m.count, t0 = B.t0(), t1 = B.t1();
+      for (let i = 0; i < n; i++) {
+        // fill order: tier by tier, row wave front, so the stack grows like a real yard
+        const tier = Math.floor(i / (B.cols * B.rows)), r = Math.floor(i / B.cols) % B.rows, c = i % B.cols;
+        const st = t0 + ((t1 - t0) * i) / n;
         const k = E.out(prog(t, st, st + 0.35));
-        sv.setScalar(CS * Math.max(0.001, k));
-        m4.compose(new THREE.Vector3(x, y + (1 - k) * 0.5, z), q, sv);
-        mesh.setMatrixAt(i, m4);
+        const drop = (1 - k) * 0.9;
+        pv.set(B.x0 + c * (CL + 0.06), CH / 2 + tier * CH + drop, B.z0 + r * (CW + 0.02));
+        m4.compose(pv, q0, k > 0.001 ? sv : new THREE.Vector3(0.0001, 0.0001, 0.0001));
+        B.m.setMatrixAt(i, m4);
       }
-      mesh.instanceMatrix.needsUpdate = true;
+      B.m.instanceMatrix.needsUpdate = true;
     };
-    const gridT = canvasTex(512, 512, (g, w, h) => {
-      g.fillStyle = '#15171c';
-      g.fillRect(0, 0, w, h);
-      g.strokeStyle = 'rgba(255,255,255,0.05)';
-      g.lineWidth = 2;
-      for (let x = 0; x <= w; x += 64) {
-        g.beginPath();
-        g.moveTo(x, 0);
-        g.lineTo(x, h);
-        g.stroke();
-        g.beginPath();
-        g.moveTo(0, x);
-        g.lineTo(w, x);
-        g.stroke();
+    // gantry crane silhouettes
+    const steel = new THREE.MeshLambertMaterial({color: '#c9a14a'});
+    for (const [x, z] of [[-1.3, -3.4], [2.6, -3.0]]) {
+      const cr = new THREE.Group();
+      for (const dx of [-0.9, 0.9]) {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.06, 2.6, 0.06), steel);
+        leg.position.set(dx, 1.3, 0);
+        cr.add(leg);
       }
-    }).tex;
-    gridT.wrapS = gridT.wrapT = THREE.RepeatWrapping;
-    gridT.repeat.set(20, 20);
-    scene.fog = new THREE.Fog('#121419', 3.5, 11);
-    scene.background = new THREE.Color('#121419');
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshBasicMaterial({map: gridT}));
-    ground.rotation.x = -Math.PI / 2;
-    scene.add(ground);
-    const camT = track([[a, [0, 0.6, 7]], [T29.a, [-0.9, 0.55, 1.35]], [T29.b, [-0.2, 0.75, 1.6]], [T30.a + 0.5, [1.35, 0.6, 1.3]], [T31.a + 1.0, [0.6, 1.6, 2.9]], [b, [0.3, 3.2, 4.6]]], E.io);
-    const tgT = track([[a, [0, 0.6, 0]], [T29.a, [-0.25, 0.08, 0.1]], [T29.b, [-0.1, 0.06, 0.1]], [T30.a + 0.5, [1.1, 0.04, 0.05]], [T31.a + 1.0, [0.2, 0.0, -0.3]], [b, [0.1, 0.0, -0.35]]], E.io);
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.12, 0.12), steel);
+      beam.position.y = 2.6;
+      cr.add(beam);
+      const boom = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 3.0), steel);
+      boom.position.set(0, 2.55, 0.9);
+      cr.add(boom);
+      cr.position.set(x, 0, z);
+      scene.add(cr);
+    }
+    // yard lights
+    const lamps = [];
+    for (let i = 0; i < 8; i++) {
+      const gl = glow('#ffcf7a', 0.16);
+      gl.position.set(-5 + i * 1.6, 1.6, -1.2 - (i % 2) * 5.5);
+      scene.add(gl);
+      lamps.push(gl);
+    }
+    const doc = await iconTile(eng.renderer, 'file-text', {size: 1.0});
+    scene.add(doc);
+    const camT = track([[a, [0.2, 1.4, 6.5]], [T29.a - 0.2, [2.4, 1.9, 6.2]], [T29.b, [1.6, 1.7, 5.6]], [T30.a + 0.6, [3.4, 1.6, 4.8]], [T31.a + 1.0, [3.6, 3.2, 7.2]], [b, [4.0, 5.2, 9.0]]], E.io);
+    const tgT = track([[a, [0, 1.3, 0]], [T29.a - 0.2, [-2.2, 0.3, 2.0]], [T29.b, [-2.0, 0.3, 2.2]], [T30.a + 0.6, [0.4, 0.3, 1.6]], [T31.a + 1.0, [-0.8, 0.2, -2.0]], [b, [-1.0, 0.0, -3.2]]], E.io);
     S.boxes = eng.addShot({
-      name: 'boxes', a, b, scene, camera, opaque: false, hdr: false,
+      name: 'boxes', a, b, scene, camera, opaque: true, hdr: true, exposure: 1.0,
       update(t) {
         const k = E.out(prog(t, a + 0.35, a + 1.2));
-        const out = E.in(prog(t, T29.a - 0.6, T29.a));
-        doc.position.set(0, 0.95 - out * 1.5, 0);
+        const out = E.in(prog(t, T29.a - 0.8, T29.a - 0.1));
+        doc.position.set(0, 1.35 + out * 1.2, 0.6);
         doc.rotation.set(0.1 * Math.sin(t * 1.2), lerp(-2.4, 0, k) + 0.15 * Math.sin(t * 0.8), 0);
+        doc.scale.setScalar(0.32);
         pop(doc, k * (1 - out), {s: 0.4});
-        place(usM, -0.75, 0.0, 8, 7, wt('L29', 'ایک') - 0.5, wt('L29', 'انچاس') + 0.4, t);
-        place(natoM, 0.75, 0.0, 6, 3, wt('L30', 'باون') - 0.4, wt('L30', 'انتیس') + 0.4, t);
-        place(restM, -1.0, -0.6, 12, 5, wt('L31', 'چار') - 0.3, wt('L31', 'داخل'), t);
+        doc.scale.multiplyScalar(0.32);
+        for (const B of blocks) fillBlock(B, t);
+        lamps.forEach((l, i) => (l.material.opacity = 0.6 + 0.15 * Math.sin(t * 2 + i)));
         camera.position.set(...camT(t));
         camera.lookAt(...tgT(t));
       },
     });
+    scrim(a, b, 0.9);
     dom.infoCard({title: 'وفاقی ٹیکس محتسب', sub: 'پاکستان · سرکاری رپورٹ', icon: 'file-text', tags: [{text: '2005 کا آغاز', icon: 'calendar', t: wt('L28', 'پانچ')}, {text: 'جون 2010 تک', icon: 'calendar', t: wt('L28', 'دس')}], a: T28.a + 0.4, b: T28.b + 0.3, top: 1320});
     dom.counter({a: T29.a - 0.1, b: T29.b + 0.5, top: 1330, to: 166949, t0: wt('L29', 'ایک') - 0.2, t1: wt('L29', 'انچاس') + 0.3, label: 'امریکی فوجی کنٹینرز', accent: true});
     dom.counter({a: T30.a - 0.1, b: T30.b + 0.6, top: 1330, to: 52929, t0: wt('L30', 'باون') - 0.2, t1: wt('L30', 'انتیس') + 0.3, label: 'نیٹو کنٹینرز'});
     dom.counter({a: wt('L31', 'تقریباً') - 0.2, b: b - 0.2, top: 1330, to: 400000, t0: wt('L31', 'چار') - 0.3, t1: wt('L31', 'لاکھ') + 0.7, label: 'نیٹو سپلائی کنٹینرز · 20 سال', prefix: '~', accent: true});
-    dom.chip({html: '<span class="dot"></span>ایک خانہ ≈ ایک ہزار کنٹینر', a: T29.a + 0.6, b: T31.a + 1.5, top: 1720});
+    dom.chip({html: '<span class="dot"></span>ایک کنٹینر ≈ ایک ہزار کنٹینرز', a: T29.a + 0.6, b: T31.a + 1.5, top: 1720});
   }
 
   // ================================================================ 8 · THE QUESTION
   {
     const T32 = L('L32'), T33 = L('L33');
-    const a = 234.4, b = 245.35;
+    const [a, b] = SH.question;
     const {scene, map, camera, look} = mapScene({fogD: 0.02});
     const u = map.uniforms;
     const pins = basesDef.map((d) => {
@@ -1205,57 +1303,74 @@ export async function buildShots(ctx) {
   }
 
   // ================================================================ 9 · OUTRO (Higgsfield clip → exact logo end card)
-  S.outro = clipShot(eng, 'outro_hf', {a: 244.85, b: 251.8, start: 0, rate: 5 / 6.4, zoom: [1.0, 1.0]});
+  S.outro = clipShot(eng, 'outro_hf', {a: SH.outro[0], b: SH.outro[1], start: 0, rate: 5 / 5.6, zoom: [1.0, 1.0]});
+  // end card: the outro clip holds under a dark veil; logo, slogan and animated follow / link buttons
   {
-    const a = 250.9, b = TL.duration + 0.5;
-    const {scene, camera} = cardScene();
-    const logoTex = await new Promise((res) => new THREE.TextureLoader().load('assets/img/logo-nahzat.png', res));
-    logoTex.colorSpace = THREE.SRGBColorSpace;
-    const logo = new THREE.Mesh(new THREE.PlaneGeometry(2.3, 1.8), new THREE.MeshBasicMaterial({map: logoTex, transparent: true, toneMapped: false}));
-    scene.add(logo);
-    const names = ['newspaper', 'mic', 'search', 'chart-column', 'file-text', 'globe', 'radar', 'book-open-text'];
-    const ring = [];
-    for (let i = 0; i < names.length; i++) {
-      const tl = await iconTile(eng.renderer, names[i], {size: 0.42});
-      scene.add(tl);
-      ring.push(tl);
-    }
-    S.end = eng.addShot({
-      name: 'end', a, b, scene, camera, opaque: false, hdr: false,
-      update(t) {
-        const k = E.out(prog(t, a, a + 1.0));
-        logo.position.set(0, 0.35, 0);
-        logo.scale.setScalar(lerp(0.92, 1, k));
-        ring.forEach((tl, i) => {
-          const an = (i / ring.length) * Math.PI * 2 + t * 0.12;
-          tl.position.set(Math.cos(an) * 1.45, 0.45 + Math.sin(an) * 1.45, -0.4 + 0.2 * Math.sin(an * 2));
-          tl.rotation.set(0.1 * Math.sin(t + i), 0.25 * Math.sin(t * 0.7 + i), 0);
-          tl.scale.setScalar(0.9);
+    const a = TL.outro[0] + 5.2, e = TL.duration;
+    const ico = (n, c = '#ffffff') => `<img src="${iconURL(n, c)}" style="width:40px;height:40px">`;
+    dom.custom(
+      `<div class="endcard">
+        <div class="veil"></div>
+        <img class="logo" src="assets/img/logo-nahzat.png">
+        <div class="slogan">میڈیا کے میدان میں <b>جدت اور ابتکار</b> کی نئی آواز</div>
+        <div class="btns">
+          <div class="btn pri">${ico('bell', '#1a1205')}<span class="lb1">فالو کریں</span><span class="lb2">${ico('check', '#1a1205')}فالو ہو گیا</span><i class="shine"></i></div>
+          <div class="btn sec">${ico('link', '#ffd08a')}<span>لنک</span></div>
+          <div class="btn sec">${ico('share-2', '#ffd08a')}<span>شیئر</span></div>
+        </div>
+        <div class="cursor">${ico('mouse-pointer-2', '#ffffff')}</div>
+      </div>`,
+      {left: '0', top: '0', width: '1080px', height: '1920px'},
+      (el, t, show) => {
+        if (!show(el, t, a, e + 1, {fin: 0.01, dy: 0, s0: 1})) return;
+        const veil = el.querySelector('.veil'), logo = el.querySelector('.logo'), slog = el.querySelector('.slogan');
+        veil.style.opacity = String(E.soft(prog(t, a, a + 0.9)));
+        const kl = E.out(prog(t, a + 0.3, a + 1.2));
+        logo.style.opacity = String(kl);
+        logo.style.transform = `translate(-50%, ${(1 - kl) * 40}px) scale(${0.86 + 0.14 * kl})`;
+        logo.style.filter = `blur(${(1 - kl) * 14}px) drop-shadow(0 0 ${24 * Math.sin(Math.PI * prog(t, a + 0.9, a + 2.4))}px rgba(245,190,80,.55))`;
+        const ks = E.out(prog(t, a + 0.8, a + 1.6));
+        slog.style.opacity = String(ks);
+        slog.style.transform = `translateY(${(1 - ks) * 24}px)`;
+        el.querySelectorAll('.btn').forEach((bt, i) => {
+          const kb = E.back(prog(t, a + 1.3 + i * 0.16, a + 1.85 + i * 0.16));
+          bt.style.opacity = String(Math.min(1, prog(t, a + 1.3 + i * 0.16, a + 1.5 + i * 0.16)));
+          bt.style.transform = `translateY(${(1 - kb) * 60}px) scale(${0.7 + 0.3 * kb})`;
         });
-        camera.position.z = 10.5 - 0.3 * prog(t, a, b);
+        // the cursor glides in and taps «follow»
+        const cur = el.querySelector('.cursor'), pri = el.querySelector('.pri');
+        const tc = a + 2.4, tap = tc + 0.9;
+        const kc = E.io(prog(t, tc, tap));
+        cur.style.opacity = String(prog(t, tc, tc + 0.2) * (1 - prog(t, tap + 0.9, tap + 1.2)));
+        cur.style.transform = `translate(${lerp(260, 0, kc)}px, ${lerp(220, 0, kc)}px) scale(${t > tap && t < tap + 0.18 ? 0.85 : 1})`;
+        const done = t >= tap + 0.1;
+        pri.classList.toggle('done', done);
+        pri.style.transform += ` scale(${t > tap && t < tap + 0.2 ? 0.94 : 1})`;
+        pri.querySelector('.shine').style.transform = `translateX(${lerp(-520, 520, prog(t, a + 2.0, a + 2.9))}px) skewX(-20deg)`;
       },
-    });
-    dom.custom(`<div style="position:absolute;top:1520px;left:30px;right:30px;text-align:center;direction:rtl;font-family:Nastaliq;font-weight:700;font-size:50px;line-height:1.9;color:#eef0f4">میڈیا کے میدان میں <span style="color:#f5a623">جدت اور ابتکار</span> کی نئی آواز</div>`, {left: '0', top: '0', width: '1080px', height: '1920px'}, (el, t, show) => show(el, t, a + 0.5, TL.duration + 1, {fin: 0.9}));
+    );
   }
 
   // ================================================================ transitions (cut points sit between the lines)
-  const X = (from, to, at, type, dur = 1.0) => eng.addTransition(from, to, at, type, dur);
-  X(S.intro, S.date, 6.45, 'zoom', 0.9);
-  X(S.date, S.nyc, 8.2, 'flip', 0.7);
-  X(S.nyc, S.toll, 13.4, 'stack', 0.7);
-  X(S.toll, S.blame, 20.45, 'flip', 0.6);
-  X(S.blame, S.congress, 24.75, 'push', 0.6);
-  X(S.congress, S.reply, 38.1, 'swipe', 0.5);
-  X(S.reply, S.war, 48.7, 'zoom', 0.5);
-  X(S.war, S.mush, 68.05, 'flip', 0.6);
-  X(S.mush, S.pak, 90.65, 'zoom', 0.6);
-  X(S.pak, S.nato, 153.5, 'stack', 0.5);
-  X(S.nato, S.globe, 172.9, 'zoom', 0.7);
-  X(S.globe, S.supply, 178.6, 'zoom', 0.5);
-  X(S.supply, S.boxes, 202.9, 'push', 0.5);
-  X(S.boxes, S.question, 234.7, 'zoom', 0.6);
-  X(S.question, S.outro, 245.1, 'flip', 0.5);
-  X(S.outro, S.end, 251.35, 'fade', 0.9);
+  const X = (from, to, type, dur = 0.8) => {
+    const at = (from.b + to.a) / 2;
+    eng.addTransition(from, to, at, type, Math.min(dur, from.b - to.a - 0.02));
+  };
+  X(S.intro, S.date, 'zoom', 0.9);
+  X(S.date, S.nyc, 'flip', 0.7);
+  X(S.nyc, S.toll, 'stack', 0.6);
+  X(S.toll, S.blame, 'flip', 0.55);
+  X(S.blame, S.congress, 'push', 0.55);
+  X(S.congress, S.reply, 'swipe', 0.5);
+  X(S.reply, S.war, 'zoom', 0.5);
+  X(S.war, S.mush, 'flip', 0.6);
+  X(S.mush, S.pak, 'zoom', 0.6);
+  X(S.pak, S.nato, 'stack', 0.5);
+  X(S.nato, S.globe, 'zoom', 0.7);
+  X(S.globe, S.supply, 'zoom', 0.5);
+  X(S.supply, S.boxes, 'push', 0.5);
+  X(S.boxes, S.question, 'zoom', 0.6);
+  X(S.question, S.outro, 'flip', 0.5);
 
   return {
     overlay(t) {

@@ -2,6 +2,7 @@
 // counters, lower thirds, the opening title and the closing options. Pure functions of t.
 import {E, clamp, lerp, prog, fmtInt} from './util.js';
 import {iconURL} from './cards.js';
+import {ur} from './type.js';
 
 const css = `
 .cmp{position:absolute;direction:rtl;pointer-events:none}
@@ -12,11 +13,11 @@ const css = `
   box-shadow:0 12px 26px rgba(240,140,18,.35),inset 0 2px 0 rgba(255,255,255,.45),inset 0 -6px 12px rgba(150,70,0,.35)}
 .icard .tile.red{background:linear-gradient(160deg,#ff7a6e,#d8352b);box-shadow:0 12px 26px rgba(216,53,43,.35),inset 0 2px 0 rgba(255,255,255,.4)}
 .icard .tile img{width:56px;height:56px}
-.icard .tt{font-family:Nastaliq;font-weight:700;font-size:58px;line-height:1.75;color:#fff}
-.icard .st{font-family:Nastaliq;font-weight:500;font-size:30px;line-height:1.6;color:#9aa3b2;margin-top:-10px}
+.icard .tt{font-family:Quds;font-weight:900;font-size:56px;line-height:1.45;color:#fff}
+.icard .st{font-family:Quds;font-weight:600;font-size:30px;line-height:1.5;color:#9aa3b2;margin-top:4px}
 .icard .tags{display:flex;flex-wrap:wrap;gap:14px 14px;margin-top:8px}
 .tag{display:inline-flex;align-items:center;gap:12px;padding:6px 22px 10px 18px;border-radius:30px;background:rgba(245,166,35,.12);border:1.5px solid rgba(245,166,35,.55);
-  font-family:Nastaliq;font-weight:600;font-size:36px;line-height:1.75;color:#ffe2b0;white-space:nowrap}
+  font-family:Quds;font-weight:700;font-size:34px;line-height:1.5;color:#ffe2b0;white-space:nowrap}
 .tag img{width:34px;height:34px;opacity:.95}
 .tag.red{background:rgba(255,90,79,.12);border-color:rgba(255,90,79,.6);color:#ffd3cf}
 .tag.blue{background:rgba(127,178,255,.12);border-color:rgba(127,178,255,.6);color:#dbe9ff}
@@ -24,22 +25,38 @@ const css = `
 .counter .num{font-family:Inter;font-weight:900;font-size:190px;letter-spacing:-6px;line-height:1;color:#fff;direction:ltr;
   text-shadow:0 12px 50px rgba(0,0,0,.6)}
 .counter .num em{font-style:normal;color:#f5a623}
-.counter .lb{font-family:Nastaliq;font-weight:700;font-size:52px;line-height:1.9;color:#e9ecf1;text-shadow:0 6px 24px rgba(0,0,0,.6)}
+.counter .lb{font-family:Quds;font-weight:800;font-size:50px;line-height:1.5;color:#e9ecf1;text-shadow:0 6px 24px rgba(0,0,0,.6)}
 .counter .src{display:inline-flex;align-items:center;gap:12px;margin-top:8px;padding:6px 24px 10px;border-radius:30px;background:rgba(15,17,21,.75);border:1px solid rgba(255,255,255,.14);
-  font-family:Nastaliq;font-weight:500;font-size:30px;line-height:1.7;color:#aeb6c4}
+  font-family:Quds;font-weight:600;font-size:30px;line-height:1.5;color:#aeb6c4}
 .lower{left:80px;right:80px;display:flex;align-items:center;gap:22px;padding:18px 30px 22px;border-radius:30px;background:rgba(16,18,22,.86);
   border:1.5px solid rgba(255,255,255,.12);box-shadow:0 20px 50px rgba(0,0,0,.45);overflow:hidden}
 .lower .bar{position:absolute;right:0;top:0;bottom:0;width:10px;background:#f5a623}
-.lower .nm{font-family:Nastaliq;font-weight:700;font-size:50px;line-height:1.75;color:#fff}
-.lower .rl{font-family:Nastaliq;font-weight:500;font-size:32px;line-height:1.6;color:#a9b1bf}
+.lower .nm{font-family:Quds;font-weight:900;font-size:50px;line-height:1.5;color:#fff;margin-bottom:8px}
+.lower .rl{font-family:Quds;font-weight:600;font-size:32px;line-height:1.5;color:#a9b1bf}
 .opt{width:440px;padding:26px 30px 32px;border-radius:40px;text-align:center;background:linear-gradient(180deg,rgba(40,43,51,.95),rgba(25,27,33,.95));
   border:2px solid rgba(255,255,255,.14);box-shadow:0 30px 70px rgba(0,0,0,.5)}
-.opt .q{font-family:Nastaliq;font-weight:700;font-size:54px;line-height:1.8;color:#fff}
+.opt .q{font-family:Quds;font-weight:900;font-size:52px;line-height:1.45;color:#fff}
 .opt.hot{border-color:rgba(255,90,79,.8);box-shadow:0 0 60px rgba(255,90,79,.25),0 30px 70px rgba(0,0,0,.5)}
 .opt.hot .q{color:#ffb2aa}
 .opt .ic{width:110px;height:110px;margin:0 auto 6px;border-radius:30px;display:grid;place-items:center;background:linear-gradient(160deg,#9fc5ff,#4f86e0)}
 .opt.hot .ic{background:linear-gradient(160deg,#ff7a6e,#d8352b)}
 .opt .ic img{width:62px;height:62px}
+.endcard{position:absolute;inset:0}
+.endcard .veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(10,12,17,.8),rgba(6,7,10,.96));backdrop-filter:blur(18px)}
+.endcard .logo{position:absolute;left:50%;top:560px;width:400px}
+.endcard .slogan{position:absolute;left:40px;right:40px;top:960px;text-align:center;direction:rtl;font-family:Quds;font-weight:700;font-size:44px;line-height:1.5;color:#e9ecf1}
+.endcard .slogan b{font-weight:900;color:#f5c45a}
+.endcard .btns{position:absolute;left:0;right:0;top:1150px;display:flex;justify-content:center;gap:22px;direction:rtl}
+.endcard .btn{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:18px 34px 20px;border-radius:60px;font-family:Quds;font-weight:900;font-size:40px;line-height:1.3;white-space:nowrap}
+.endcard .btn.pri{background:linear-gradient(180deg,#ffd27a,#f5a623);color:#1a1205;box-shadow:0 14px 40px rgba(245,166,35,.45),inset 0 2px 0 rgba(255,255,255,.6)}
+.endcard .btn.sec{background:rgba(24,27,34,.9);color:#ffe2b0;border:2px solid rgba(245,166,35,.55)}
+.endcard .btn .lb2{display:none;align-items:center;gap:10px}
+.endcard .btn.done .lb1{display:none}
+.endcard .btn.done .lb2{display:flex}
+.endcard .btn.done{background:linear-gradient(180deg,#9be59b,#4cbf6a)}
+.endcard .btn .shine{position:absolute;top:-20px;bottom:-20px;width:90px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent)}
+.endcard .cursor{position:absolute;left:640px;top:1205px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.endcard .cursor img{width:64px !important;height:64px !important}
 .vs{font-family:Inter;font-weight:900;font-size:44px;color:#f5a623;letter-spacing:2px}
 `;
 
@@ -55,7 +72,7 @@ export function createDom(root) {
   const mk = (cls, html, style = {}) => {
     const el = document.createElement('div');
     el.className = 'cmp ' + cls;
-    el.innerHTML = html;
+    el.innerHTML = ur(html);
     Object.assign(el.style, style);
     layer.appendChild(el);
     return el;

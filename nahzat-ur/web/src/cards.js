@@ -80,12 +80,13 @@ export function text(g, s, x, y, o = {}) {
   g.direction = o.dir || 'rtl';
   g.textAlign = o.align || 'right';
   g.textBaseline = o.base || 'middle';
-  g.font = `${o.weight || 700} ${o.size || 48}px ${o.family || 'Nastaliq'}`;
+  g.font = `${o.weight || 700} ${o.size || 48}px ${o.family || 'Quds'}`;
   g.fillStyle = o.color || INK;
   if (o.glow) {
     g.shadowColor = o.glow;
     g.shadowBlur = 24;
   }
+  s = s.replace(/\u06BE/g, '\u0647');
   g.fillText(s, x, y);
   const m = g.measureText(s);
   g.restore();
@@ -125,7 +126,7 @@ export async function iconTile(renderer, name, opts = {}) {
   const color = opts.color || TILE;
   const g = new THREE.Group();
   const geo = new RoundedBoxGeometry(size, size, size * 0.34, 6, size * 0.22);
-  const mat = new THREE.MeshPhysicalMaterial({color, roughness: 0.32, metalness: 0.0, clearcoat: 1, clearcoatRoughness: 0.18, envMap: envMap(renderer), envMapIntensity: 0.85, sheen: 0.2});
+  const mat = new THREE.MeshPhysicalMaterial({color, roughness: 0.42, metalness: 0.0, clearcoat: 0.35, clearcoatRoughness: 0.35, envMap: envMap(renderer), envMapIntensity: 0.4});
   const box = new THREE.Mesh(geo, mat);
   g.add(box);
   const img = await iconImage(name, opts.ink || '#ffffff', opts.stroke || 2.1);

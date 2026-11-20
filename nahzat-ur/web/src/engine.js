@@ -47,7 +47,6 @@ void main(){
   // faint drafting grid, like the reference set
   vec2 px = vUv * vec2(1080.0, 1920.0);
   float gl = max(1.0 - smoothstep(0.0, 1.2, abs(mod(px.x, 120.0) - 60.0) - 59.0), 1.0 - smoothstep(0.0, 1.2, abs(mod(px.y, 120.0) - 60.0) - 59.0));
-  c += vec3(0.012) * gl * g;
   gl_FragColor = vec4(c, 1.0);
 }`;
 const OUT_FS = /* glsl */ `
@@ -180,7 +179,7 @@ export function createEngine(canvas) {
   const accMat = new THREE.MeshBasicMaterial({map: tmpRT.texture, transparent: true, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, opacity: 1});
   const accScene = new THREE.Scene();
   accScene.add(new THREE.Mesh(quadGeo, accMat));
-  const outMat = new THREE.ShaderMaterial({vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.0,1.0); }`, fragmentShader: OUT_FS, uniforms: {tAcc: {value: accRT.texture}, uFrame: {value: 0}, uGrain: {value: 0.022}, uVig: {value: 0.28}, uFxaa: {value: 1}, uTexel: {value: new THREE.Vector2(1 / W, 1 / H)}}, depthTest: false, depthWrite: false});
+  const outMat = new THREE.ShaderMaterial({vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.0,1.0); }`, fragmentShader: OUT_FS, uniforms: {tAcc: {value: accRT.texture}, uFrame: {value: 0}, uGrain: {value: 0.0}, uVig: {value: 0.28}, uFxaa: {value: 1}, uTexel: {value: new THREE.Vector2(1 / W, 1 / H)}}, depthTest: false, depthWrite: false});
   const outScene = new THREE.Scene();
   outScene.add(new THREE.Mesh(quadGeo, outMat));
 

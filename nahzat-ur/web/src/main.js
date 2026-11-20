@@ -6,12 +6,12 @@ import {loadIcons} from './cards.js';
 import {loadMap} from './map.js';
 import {buildShots} from './shots.js';
 
-const ICON_NAMES = ['plane', 'plane-takeoff', 'plane-landing', 'rocket', 'ship', 'anchor', 'truck', 'container', 'fuel', 'wheat', 'package', 'crosshair', 'radar', 'shield', 'file-text', 'newspaper', 'mic', 'search', 'chart-column', 'globe', 'map-pin', 'landmark', 'building-2', 'building', 'flag', 'users', 'handshake', 'pen-line', 'map', 'mountain', 'cloud', 'bomb', 'eye', 'lock', 'target', 'calendar', 'clock', 'life-buoy', 'satellite', 'file-warning', 'gavel', 'scale', 'signature', 'car', 'warehouse', 'route', 'waypoints', 'swords', 'badge-alert', 'microscope', 'book-open-text', 'chart-line', 'message-square-quote'];
+const ICON_NAMES = ['plane', 'plane-takeoff', 'plane-landing', 'rocket', 'ship', 'anchor', 'truck', 'container', 'fuel', 'wheat', 'package', 'crosshair', 'radar', 'shield', 'file-text', 'newspaper', 'mic', 'search', 'chart-column', 'globe', 'map-pin', 'landmark', 'building-2', 'building', 'flag', 'users', 'handshake', 'pen-line', 'map', 'mountain', 'cloud', 'bomb', 'eye', 'lock', 'target', 'calendar', 'clock', 'life-buoy', 'satellite', 'file-warning', 'gavel', 'scale', 'signature', 'car', 'warehouse', 'route', 'waypoints', 'swords', 'badge-alert', 'microscope', 'book-open-text', 'chart-line', 'message-square-quote', 'bell', 'link', 'user-plus', 'mouse-pointer-2', 'check', 'share-2', 'heart'];
 
 async function boot() {
   const q = new URLSearchParams(location.search);
   const TL = await (await fetch('assets/timeline.json')).json();
-  await Promise.all(['700 40px Nastaliq', '600 40px Nastaliq', '400 40px Nastaliq', '800 40px Inter', '900 40px Inter', '500 40px Inter'].map((f) => document.fonts.load(f, 'ابپ کیا ہے 123')));
+  await Promise.all(['600 40px Quds', '700 40px Quds', '800 40px Quds', '900 40px Quds', '800 40px Inter', '900 40px Inter', '500 40px Inter'].map((f) => document.fonts.load(f, 'ابپ کیا ہے 123')));
   await loadIcons(ICON_NAMES);
   const app = document.getElementById('app');
   const canvas = document.createElement('canvas');
@@ -44,6 +44,5 @@ async function boot() {
 boot().catch((e) => {
   console.error(e);
   document.body.insertAdjacentHTML('beforeend', `<pre style="position:absolute;top:0;left:0;color:#f55;font:20px monospace;z-index:9;white-space:pre-wrap">${e.stack || e}</pre>`);
-  if (q.has('nodom')) for (const el of app.querySelectorAll('div')) if (el.parentElement === app) el.style.visibility = 'hidden';
   window.SIM = {ready: true, error: String(e.stack || e)};
 });
