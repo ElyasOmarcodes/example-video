@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg && pip install numpy
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg handbrake-cli && pip install numpy
       - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
       - run: cp data/timeline.json web/assets/timeline.json && node tools/build.mjs
       - name: fetch the scene cache
@@ -55,6 +55,8 @@ jobs:
           python3 tools/sound.py
           bash tools/assemble.sh renders/cache renders/hindukush.mp4
           ffmpeg -v error -y -i renders/hindukush.mp4 -c:v libx264 -preset slow -b:v 4M -maxrate 5M -bufsize 9M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart renders/hindukush-share.mp4
+      - name: compress with HandBrake (H.265, small file, same look)
+        run: bash tools/handbrake.sh renders/hindukush.mp4 renders/hindukush-small.mp4
       - uses: actions/upload-artifact@v4
         with:
           name: video
@@ -63,4 +65,4 @@ jobs:
       - name: publish as a release
         run: |
           tag="hindukush-render-${GITHUB_RUN_NUMBER}"
-          gh release create "$tag" renders/hindukush.mp4 renders/hindukush-share.mp4 --target "$GITHUB_SHA" --title "Hindukush render #${GITHUB_RUN_NUMBER}" --notes "Rendered in one job by the hindukush-render workflow from ${GITHUB_SHA}." --prerelease
+          gh release create "$tag" renders/hindukush.mp4 renders/hindukush-small.mp4 renders/hindukush-share.mp4 --target "$GITHUB_SHA" --title "Hindukush render #${GITHUB_RUN_NUMBER}" --notes "Rendered in one job by the hindukush-render workflow from ${GITHUB_SHA}." --prerelease
