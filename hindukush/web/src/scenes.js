@@ -12,6 +12,45 @@ export const SEC = {
   4: {color: '#12a37f', short: 'د افغانستان دریځ او حل'},
 };
 
+// the Hindukush logo as one unit: wordmark (left) + mark (right) at their true proportions
+function brandLogo(s, tMark, tWord, {w = 800, rays = false, sweep = null} = {}) {
+  const H = (w * 559) / 1699, WW = (w * 1338) / 1699, MW = w - WW;
+  const wrap = h('div', 'blogo');
+  css(wrap, {width: w + 'px', height: H + 'px'});
+  wrap.innerHTML = `<div class="bw" style="width:${WW}px;height:${H}px"><img src="assets/brand/logo_word.png"><div class="sw"></div></div>
+    <img class="bm" src="assets/brand/logo_mark.png" style="left:${WW}px;width:${MW}px;height:${H}px">`;
+  const bw = wrap.querySelector('.bw'), bm = wrap.querySelector('.bm'), sw = wrap.querySelector('.sw');
+  const rs = [];
+  if (rays) for (let i = 0; i < 14; i++) {
+    const r = h('div', 'ray');
+    css(r, {left: WW + MW / 2 + 'px', top: H * 0.56 + 'px', background: i % 2 ? 'var(--ink)' : 'var(--acc)'});
+    wrap.insertBefore(r, wrap.firstChild); rs.push(r);
+  }
+  s.content.appendChild(wrap);
+  cue('stamp', tMark + 0.1);
+  s.parts.push({render(t) {
+    const mp = spring(prog(t, tMark, tMark + 1.1) * 1.6, 9, 0.5), mr = E.out(prog(t, tMark, tMark + 1.0));
+    bm.style.transform = `scale(${mp}) rotate(${(1 - mr) * -120}deg)`;
+    bm.style.filter = `drop-shadow(0 0 ${30 * clamp(mp)}px rgba(245,160,0,.45))`;
+    const wp = E.out(prog(t, tWord, tWord + 1.0));
+    bw.style.clipPath = `inset(-5% 0 -5% ${(1 - wp) * 100}%)`;
+    bw.style.transform = `translateX(${(1 - wp) * 60}px)`;
+    bw.style.filter = wp < 0.99 ? `blur(${(1 - wp) * 14}px)` : 'none';
+    if (sweep != null) {
+      const sp = lerp(-40, 140, E.io(prog(t, sweep, sweep + 0.75)));
+      sw.style.background = `linear-gradient(100deg, transparent ${sp - 18}%, rgba(255,255,255,.95) ${sp}%, transparent ${sp + 18}%)`;
+    }
+    rs.forEach((r, i) => {
+      const p = spring(prog(t, tMark - 0.25 + i * 0.04, tMark + 0.75 + i * 0.04) * 1.6, 9, 0.6);
+      const out = 1 - E.in(prog(t, tMark + 0.3 + i * 0.033, tMark + 0.8 + i * 0.033));
+      r.style.height = `${330 * clamp(p, 0, 1.2)}px`;
+      r.style.opacity = String(t > tMark - 0.25 ? out : 0);
+      r.style.transform = `translateX(-50%) rotate(${(360 / 14) * i}deg) translateY(${120 + 140 * (1 - out)}px)`;
+    });
+  }});
+  return {wrap};
+}
+
 export function buildScenes(TL, LEAD) {
   const IT = Object.fromEntries(TL.items.map((x) => [x.id, x]));
   // word time: first word in the item (head then body) containing needle, optionally after time `after`
@@ -54,16 +93,10 @@ export function buildScenes(TL, LEAD) {
     const fade = h('div', 'mapfade');
     s.content.appendChild(fade);
     // logo sting
-    const logo = h('div', 'tlogo', '<img class="m" src="assets/brand/mark.png"><img class="wm" src="assets/brand/wordmark_navy.png">');
-    s.content.appendChild(logo);
-    const lm = logo.querySelector('.m'), lw = logo.querySelector('.wm');
+    const logo = brandLogo(s, 0.05, 0.4, {w: 760});
     s.parts.push({render(t) {
-      const k = spring(prog(t, 0.05, 1.2) * 1.6), kw = E.out(prog(t, 0.35, 1.1));
       const mv = E.io(prog(t, LEAD - 0.3, LEAD + 0.9));
-      lm.style.transform = `scale(${0.4 + 0.6 * k}) rotate(${(1 - k) * -25}deg)`;
-      lm.style.opacity = String(clamp(k * 3));
-      lw.style.clipPath = `inset(-10% 0 -10% ${(1 - kw) * 100}%)`;
-      logo.style.transform = `translate(-50%, -50%) translateY(${lerp(0, -650, mv)}px) scale(${lerp(1, 0.48, mv)})`;
+      logo.wrap.style.transform = `translate(-50%, -50%) translateY(${lerp(0, -650, mv)}px) scale(${lerp(1, 0.5, mv)})`;
     }});
     const t1 = W('T', 'تبلیغاتو'), t2 = W('T', 'نیابتي'), t3 = W('T', 'افغانستان');
     s.add(at(headline('له تبلیغاتو', 'up', t1 - 0.25, {size: 120}), 1180));
@@ -246,7 +279,7 @@ export function buildScenes(TL, LEAD) {
   point('P12', 4, 4, {img: 'evidence', style: 'up', size: 86, head: 'د مخالفو ډلو\nد ملاتړ شواهد', trans: 'stripes', heroOpts: {y: 640, scale: 0.9},
     extra(s) {
       const tg = W('P12', 'هندوکش');
-      const card = h('div', 'hkcard', '<img class="m" src="assets/brand/mark.png"><img class="w" src="assets/brand/wordmark_navy.png"><span>سره شته</span>');
+      const card = h('div', 'hkcard', '<span>له</span><img src="assets/brand/logo_full.png"><span>سره شته</span>');
       s.add(at({el: card, render(t) { const k = spring(prog(t, tg - 0.3, tg + 0.7) * 1.6); card.style.opacity = String(clamp(k * 3)); card.style.transform = `scale(${0.6 + 0.4 * k})`; }}, 1440));
       s.add(at(chips([['ښکاره بېلګه', W('P12', 'ښکاره') - 0.2, 'dark']]), Y2 + 70));
     }});
@@ -357,16 +390,20 @@ export function buildScenes(TL, LEAD) {
   // ---------------- end card ----------------
   {
     const s = base(0, {tint: ['#f5a000', '#3b5bdb']});
-    const lg = h('div', 'endlogo', '<img class="m" src="assets/brand/mark.png"><img class="w" src="assets/brand/wordmark_navy.png">');
-    const ln = h('div', 'endline');
-    s.content.append(lg, ln);
-    const t0 = IT.P23.b + 0.6;
+    const grid = h('div', 'endgrid');
+    s.content.appendChild(grid);
+    const t0 = IT.P23.b + 0.5;
+    const lg = brandLogo(s, t0 + 0.25, t0 + 0.8, {w: 900, rays: true, sweep: t0 + 1.8});
+    const bar = h('div', 'endline'), handle = h('div', 'endhandle', '@hindukush');
+    s.content.append(bar, handle);
     s.parts.push({render(t) {
-      const k = spring(prog(t, t0, t0 + 1.3) * 1.6), kw = E.out(prog(t, t0 + 0.4, t0 + 1.3));
-      lg.querySelector('.m').style.transform = `scale(${0.4 + 0.6 * k}) rotate(${(1 - k) * -30}deg)`;
-      lg.querySelector('.m').style.opacity = String(clamp(k * 3));
-      lg.querySelector('.w').style.clipPath = `inset(-10% 0 -10% ${(1 - kw) * 100}%)`;
-      ln.style.transform = `translateX(-50%) scaleX(${E.io(prog(t, t0 + 0.8, t0 + 1.8))})`;
+      grid.style.transform = `translateY(${-(t - t0) * 24}px)`;
+      const kb = spring(prog(t, t0 + 1.95, t0 + 2.9) * 1.6), kh = spring(prog(t, t0 + 2.25, t0 + 3.2) * 1.6);
+      bar.style.transform = `translateX(-50%) scaleX(${kb})`;
+      handle.style.opacity = String(clamp(kh * 2));
+      handle.style.transform = `translateX(-50%) translateY(${(1 - kh) * 30}px) scale(${0.94 + 0.06 * kh})`;
+      const br = 1 + Math.sin((t - t0) * 1.4) * 0.012 * (t > t0 + 2 ? 1 : 0);
+      lg.wrap.style.transform = `translate(-50%, -50%) scale(${br})`;
     }});
     s.t0 = IT.P23.b + 0.3; s.t1 = IT.P23.b + 4.8; s.chrome = false; s.brand = false;
     scenes.push(s);

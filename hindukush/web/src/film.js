@@ -11,7 +11,7 @@ export function createFilm(root, scenes, sections) {
   const chrome = h('div', 'chrome');
   const sechip = h('div', 'sechip', '<span class="n"></span><span class="tt"></span>');
   const progEl = h('div', 'prog');
-  const brand = h('div', 'brand', '<img class="m" src="assets/brand/mark.png"><img src="assets/brand/wordmark_navy.png">');
+  const brand = h('div', 'brand', '<img src="assets/brand/logo_full.png">');
   chrome.append(sechip, progEl, brand);
   root.appendChild(chrome);
   // windows: transition between scene i and i+1 centred in the narration gap
