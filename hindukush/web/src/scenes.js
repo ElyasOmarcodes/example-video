@@ -3,6 +3,7 @@
 import {E, clamp, prog, lerp, h, css, spring, PS_DIGITS, cue} from './util.js';
 import {backdrop, hero, headline, kicker, line, chips, stamp, bubble, strike, at} from './kit.js';
 import {mapView, marker, arc, ripple, place, LL} from './map.js';
+import {measure} from './kashida.js';
 import {people, radar, network, callCard, videoFrame, echo, recapRow} from './widgets.js';
 
 export const SEC = {
@@ -99,7 +100,7 @@ export function buildScenes(TL, LEAD) {
       logo.wrap.style.transform = `translate(-50%, -50%) translateY(${lerp(0, -650, mv)}px) scale(${lerp(1, 0.5, mv)})`;
     }});
     const t1 = W('T', 'تبلیغاتو'), t2 = W('T', 'نیابتي'), t3 = W('T', 'افغانستان');
-    s.add(at(headline('له تبلیغاتو', 'up', t1 - 0.25, {size: 120}), 1180));
+    s.add(at(headline('له تبلیغاتو', 'up', t1 - 0.25, {size: 120, justifyTo: measure('تر نیابتي جګړې', 132) * 0.92}), 1180));
     s.add(at(headline('تر نیابتي جګړې', 'tone', t2 - 0.2, {size: 132, toneN: 2}), 1330));
     const sub = h('div', 'tsub', 'د افغانستان پر ضد د پاکستان پوځي رژیم سیاست');
     const subw = at({el: sub, render(t) {
@@ -107,7 +108,7 @@ export function buildScenes(TL, LEAD) {
       sub.style.clipPath = `inset(-20% 0 -20% ${(1 - k) * 100}% round 40px)`;
     }}, 1560);
     s.add(subw);
-    s.t0 = 0; s.t1 = it.b; s.chrome = false; s.brand = false; s.trans = 'wipe'; s.td = 1.4;
+    s.id = 'T'; s.t0 = 0; s.t1 = it.b; s.chrome = false; s.brand = false; s.trans = 'wipe'; s.td = 1.4;
     s.focus = [540, 760];
     scenes.push(s);
   }
@@ -135,7 +136,7 @@ export function buildScenes(TL, LEAD) {
       num.style.opacity = String(k);
       num.style.transform = `translate(-50%, -50%) scale(${1.25 - 0.25 * k}) translateY(${Math.sin(t * 0.5) * 10}px)`;
     }});
-    s.t0 = it.a; s.t1 = it.b; s.chrome = false; s.brand = false; s.trans = trans; s.focus = [540, 700];
+    s.id = id; s.t0 = it.a; s.t1 = it.b; s.chrome = false; s.brand = false; s.trans = trans; s.focus = [540, 700];
     scenes.push(s);
   }
 
@@ -164,7 +165,7 @@ export function buildScenes(TL, LEAD) {
     const hd = s.add(at(headline(cfg.head || it.head, cfg.style || 'up', t0 - 0.1, {size: cfg.size, toneN: cfg.toneN}), hy));
     if (cfg.hl) hd.el.style.setProperty('--hl', cfg.hl);
     if (cfg.extra) cfg.extra(s, it);
-    s.t0 = it.a; s.t1 = it.b; s.trans = cfg.trans || 'slide'; s.td = cfg.td;
+    s.id = id; s.t0 = it.a; s.t1 = it.b; s.trans = cfg.trans || 'slide'; s.td = cfg.td;
     s.focus = cfg.focus || [540, cfg.heroOpts?.y ?? 700];
     sections[sec].points.push({t0: it.a, t1: it.b});
     scenes.push(s);
@@ -372,7 +373,7 @@ export function buildScenes(TL, LEAD) {
     rows.forEach(([img, tx, tt], i) => s.add(recapRow(img, tx, tt - 0.3, 400 + i * 180), g1));
     s.add(recapRow('shield_crack', 'د سیمې امنیت او ثبات ګواښي', W('P23', 'امنیت') - 0.4, 1150, 'hot'), g1);
     s.add(hero('mountain', tA - 0.2, {y: 640, scale: 0.95}), g2);
-    s.add(at(headline('افغانستان د ښه ګاونډیتوب\nپلوی دی', 'tone', tA, {size: 84, toneN: 2}), 1150), g2);
+    s.add(at(headline('افغانستان د ښه ګاونډیتوب پلوی دی', 'tone', tA, {size: 88, toneN: 2}), 1150), g2);
     s.add(at(headline('د هر ډول شومو هڅو مخه نیسي', 'box', W('P23', 'شومو') - 0.6, {size: 62}), 1510), g2);
     s.parts.push({render(t) {
       const k = ph(t);
@@ -383,29 +384,54 @@ export function buildScenes(TL, LEAD) {
       g2.style.display = k <= 0 ? 'none' : '';
       g2.style.opacity = String(k);
     }});
-    s.t0 = it.a; s.t1 = it.b; s.trans = 'fade'; s.td = 1.6; s.chrome = false; s.focus = [540, 640];
+    s.id = 'P23'; s.t0 = it.a; s.t1 = it.b; s.trans = 'fade'; s.td = 1.6; s.chrome = false; s.focus = [540, 640];
     scenes.push(s);
   }
 
-  // ---------------- end card ----------------
+  // ---------------- end card: the Hindukush outro (three discs, glitch-in logo, handle) ----------------
   {
-    const s = base(0, {tint: ['#f5a000', '#3b5bdb']});
-    const grid = h('div', 'endgrid');
-    s.content.appendChild(grid);
-    const t0 = IT.P23.b + 0.5;
-    const lg = brandLogo(s, t0 + 0.25, t0 + 0.8, {w: 900, rays: true, sweep: t0 + 1.8});
-    const bar = h('div', 'endline'), handle = h('div', 'endhandle', '@hindukush');
-    s.content.append(bar, handle);
-    s.parts.push({render(t) {
-      grid.style.transform = `translateY(${-(t - t0) * 24}px)`;
-      const kb = spring(prog(t, t0 + 1.95, t0 + 2.9) * 1.6), kh = spring(prog(t, t0 + 2.25, t0 + 3.2) * 1.6);
-      bar.style.transform = `translateX(-50%) scaleX(${kb})`;
-      handle.style.opacity = String(clamp(kh * 2));
-      handle.style.transform = `translateX(-50%) translateY(${(1 - kh) * 30}px) scale(${0.94 + 0.06 * kh})`;
-      const br = 1 + Math.sin((t - t0) * 1.4) * 0.012 * (t > t0 + 2 ? 1 : 0);
-      lg.wrap.style.transform = `translate(-50%, -50%) scale(${br})`;
-    }});
-    s.t0 = IT.P23.b + 0.3; s.t1 = IT.P23.b + 4.8; s.chrome = false; s.brand = false;
+    const t0 = IT.P23.b + 0.3;
+    const el = h('div', 'scene');
+    const content = h('div', 'layer');
+    el.appendChild(content);
+    const discs = ['#EAA500', '#ffffff', '#051449'].map((c) => { const d = h('div', 'odisc'); d.style.background = c; content.appendChild(d); return d; });
+    const LW = 800, LH = (LW * 559) / 1699;
+    const box = h('div', 'ologo');
+    css(box, {left: 540 - LW / 2 + 'px', top: 900 - LH / 2 + 'px', width: LW + 'px', height: LH + 'px'});
+    box.innerHTML = `<img class="lg" src="assets/brand/logo_full_light.png"><img class="gh g1" src="assets/brand/logo_ghost.png"><img class="gh g2" src="assets/brand/logo_ghost.png">`;
+    const handle = h('div', 'ohandle', '@hindukush');
+    content.append(box, handle);
+    const lg = box.querySelector('.lg'), g1 = box.querySelector('.g1'), g2 = box.querySelector('.g2');
+    const P3 = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2); // power3.inOut
+    const T = t0 + 1.65;
+    [0.05, 0.5, 0.95].forEach((d) => cue('disc', t0 + d));
+    cue('glitch', T + 0.05);
+    const gx = [0, -14, 9, -6, 12, 0], bx = [0, 12, -10, 7, -12, 0];
+    const clips = ['inset(10% 0% 55% 0%)', 'inset(60% 0% 8% 0%)', 'inset(30% 0% 40% 0%)'];
+    const s = {
+      el, content, id: 'END', sec: 0, chrome: false, brand: false, t0, t1: t0 + 5.0,
+      render(t) {
+        [0.05, 0.5, 0.95].forEach((d, i) => { discs[i].style.transform = `scale(${P3(prog(t, t0 + d, t0 + d + 0.7))})`; });
+        const lk = E.out(prog(t, T, T + 0.6));
+        box.style.opacity = String(lk);
+        box.style.transform = `translateY(${-E.out(prog(t, T + 0.8, t0 + 5.0)) * 10}px) scale(${lerp(0.9, 1, lk)})`;
+        const g = t >= T + 0.05 && t < T + 0.55;
+        const step = Math.floor((t - T - 0.05) / 0.1);
+        const flick = g && Math.floor((t - T - 0.05) / 0.06) % 2 === 0;
+        const ci = Math.floor((t - T - 0.1) / (0.45 / 4));
+        lg.style.clipPath = t >= T + 0.1 && ci >= 0 && ci < 3 ? clips[ci] : 'none';
+        const on = g && step >= 0 && step < 6;
+        g1.style.opacity = on && flick ? '0.55' : '0';
+        g2.style.opacity = on && flick ? '0.55' : '0';
+        g1.style.left = (on ? gx[step] : 0) + 'px'; g2.style.left = (on ? bx[step] : 0) + 'px';
+        const sk = E.out(prog(t, T + 0.7, T + 1.4));
+        handle.style.opacity = String(sk);
+        handle.style.transform = `translateY(${(1 - sk) * 20}px)`;
+      },
+    };
+    // the discs open over the last scene: it stays underneath until the navy disc has covered it
+    const last = scenes[scenes.length - 1];
+    last.trans = 'over'; last.tm = t0 + 0.85; last.td = 1.7;
     scenes.push(s);
   }
   return {scenes, sections};

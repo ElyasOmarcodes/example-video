@@ -56,6 +56,11 @@ export function createFilm(root, scenes, sections) {
       k = T.A.chrome === false ? E.io(p) : 1 - E.io(p);
     }
     chrome.style.opacity = String(k);
+    chrome.style.display = k > 0 ? '' : 'none';
+    // every frame sets the same state for the same t, whatever was drawn before (the render cache relies on it)
+    const secNow = S && S.sec ? S.sec : 1;
+    root.style.setProperty('--sec', sections[secNow].color);
+    chrome.style.setProperty('--sec', sections[secNow].color);
     if (S && S.sec) {
       if (S.sec !== curSec) {
         curSec = S.sec;
@@ -63,8 +68,6 @@ export function createFilm(root, scenes, sections) {
         sechip.querySelector('.n').textContent = PS_DIGITS(S.sec, 1);
         sechip.querySelector('.tt').textContent = sc.short;
         progEl.innerHTML = sc.points.map(() => '<i><b></b></i>').join('');
-        root.style.setProperty('--sec', sc.color);
-        chrome.style.setProperty('--sec', sc.color);
       }
       const sc = sections[S.sec];
       const bars = progEl.querySelectorAll('b');

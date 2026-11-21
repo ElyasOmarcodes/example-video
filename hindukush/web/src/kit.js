@@ -1,6 +1,7 @@
 // Building blocks for the light explainer: backdrop, hero stage, key-phrase type styles, chips,
 // stamps, bubbles. Every block is {el, render(t)} and render is a pure function of t.
 import {E, clamp, prog, lerp, h, css, spring, noise, cue} from './util.js';
+import {balance, justify, measure} from './kashida.js';
 
 export const ps = (s) => s; // Al-Quds covers every Pashto letter; hook kept for glyph fixes
 
@@ -83,7 +84,11 @@ export function headline(text, kind, t0, o = {}) {
   cue('head', t0, {style: kind});
   const el = h('div', `hd ${kind}`);
   if (o.size) el.style.fontSize = o.size + 'px';
-  const lines = text.split('\n');
+  const size = o.size || 96;
+  // calligraphic layout: balanced lines, kashida-justified to one width (no wide word gaps)
+  const maxW = (o.maxW || 940) - (kind === 'box' ? size * 0.9 : 0);
+  let lines = balance(text, size, 900, maxW);
+  lines = justify(lines, size, 900, o.justifyTo ?? null);
   const words = [];
   let body = '';
   if (kind === 'out') {

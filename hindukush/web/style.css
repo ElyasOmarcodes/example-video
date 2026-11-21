@@ -6,7 +6,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
 #app{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg);font-family:'Quds';color:var(--ink);direction:rtl}
-.scene{position:absolute;inset:0;overflow:hidden;display:none;transform-origin:50% 50%;will-change:transform}
+.scene{position:absolute;inset:0;overflow:hidden;display:none;transform-origin:50% 50%}
 .layer{position:absolute;inset:0}
 /* backdrop of every scene: light field, two soft colour pools, a quiet dot grid */
 .bgf{position:absolute;inset:-120px;background:var(--bg)}
@@ -26,8 +26,8 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
 .kick .bar{width:54px;height:6px;border-radius:3px;background:var(--sec)}
 .kick .num{font-weight:800;color:var(--sec)}
 .hd{font-weight:900;font-size:96px;line-height:1.32;color:var(--ink)}
-.hd .w{display:inline-block;padding:0 .12em;white-space:nowrap}
-.hd .wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.06em 0 .14em;margin:-.06em 0 -.14em}
+.hd .w{display:inline-block;white-space:nowrap}
+.hd .wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.06em .1em .14em;margin:-.06em -.1em -.14em}
 .hd.out .tx{color:transparent;-webkit-text-stroke:3px var(--ink);position:relative}
 .hd.out .fill{position:absolute;inset:0;color:var(--ink);-webkit-text-stroke:0}
 .hd .mk{position:absolute;left:-.1em;right:-.1em;bottom:.12em;height:.42em;border-radius:.12em;background:color-mix(in srgb,var(--acc) 45%,transparent);transform-origin:right center;z-index:-1}
@@ -110,3 +110,8 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
 .ray{position:absolute;width:10px;height:0;border-radius:10px;transform-origin:50% 0%}
 .mote{position:absolute;left:0;top:0;border-radius:50%}
 .xbadge{position:absolute;width:120px;height:120px;border-radius:50%;background:var(--hot);color:#fff;display:grid;place-items:center;font-family:Arial,sans-serif;font-weight:700;font-size:70px;box-shadow:0 0 0 14px rgba(229,72,77,.2),0 18px 36px rgba(229,72,77,.35)}
+.odisc{position:absolute;left:-660px;top:-240px;width:2400px;height:2400px;border-radius:50%;transform:scale(0)}
+.ologo{position:absolute}.ologo img{position:absolute;left:0;top:0;width:100%;height:100%}
+.ologo .g1{mix-blend-mode:screen;filter:hue-rotate(300deg) saturate(3);opacity:0}
+.ologo .g2{mix-blend-mode:screen;filter:hue-rotate(160deg) saturate(3);opacity:0}
+.ohandle{position:absolute;left:0;top:1090px;width:1080px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:44px;font-weight:700;color:#a7a9c2;direction:ltr}

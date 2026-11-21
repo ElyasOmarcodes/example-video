@@ -118,7 +118,7 @@ cue = lambda name, at, g, **kw: place(fx, S[name], at, g, **kw)
 # transitions
 WH = {'slide': [('whoosh_fast', -0.35, -21)], 'rise': [('whoosh_fast2', -0.3, -21)], 'iris': [('swoosh_myst', -0.6, -22), ('pop', 0.05, -26)],
       'zoom': [('whoosh_tunnel', -0.5, -21)], 'stack': [('swoosh_slow', -0.75, -22), ('paper_slide', 0.15, -26)], 'flip': [('whoosh_fast2', -0.25, -21), ('paper_slide', -0.05, -25)],
-      'stripes': [('whoosh_wind', -0.55, -20), ('impact_deep', 0.0, -22)], 'wipe': [('whoosh_wind', -0.5, -21)], 'fade': [('swoosh_slow', -0.8, -27)]}
+      'stripes': [('whoosh_wind', -0.55, -20), ('impact_deep', 0.0, -22)], 'wipe': [('whoosh_wind', -0.5, -21)], 'fade': [('swoosh_slow', -0.8, -27)], 'over': []}
 for x in C['tr']:
     m = (x['a'] + x['b']) / 2
     for name, off, g in WH[x['type']]:
@@ -169,6 +169,12 @@ for c in sorted(C['cues'], key=lambda c: c['t']):
         cue('select_ui', t + 0.05, -26)
     elif k == 'pull':
         cue('swoosh_myst', t, -25)
+    elif k == 'disc':
+        cue('whoosh_fast', t - 0.15, -20, fade_out=0.2)
+    elif k == 'glitch':
+        cue('impact_big', t - 0.02, -16)
+        for j in range(5):
+            cue('tick', t + j * 0.1, -22)
     elif k == 'echo':
         for j in range(3):
             cue('pop', t + j * 0.73, -31 - j * 2)
@@ -179,8 +185,6 @@ cue('riser_short', LEAD - 1.0, -26)
 for x in C['tr']:
     if x['type'] in ('zoom',):            # section opener → first point
         pass
-cue('impact_big', DUR - 4.0, -18)
-cue('ping', DUR - 3.3, -26)
 
 # ------------------------------------------------------------------ master
 mix = voice + mus + fx

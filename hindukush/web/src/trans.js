@@ -102,6 +102,10 @@ export const TRANS = {
     css(A.content, {transform: `translateY(${-e * 160}px)`});
     css(o.edge, {display: 'block', top: `${y - 13}px`, transform: `rotate(${(-Math.atan2(600, W) * 180) / Math.PI}deg)`, opacity: String(Math.sin(Math.PI * p))});
   },
+  // the next scene draws itself over the current one (used by the disc outro)
+  over(p, A, B) {
+    B.el.style.zIndex = '3';
+  },
   // soft cross-dissolve with drift (used where the voice runs straight on)
   fade(p, A, B) {
     const e = E.soft(p);
