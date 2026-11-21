@@ -1,0 +1,8 @@
+audio/voice16.wav
+audio/mix.wav
+web/bundle.js
+renders/
+node_modules/
+data/*.log
+hf/
+review/*.png

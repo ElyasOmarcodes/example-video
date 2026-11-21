@@ -1,0 +1,87 @@
+# Renders the Hindukush explainer (light motion graphics) in parallel: the film is split into 12
+# frame-exact parts at 60 fps, each part runs on its own runner (headless Chromium), then one job
+# joins them, mixes the soundtrack and publishes the video as a prerelease.
+# Start it from Actions → hindukush-render → Run workflow, or by pushing a change to hindukush/render.request.
+name: hindukush-render
+on:
+  workflow_dispatch:
+  push:
+    paths: ['hindukush/render.request']
+permissions:
+  contents: write
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      parts: ${{ steps.p.outputs.parts }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, math
+          d = json.load(open('hindukush/data/cues.json'))
+          fps = 60; n = math.ceil(d['duration'] * fps); P = 12
+          parts = [{'i': i, 'from': round((i * n // P) / fps, 4), 'to': round(((i + 1) * n // P) / fps, 4)} for i in range(P)]
+          print('parts=' + json.dumps(parts))
+          PY
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        part: ${{ fromJson(needs.plan.outputs.parts) }}
+    defaults:
+      run:
+        working-directory: hindukush
+    env:
+      HK_MODULES: ${{ github.workspace }}/hindukush/node_modules
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg fonts-noto-core
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - run: cp data/timeline.json web/assets/timeline.json && node tools/build.mjs
+      - run: |
+          python3 -m http.server 8771 --bind 127.0.0.1 --directory web >/dev/null 2>&1 &
+          sleep 2
+          node tools/capture.mjs --fps 60 --from ${{ matrix.part.from }} --to ${{ matrix.part.to }} --out renders/parts/p${{ matrix.part.i }}.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: part-${{ matrix.part.i }}
+          path: hindukush/renders/parts/p${{ matrix.part.i }}.mp4
+          retention-days: 3
+  assemble:
+    needs: render
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hindukush
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg && pip install numpy
+      - uses: actions/download-artifact@v4
+        with:
+          path: hindukush/renders/parts
+          pattern: part-*
+          merge-multiple: true
+      - run: |
+          python3 tools/sound.py
+          ls renders/parts/p*.mp4 | sort -V | sed "s|renders/parts/|file '|; s|$|'|" > renders/parts/list.txt
+          ffmpeg -v error -y -f concat -safe 0 -i renders/parts/list.txt -i audio/mix.wav -map 0:v -map 1:a -c:v libx264 -preset medium -b:v 10M -maxrate 14M -bufsize 20M -pix_fmt yuv420p -r 60 -c:a aac -b:a 256k -ar 48000 -shortest -movflags +faststart renders/hindukush.mp4
+          ffmpeg -v error -y -i renders/hindukush.mp4 -c:v libx264 -preset slow -b:v 3500k -maxrate 4500k -bufsize 8M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart renders/hindukush-share.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: hindukush/renders/hindukush*.mp4
+          retention-days: 14
+      - name: publish as a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="hindukush-render-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" renders/hindukush.mp4 renders/hindukush-share.mp4 --target "$GITHUB_SHA" --title "Hindukush render #${GITHUB_RUN_NUMBER}" --notes "Rendered by the hindukush-render workflow from ${GITHUB_SHA}." --prerelease
