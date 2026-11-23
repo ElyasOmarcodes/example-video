@@ -1,6 +1,8 @@
-# Renders the Nahzat Urdu episode in parallel: the timeline is split into 10 frame-exact parts,
-# each part runs on its own runner (headless Chromium + SwiftShader), then one job joins them,
-# adds the mix and publishes the video as a (pre)release.
+# Renders the Nahzat Urdu episode in ONE continuous pass: a single runner, a single headless Chromium
+# stepping every frame in order from the first to the last, piped into a single encoder. No parts and
+# no joins, so there is no seam anywhere in the film. Then the mix is muxed in (video stream copied,
+# never re-encoded), a share copy and a HandBrake H.265 small copy are made, and everything is
+# uploaded as an artifact (and a release when the token is allowed to create one).
 # Start it from Actions → nahzat-render → Run workflow, or by pushing a change to nahzat-ur/render.request.
 name: nahzat-render
 on:
@@ -9,79 +11,54 @@ on:
     paths: ['nahzat-ur/render.request']
 permissions:
   contents: write
+  actions: write
+concurrency:
+  group: nahzat-render
+  cancel-in-progress: true
 jobs:
-  plan:
-    runs-on: ubuntu-latest
-    outputs:
-      parts: ${{ steps.p.outputs.parts }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: p
-        run: |
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
-          import json, math
-          tl = json.load(open('nahzat-ur/data/timeline.json'))
-          n = math.ceil(tl['duration'] * tl['fps']); P = 10
-          parts = [{'i': i, 'from': round((i * n // P) / tl['fps'], 4), 'to': round(((i + 1) * n // P) / tl['fps'], 4)} for i in range(P)]
-          print('parts=' + json.dumps(parts))
-          PY
   render:
-    needs: plan
     runs-on: ubuntu-latest
-    timeout-minutes: 300
-    strategy:
-      fail-fast: false
-      matrix:
-        part: ${{ fromJson(needs.plan.outputs.parts) }}
+    timeout-minutes: 350
     defaults:
       run:
         working-directory: nahzat-ur
     env:
       NAHZAT_MODULES: ${{ github.workspace }}/nahzat-ur/node_modules
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg handbrake-cli && pip install numpy
       - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
       - run: bash tools/clips.sh && cp data/timeline.json web/assets/timeline.json && node tools/build.mjs
-      - run: |
+      - name: mix the soundtrack (user narration + the two quote voices, score, effects, −14 LUFS)
+        run: python3 tools/sound.py
+      - name: render every frame in one pass
+        run: |
           python3 -m http.server 8770 --bind 127.0.0.1 --directory web >/dev/null 2>&1 &
           sleep 2
-          node tools/capture.mjs --from ${{ matrix.part.from }} --to ${{ matrix.part.to }} --out renders/parts/p${{ matrix.part.i }}.mp4
-      - uses: actions/upload-artifact@v4
-        with:
-          name: part-${{ matrix.part.i }}
-          path: nahzat-ur/renders/parts/p${{ matrix.part.i }}.mp4
-          retention-days: 3
-  assemble:
-    needs: render
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: nahzat-ur
-    steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg && pip install numpy
-      - uses: actions/download-artifact@v4
-        with:
-          path: nahzat-ur/renders/parts
-          pattern: part-*
-          merge-multiple: true
-      - run: |
-          python3 tools/sound.py
-          ls renders/parts/p*.mp4 | sort -V | sed "s|renders/parts/|file '|; s|$|'|" > renders/parts/list.txt
-          ffmpeg -v error -y -f concat -safe 0 -i renders/parts/list.txt -i audio/mix.wav -map 0:v -map 1:a -c:v libx264 -preset medium -b:v 8M -maxrate 11M -bufsize 16M -pix_fmt yuv420p -c:a aac -b:a 256k -ar 48000 -shortest -movflags +faststart renders/final.mp4
-          ffmpeg -v error -y -i renders/final.mp4 -c:v libx264 -preset slow -b:v 2600k -maxrate 3500k -bufsize 6M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart renders/final-share.mp4
+          DUR=$(python3 -c "import json; print(json.load(open('data/timeline.json'))['duration'])")
+          node tools/capture.mjs --from 0 --to "$DUR" --fps 30 --crf 16 --out renders/film.mp4
+          ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 renders/film.mp4
+      - name: mux the mix (video copied as is) + share copy
+        run: |
+          ffmpeg -v error -y -i renders/film.mp4 -i audio/mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 256k -ar 48000 -shortest -movflags +faststart renders/nahzat-ur.mp4
+          ffmpeg -v error -y -i renders/nahzat-ur.mp4 -c:v libx264 -preset slow -b:v 2600k -maxrate 3500k -bufsize 6M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart renders/nahzat-ur-share.mp4
+      - name: compress with HandBrake (H.265, small file, same look)
+        run: bash tools/handbrake.sh renders/nahzat-ur.mp4 renders/nahzat-ur-small.mp4
       - uses: actions/upload-artifact@v4
         with:
           name: video
-          path: nahzat-ur/renders/final*.mp4
-          retention-days: 14
+          path: |
+            nahzat-ur/renders/nahzat-ur.mp4
+            nahzat-ur/renders/nahzat-ur-share.mp4
+            nahzat-ur/renders/nahzat-ur-small.mp4
+          retention-days: 30
+          compression-level: 0
       - name: publish as a release
-        env:
-          GH_TOKEN: ${{ github.token }}
+        continue-on-error: true
         run: |
           tag="nahzat-ur-render-${GITHUB_RUN_NUMBER}"
-          gh release create "$tag" renders/final.mp4 renders/final-share.mp4 --target "$GITHUB_SHA" --title "Nahzat Urdu render #${GITHUB_RUN_NUMBER}" --notes "Rendered by the nahzat-render workflow from ${GITHUB_SHA}." --prerelease
+          gh release create "$tag" renders/nahzat-ur.mp4 renders/nahzat-ur-small.mp4 renders/nahzat-ur-share.mp4 --target "$GITHUB_SHA" --title "Nahzat Urdu render #${GITHUB_RUN_NUMBER}" --notes "One continuous render (single pass, no parts) by the nahzat-render workflow from ${GITHUB_SHA}." --prerelease

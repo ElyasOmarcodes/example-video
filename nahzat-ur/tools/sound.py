@@ -59,16 +59,11 @@ def rms_db(x):
 
 
 # ------------------------------------------------------------------ narration
-voice = np.zeros((N, 2), np.float32)
-for l in TL['lines']:
-    c = load(f'{ROOT}/voice/raw/{l["id"]}.mp3')
-    # quoted voices sit a touch further back with a short room tail
-    if l['voice'] != 'arthur':
-        tail = np.zeros_like(c)
-        d = int(0.045 * SR)
-        tail[d:] = c[:-d] * 0.18
-        c = c * 0.95 + tail
-    place(voice, c, l['clip'])
+# the user's narration, with the two quotes in the earlier quote voices (tools/voicebus.py)
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from voicebus import build as build_voice
+voice = build_voice(N, SR)
 sp = voice[np.abs(voice[:, 0]) > 0.01]
 voice *= db(-17 - rms_db(sp))
 
@@ -118,10 +113,10 @@ O0 = TL['outro'][0]
 SH = {'intro': (0, A_('L01') + 0.55), 'date': (A_('L01') - 0.5, A_('L02') + 0.35), 'nyc': (A_('L02') - 0.35, A_('L03') + 0.35), 'toll': (A_('L03') - 0.3, A_('L04') + 0.3),
       'blame': (A_('L04') - 0.25, A_('L05') + 0.3), 'congress': (A_('L05') - 0.3, A_('L07') + 0.7), 'reply': (A_('L07') + 0.2, A_('L09') - 0.3), 'war': (A_('L09') - 0.8, A_('L13') + 0.3),
       'mush': (A_('L13') - 0.3, A_('L15') + 0.2), 'pak': (A_('L15') - 0.4, A_('L21') - 0.25), 'nato': (A_('L21') - 0.75, A_('L23') + 0.4), 'globe': (A_('L23') - 0.3, A_('L24') + 0.3),
-      'supply': (A_('L24') - 0.1, A_('L28') - 0.1), 'boxes': (A_('L28') - 0.6, A_('L32') - 0.2), 'question': (A_('L32') - 0.8, O0 + 0.55), 'outro': (O0 + 0.05, DUR)}
+      'supply': (A_('L24') - 0.1, A_('L28') - 0.1), 'boxes': (A_('L28') - 0.6, A_('L32') - 0.2), 'question': (A_('L32') - 0.8, DUR)}
 ORDER = [('intro', 'date', 'zoom'), ('date', 'nyc', 'flip'), ('nyc', 'toll', 'stack'), ('toll', 'blame', 'flip'), ('blame', 'congress', 'push'), ('congress', 'reply', 'swipe'),
          ('reply', 'war', 'zoom'), ('war', 'mush', 'flip'), ('mush', 'pak', 'zoom'), ('pak', 'nato', 'stack'), ('nato', 'globe', 'zoom'), ('globe', 'supply', 'zoom'),
-         ('supply', 'boxes', 'push'), ('boxes', 'question', 'zoom'), ('question', 'outro', 'flip')]
+         ('supply', 'boxes', 'push'), ('boxes', 'question', 'zoom')]
 TR = [((SH[f][1] + SH[n][0]) / 2, k) for f, n, k in ORDER]
 WH = {'zoom': ('whoosh_tunnel', -0.45, -21), 'flip': ('whoosh_fast', -0.3, -19), 'stack': ('swoosh_slow', -0.8, -22), 'push': ('whoosh_fast2', -0.3, -19), 'swipe': ('whoosh_wind', -0.5, -20)}
 for at, kind in TR:
@@ -199,10 +194,11 @@ cue('bass_rumble', wt('L33', 'فوجی') - 0.3, -16, fade_out=1.2)
 cue('impact_trailer', wt('L33', 'چھاؤنی') + 0.1, -14)
 # outro
 cue('brass_hum', O0 + 0.2, -22, fade_in=1.0, fade_out=2.0, length=8)
-cue('impact_big', O0 + 5.55, -15)
+E0 = O0 + 0.5  # end card start (shots.js)
+cue('impact_big', E0 + 0.35, -15)
 for i in range(3):
-    cue('select_ui', O0 + 5.2 + 1.3 + i * 0.16, -24)
-cue('click_ui', O0 + 5.2 + 3.3, -18)
+    cue('select_ui', E0 + 1.3 + i * 0.16, -24)
+cue('click_ui', E0 + 3.3, -18)
 
 # ------------------------------------------------------------------ master
 mix = voice + mus + fx

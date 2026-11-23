@@ -10,3 +10,9 @@ renders/parts/
 node_modules/
 renders/nahzat-ur.mp4
 renders/nahzat-ur-v2.mp4
+voice/user/n16.wav
+data/*.log
+audio/mix_raw.wav
+renders/*.mp4
+!renders/samples/
+tools/__pycache__/

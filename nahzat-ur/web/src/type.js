@@ -4,7 +4,8 @@
 import {E, clamp, prog} from './util.js';
 import {CALLOUTS} from './callouts.js';
 
-export const ur = (s) => s.replace(/ھ/g, 'ه'); // Al-Quds has no do-chashmi he; Naskh heh reads the same
+// Al-Quds now carries ھ (do-chashmi he) in all four weights (tools/font_dochashmi.py), so the text is drawn as written
+export const ur = (s) => s;
 
 const QUOTE = {L06: {who: 'امریکی مطالبہ', color: '#7fb2ff'}, L08: {who: 'طالبان کا جواب', color: '#f5a623'}};
 
@@ -49,9 +50,12 @@ export function createType(root, TL) {
     layer.appendChild(el);
     return {el, parts, t0: wt(...c.at) - 0.12};
   });
+  // a card leaves before the next one, after at most 5 s, and never rides into the next chapter's scene
+  const chapEnd = Object.fromEntries(TL.lines.map((l) => [l.id, TL.chapters.find((c) => c.name === l.chapter).b]));
   cards.forEach((c, i) => {
     const n = cards[i + 1];
     c.t1 = n ? Math.min(n.t0 - 0.02, c.t0 + 5.0) : c.t0 + 4.0;
+    c.t1 = Math.max(Math.min(c.t1, chapEnd[CALLOUTS[i].at[0]] + 0.45), c.t0 + 1.6);
   });
 
   const labels = [];

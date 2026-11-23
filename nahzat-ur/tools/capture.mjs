@@ -1,6 +1,7 @@
-// node tools/capture.mjs --from 0 --to 10 --out renders/part.mp4 [--fps 30] [--scale 1]
-// Steps SIM.render(t) for every frame in headless Chromium (served by the local http server),
-// screenshots, pipes JPEGs into ffmpeg.
+// node tools/capture.mjs --from 0 --to 10 --out renders/film.mp4 [--fps 30] [--scale 1] [--crf 16]
+// One continuous pass: a single headless Chromium steps SIM.render(t) through every frame in order
+// (served by the local http server), screenshots each one and pipes the JPEGs into ONE ffmpeg encode.
+// No parts, no joins: the film is a single stream from its first frame to its last.
 import {spawn} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,6 +15,7 @@ const arg = (k, d) => {
 const from = Number(arg('from', 0)), to = Number(arg('to', 5)), fps = Number(arg('fps', 30));
 const out = path.resolve(arg('out', 'renders/test.mp4'));
 const scale = Number(arg('scale', 1));
+const crf = String(arg('crf', 16));
 fs.mkdirSync(path.dirname(out), {recursive: true});
 const browser = await chromium.launch({args: ['--ignore-gpu-blocklist', '--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']});
 const page = await browser.newPage({viewport: {width: 1080, height: 1920}, deviceScaleFactor: scale});
@@ -22,14 +24,14 @@ await page.goto('http://127.0.0.1:8770/index.html?capture=1');
 await page.waitForFunction(() => window.SIM && window.SIM.ready, null, {timeout: 300000});
 const err = await page.evaluate(() => window.SIM.error);
 if (err) { console.error(err); process.exit(1); }
-const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', '-r', String(fps), out], {stdio: ['pipe', 'inherit', 'inherit']});
+const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', crf, '-g', String(fps * 2), '-pix_fmt', 'yuv420p', '-r', String(fps), '-movflags', '+faststart', out], {stdio: ['pipe', 'inherit', 'inherit']});
 const n0 = Math.round(from * fps), n1 = Math.round(to * fps);
 const t0 = Date.now();
 for (let i = n0; i < n1; i++) {
   await page.evaluate((x) => window.SIM.render(x), i / fps);
   const buf = await page.screenshot({type: 'jpeg', quality: 95});
   if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once('drain', r));
-  if ((i - n0) % 60 === 0) console.log(`frame ${i - n0}/${n1 - n0}  ${((Date.now() - t0) / 1000 / Math.max(1, i - n0)).toFixed(2)} s/frame`);
+  if ((i - n0) % 300 === 0) console.log(`frame ${i - n0}/${n1 - n0}  ${((Date.now() - t0) / 1000 / Math.max(1, i - n0)).toFixed(2)} s/frame`);
 }
 ff.stdin.end();
 await new Promise((r) => ff.on('close', r));

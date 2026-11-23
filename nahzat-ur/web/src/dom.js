@@ -17,7 +17,7 @@ const css = `
 .icard .st{font-family:Quds;font-weight:600;font-size:30px;line-height:1.5;color:#9aa3b2;margin-top:4px}
 .icard .tags{display:flex;flex-wrap:wrap;gap:14px 14px;margin-top:8px}
 .tag{display:inline-flex;align-items:center;gap:12px;padding:6px 22px 10px 18px;border-radius:30px;background:rgba(245,166,35,.12);border:1.5px solid rgba(245,166,35,.55);
-  font-family:Quds;font-weight:700;font-size:34px;line-height:1.5;color:#ffe2b0;white-space:nowrap}
+  font-family:Quds;font-weight:600;font-size:34px;line-height:1.5;color:#ffe2b0;white-space:nowrap}
 .tag img{width:34px;height:34px;opacity:.95}
 .tag.red{background:rgba(255,90,79,.12);border-color:rgba(255,90,79,.6);color:#ffd3cf}
 .tag.blue{background:rgba(127,178,255,.12);border-color:rgba(127,178,255,.6);color:#dbe9ff}
@@ -35,14 +35,14 @@ const css = `
 .lower .rl{font-family:Quds;font-weight:600;font-size:32px;line-height:1.5;color:#a9b1bf}
 .opt{width:440px;padding:26px 30px 32px;border-radius:40px;text-align:center;background:linear-gradient(180deg,rgba(40,43,51,.95),rgba(25,27,33,.95));
   border:2px solid rgba(255,255,255,.14);box-shadow:0 30px 70px rgba(0,0,0,.5)}
-.opt .q{font-family:Quds;font-weight:900;font-size:52px;line-height:1.45;color:#fff}
+.opt .q{font-family:Quds;font-weight:700;font-size:52px;line-height:1.45;color:#fff}
 .opt.hot{border-color:rgba(255,90,79,.8);box-shadow:0 0 60px rgba(255,90,79,.25),0 30px 70px rgba(0,0,0,.5)}
 .opt.hot .q{color:#ffb2aa}
 .opt .ic{width:110px;height:110px;margin:0 auto 6px;border-radius:30px;display:grid;place-items:center;background:linear-gradient(160deg,#9fc5ff,#4f86e0)}
 .opt.hot .ic{background:linear-gradient(160deg,#ff7a6e,#d8352b)}
 .opt .ic img{width:62px;height:62px}
 .endcard{position:absolute;inset:0}
-.endcard .veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(10,12,17,.8),rgba(6,7,10,.96));backdrop-filter:blur(18px)}
+.endcard .veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,rgba(6,8,12,.42),rgba(6,8,12,.62) 70%,rgba(4,5,8,.78))}
 .endcard .logo{position:absolute;left:50%;top:560px;width:400px}
 .endcard .slogan{position:absolute;left:40px;right:40px;top:960px;text-align:center;direction:rtl;font-family:Quds;font-weight:700;font-size:44px;line-height:1.5;color:#e9ecf1}
 .endcard .slogan b{font-weight:900;color:#f5c45a}
@@ -50,6 +50,8 @@ const css = `
 .endcard .btn{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:18px 34px 20px;border-radius:60px;font-family:Quds;font-weight:900;font-size:40px;line-height:1.3;white-space:nowrap}
 .endcard .btn.pri{background:linear-gradient(180deg,#ffd27a,#f5a623);color:#1a1205;box-shadow:0 14px 40px rgba(245,166,35,.45),inset 0 2px 0 rgba(255,255,255,.6)}
 .endcard .btn.sec{background:rgba(24,27,34,.9);color:#ffe2b0;border:2px solid rgba(245,166,35,.55)}
+.endcard .btn .u{font-family:Inter;font-weight:800;font-size:36px;letter-spacing:.3px;direction:ltr}
+.endcard .slogan,.endcard .logo{filter:drop-shadow(0 8px 30px rgba(0,0,0,.65))}
 .endcard .btn .lb2{display:none;align-items:center;gap:10px}
 .endcard .btn.done .lb1{display:none}
 .endcard .btn.done .lb2{display:flex}

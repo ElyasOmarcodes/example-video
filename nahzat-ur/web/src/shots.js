@@ -31,8 +31,7 @@ export async function buildShots(ctx) {
     toll: [A('L03') - 0.3, A('L04') + 0.3], blame: [A('L04') - 0.25, A('L05') + 0.3], congress: [A('L05') - 0.3, A('L07') + 0.7],
     reply: [A('L07') + 0.2, A('L09') - 0.3], war: [A('L09') - 0.8, A('L13') + 0.3], mush: [A('L13') - 0.3, A('L15') + 0.2],
     pak: [A('L15') - 0.4, A('L21') - 0.25], nato: [A('L21') - 0.75, A('L23') + 0.4], globe: [A('L23') - 0.3, A('L24') + 0.3],
-    supply: [A('L24') - 0.1, A('L28') - 0.1], boxes: [A('L28') - 0.6, A('L32') - 0.2], question: [A('L32') - 0.8, TL.outro[0] + 0.55],
-    outro: [TL.outro[0] + 0.05, TL.duration + 0.5],
+    supply: [A('L24') - 0.1, A('L28') - 0.1], boxes: [A('L28') - 0.6, A('L32') - 0.2], question: [A('L32') - 0.8, TL.duration + 0.5],
   };
 
   // ---------------------------------------------------------------- shared builders
@@ -132,7 +131,7 @@ export async function buildShots(ctx) {
       panel(g, 16, 16, w - 32, h - 32, 70);
       text(g, '11', w / 2 + 250, 290, {family: 'Inter', weight: 900, size: 250, align: 'center', dir: 'ltr', color: ACC});
       text(g, 'ستمبر', w / 2 - 90, 300, {size: 170, align: 'center'});
-      text(g, '2001  ·  نیویارک', w / 2, 470, {size: 64, align: 'center', color: '#aeb6c4', weight: 600});
+      text(g, 'نیویارک', w / 2, 470, {size: 64, align: 'center', color: '#aeb6c4', weight: 600});
     });
     const card = texPlane(tex, 2.75);
     scene.add(card);
@@ -213,7 +212,7 @@ export async function buildShots(ctx) {
         camera.lookAt(0, -0.25, 0);
       },
     });
-    dom.counter({a: T3.a + 0.9, b: b - 0.15, top: 1370, from: 0, to: 3000, t0: wt('L03', 'تین') - 0.2, t1: wt('L03', 'ہزار') + 0.6, label: 'افراد ہلاک', prefix: '~', accent: true});
+    dom.counter({a: wt('L03', 'تین') - 0.3, b: b - 0.15, top: 1370, from: 0, to: 3000, t0: wt('L03', 'تین') - 0.2, t1: wt('L03', 'ہزار') + 0.6, label: 'افراد ہلاک', prefix: '~', accent: true});
     dom.chip({html: '<span class="dot red"></span>2 فلک بوس عمارتیں زمیں بوس', a: wt('L03', 'فلک') - 0.1, b: b - 0.2, top: 1700, cls: 'red'});
   }
   // the accusation
@@ -507,7 +506,7 @@ export async function buildShots(ctx) {
       },
     });
     scrim(a, b, 0.75);
-    dom.chip({html: '<span class="dot"></span>20 ستمبر 2001 <b>·</b> امریکی کانگریس', a: T5.a - 0.1, b: T5.b - 0.2, top: 1700});
+    dom.chip({html: '<span class="dot"></span>20 ستمبر <b>·</b> امریکی کانگریس', a: T5.a - 0.1, b: T5.b - 0.2, top: 1700});
     dom.lower({name: 'جارج ڈبلیو بش', role: 'امریکی صدر · کانگریس سے خطاب', a: wt('L05', 'جارج') - 0.2, b: T5.b + 0.1, top: 1460});
     dom.infoCard({title: 'امریکی مطالبہ', sub: 'طالبان سے', icon: 'flag', tags: [{text: 'القاعدہ رہنما امریکہ کے حوالے', icon: 'users', t: wt('L06', 'رہنماؤں'), cls: 'blue'}, {text: 'تمام تربیتی مراکز بند', icon: 'lock', t: wt('L06', 'مراکز'), cls: 'blue'}], a: T6.a - 0.2, b: b - 0.15, top: 1330});
   }
@@ -628,7 +627,7 @@ export async function buildShots(ctx) {
       },
     });
     scrim(a, b, 1);
-    dom.chip({html: '<span class="dot red"></span>7 اکتوبر 2001 <b>·</b> شام 7 بجے', a: T9.a - 0.4, b: T10.b + 0.3, top: 1660, cls: 'red'});
+    dom.chip({html: '<span class="dot red"></span>7 اکتوبر <b>·</b> شام 7 بجے', a: T9.a - 0.4, b: T10.b + 0.3, top: 1660, cls: 'red'});
   }
 
   // ================================================================ 4 · MUSHARRAF + the strategic agreement
@@ -735,17 +734,17 @@ export async function buildShots(ctx) {
       },
     });
     scrim(a, b, 0.75);
-    dom.chip({html: '<span class="dot red"></span><b>1999</b> فوجی بغاوت', a: wt('L13', 'بغاوت') - 0.15, b: T13.b + 0.3, top: 1560, cls: 'red'});
-    dom.chip({html: '<span class="dot"></span><b>2001</b> خود ساختہ صدر', a: wt('L13', 'صدر') - 0.15, b: T13.b + 0.3, top: 1680});
+    dom.chip({html: '<span class="dot red"></span>فوجی بغاوت <b>·</b> حکومت کا تختہ الٹ', a: wt('L13', 'بغاوت') - 0.15, b: T13.b + 0.3, top: 1560, cls: 'red'});
+    dom.chip({html: '<span class="dot"></span>خود کو صدر مقرر کیا', a: wt('L13', 'صدر') - 0.15, b: T13.b + 0.3, top: 1680});
     dom.infoCard({title: 'اسٹریٹجک فوجی معاہدہ', sub: 'امریکہ کے حوالے', icon: 'signature', tags: items.map(([icon, text, w]) => ({text, icon, t: wt('L14', w)})), a: T14.a + 0.4, b: b - 0.15, top: 1250});
   }
 
   // ================================================================ 5 · PAKISTAN: four airbases → 57,000 flights → targets
   const basesDef = [
-    {id: 'jacobabad', line: 'L15', name: 'جیکب آباد', sub: 'شہباز ایئربیس · سندھ', radar: false, planes: 'cargo', tags: [['امریکی رسد', 'package', 'رسد'], ['فوجی معاونت', 'shield', 'معاونت'], ['طیارے', 'plane', 'طیاروں'], ['ریسکیو آپریشنز', 'life-buoy', 'ریسکیو']]},
-    {id: 'pasni', line: 'L16', name: 'پسنی', sub: 'ساحلی ایئربیس · بلوچستان', radar: false, planes: 'cargo', tags: [['لاجسٹک سپورٹ', 'package', 'لاجسٹک'], ['ہنگامی کارروائیاں', 'badge-alert', 'ہنگامی']]},
-    {id: 'dalbandin', line: 'L17', name: 'دالبندین', sub: 'افغان سرحد کے قریب · بلوچستان', radar: false, planes: 'fighter', tags: [['افغان سرحد کے قریب', 'map-pin', 'سرحد'], ['عسکری آپریشنز', 'crosshair', 'عسکری'], ['فوجی حملے', 'target', 'حملوں']]},
-    {id: 'shamsi', line: 'L18', name: 'شمسی', sub: 'خفیہ ایئربیس · بلوچستان', radar: true, planes: 'drone', tags: [['خفیہ آپریشنز', 'lock', 'خفیہ'], ['ڈرون حملے', 'target', 'ڈرون'], ['جاسوسی', 'eye', 'جاسوسی'], ['انٹیلی جنس', 'radar', 'انٹیلی'], ['اعلیٰ امریکی حکام', 'users', 'اعلیٰ']]},
+    {id: 'jacobabad', line: 'L15', name: 'جیکب آباد', sub: 'ایئربیس · امریکی رسد کا مرکز', radar: false, planes: 'cargo', tags: [['امریکی رسد', 'package', 'رسد'], ['فوجی معاونت', 'shield', 'معاونت'], ['طیارے', 'plane', 'طیاروں'], ['ریسکیو آپریشنز', 'life-buoy', 'ریسکیو']]},
+    {id: 'pasni', line: 'L16', name: 'پسنی', sub: 'ایئربیس · لاجسٹک سپورٹ', radar: false, planes: 'cargo', tags: [['لاجسٹک سپورٹ', 'package', 'لاجسٹک'], ['ہنگامی کارروائیاں', 'badge-alert', 'ہنگامی']]},
+    {id: 'dalbandin', line: 'L17', name: 'دالبندین', sub: 'ایئربیس · افغان سرحد کے قریب', radar: false, planes: 'fighter', tags: [['افغان سرحد کے قریب', 'map-pin', 'سرحد'], ['عسکری آپریشنز', 'crosshair', 'عسکری'], ['فوجی حملے', 'target', 'حملوں']]},
+    {id: 'shamsi', line: 'L18', name: 'شمسی', sub: 'ایئربیس · خفیہ آپریشنز کا مرکز', radar: true, planes: 'drone', tags: [['خفیہ آپریشنز', 'lock', 'خفیہ'], ['ڈرون حملے', 'target', 'ڈرون'], ['جاسوسی', 'eye', 'جاسوسی'], ['انٹیلی جنس', 'radar', 'انٹیلی'], ['اعلیٰ امریکی حکام', 'users', 'اعلیٰ']]},
   ];
   {
     const T19 = L('L19'), T20 = L('L20'), T15 = L('L15'), T18 = L('L18');
@@ -855,11 +854,11 @@ export async function buildShots(ctx) {
     }));
     const afLabel = makeLabel('افغانستان', {size: 90, color: '#fff', worldW: 0.3});
     afLabel.material.sizeAttenuation = false;
-    afLabel.position.copy(P(65.8, 34.1, 0.4));
+    afLabel.position.copy(P(65.0, 32.5, 0.4));   // below the title cards, clear of the callouts
     scene.add(afLabel);
     const pkLabel = makeLabel('پاکستان', {size: 90, color: '#fff', worldW: 0.28});
     pkLabel.material.sizeAttenuation = false;
-    pkLabel.position.copy(P(68.6, 29.2, 0.3));
+    pkLabel.position.copy(P(67.6, 27.5, 0.3));   // clear of the 57,000 counter
     scene.add(pkLabel);
     // camera: overview → each base → pull back for the flights
     const keys = [[a, [67.8, 27.6, 22, 66, 0]], [T15.a + 0.2, [67.2, 27.4, 15, 60, -4]]];
@@ -944,8 +943,8 @@ export async function buildShots(ctx) {
       const Lb = L(bs.line);
       dom.infoCard({title: 'اڈے کا کردار', sub: bs.name + ' · ' + bs.sub, icon: bs.planes === 'drone' ? 'radar' : 'plane-takeoff', red: bs.id === 'shamsi', tags: bs.tags.map(([text, icon, w]) => ({text, icon, t: wt(bs.line, w)})), a: Lb.a + 0.35, b: Lb.b + 0.25, top: 1240});
     }
-    dom.chip({html: '<span class="dot"></span>ماخذ: امریکی کانگریس ریسرچ سروس <b>CRS</b>', a: wt('L19', 'کانگریس') - 0.3, b: wt('L19', 'ستاون') - 0.9, top: 1560});
-    dom.counter({a: wt('L19', 'ستاون') - 1.0, b: T19.b + 0.5, top: 1290, from: 0, to: 57000, t0: wt('L19', 'ستاون') - 0.4, t1: wt('L19', 'زائد') + 0.2, label: 'فوجی پروازیں · پاکستان سے افغانستان', suffix: '+', accent: true, src: 'ماخذ: امریکی کانگریس ریسرچ سروس (CRS)'});
+    dom.chip({html: '<span class="dot"></span>ماخذ: امریکی کانگریس کی ریسرچ سروس', a: wt('L19', 'کانگریس') - 0.3, b: wt('L19', 'ستاون') - 0.9, top: 1560});
+    dom.counter({a: wt('L19', 'ستاون') - 0.5, b: T19.b + 0.5, top: 1290, from: 0, to: 57000, t0: wt('L19', 'ستاون') - 0.4, t1: wt('L19', 'زائد') + 0.2, label: 'فوجی پروازیں · پاکستان سے افغانستان', suffix: '+', accent: true, src: 'ماخذ: امریکی کانگریس کی ریسرچ سروس'});
     dom.infoCard({title: 'بمباری کے اہداف', sub: 'افغانستان بھر میں', icon: 'target', red: true, tagCls: 'red', tags: [{text: 'اہم صوبے', icon: 'map', t: wt('L20', 'صوبوں')}, {text: 'فوجی مراکز', icon: 'crosshair', t: wt('L20', 'مراکز')}, {text: 'سرکاری ادارے', icon: 'landmark', t: wt('L20', 'سرکاری')}, {text: 'عوامی تنصیبات', icon: 'building-2', t: wt('L20', 'عوامی')}], a: T20.a + 0.3, b: b - 0.15, top: 1300});
   }
 
@@ -977,7 +976,7 @@ export async function buildShots(ctx) {
         g.fillStyle = 'rgba(0,0,0,0.22)';
         g.fillRect(x, 0, 6, h);
       }
-      text(g, 'NATO · ISAF', w / 2, h / 2, {family: 'Inter', weight: 800, size: 46, color: 'rgba(255,255,255,0.75)', align: 'center', dir: 'ltr'});
+      text(g, 'NATO', w / 2, h / 2, {family: 'Inter', weight: 800, size: 46, color: 'rgba(255,255,255,0.75)', align: 'center', dir: 'ltr'});
     }).tex;
     cmat.map = corr;
     const cbox = new THREE.Mesh(containerGeo(), cmat);
@@ -1010,7 +1009,7 @@ export async function buildShots(ctx) {
         camera.position.z = 9.2 - 0.5 * prog(t, a, b);
       },
     });
-    dom.chip({html: '<span class="dot"></span><b>20</b> سالہ جنگ کی شہ رگ', a: wt('L21', 'بیس') - 0.2, b: T21.b + 0.4, top: 1520});
+    dom.chip({html: '<span class="dot"></span><b>20</b> سالہ جنگ کا اہم ترین موضوع', a: wt('L21', 'بیس') - 0.2, b: T21.b + 0.4, top: 1520});
     dom.chip({html: '<span class="dot"></span>راستہ: <b>·</b> پاکستان کی سرزمین', a: wt('L22', 'پاکستان') - 0.2, b: b - 0.2, top: 1640});
   }
   // globe: ships from the US and Europe to Karachi
@@ -1024,7 +1023,7 @@ export async function buildShots(ctx) {
     const {scene, map, camera, look} = mapScene({fogD: 0.02});
     const u = map.uniforms;
     // road polylines (lon, lat) along the real corridors
-    const south = [[67.0, 24.85], [67.6, 25.4], [67.9, 26.4], [67.6, 27.6], [67.2, 28.6], [67.0, 29.5], [66.99, 30.18], [66.7, 30.6], [66.45, 30.92], [66.2, 31.2], [65.71, 31.61]];
+    const south = [[67.0, 24.85], [67.6, 25.4], [67.9, 26.4], [67.6, 27.6], [67.2, 28.6], [67.0, 29.5], [66.99, 30.18], [66.7, 30.6], [66.45, 30.92], [66.3, 31.06]];
     const north = [[67.0, 24.85], [68.3, 25.4], [68.4, 26.3], [68.2, 27.6], [69.6, 28.6], [70.6, 29.6], [71.0, 30.8], [71.9, 31.6], [72.4, 32.6], [71.9, 33.6], [71.58, 34.01], [71.2, 34.08], [71.09, 34.12], [70.45, 34.43], [69.6, 34.55], [69.17, 34.53]];
     const toPts = (ll, lift = 0.012) => {
       const pts = [];
@@ -1041,7 +1040,7 @@ export async function buildShots(ctx) {
     const nodes = [
       ['karachi', 'کراچی بندرگاہ', wt('L26', 'کراچی'), ACC], ['quetta', 'کوئٹہ', wt('L26', 'کوئٹہ'), ACC], ['chaman', 'چمن', wt('L26', 'چمن'), ACC],
       ['peshawar', 'پشاور', wt('L27', 'پشاور'), BLUE], ['khyber', 'درہ خیبر', wt('L27', 'درہ'), BLUE], ['torkham', 'طورخم', wt('L27', 'طورخم'), BLUE],
-      ['kabul', 'کابل', wt('L27', 'کابل'), BLUE], ['bagram', 'بگرام', wt('L27', 'بگرام'), BLUE], ['kandahar', 'قندھار', T26.b - 0.2, ACC],
+      ['kabul', 'کابل', wt('L27', 'کابل'), BLUE], ['bagram', 'بگرام', wt('L27', 'بگرام'), BLUE],
     ].map(([id, name, t0, col]) => {
       const p = makePin(name, {color: col, beam: id === 'khyber' ? 0.12 : 0.22, cardW: 0.17, size: 54});
       const [lon, lat] = PLACES[id];
@@ -1106,7 +1105,7 @@ export async function buildShots(ctx) {
     });
     scrim(a, b, 1);
     dom.chip({html: '<span class="dot"></span>نجی ٹھیکیدار کمپنیاں <b>+</b> آئل ٹینکرز', a: wt('L24', 'نجی') - 0.2, b: T24.b + 0.3, top: 1620});
-    dom.infoCard({title: 'جنوبی روٹ', sub: 'قندھار کے لیے', icon: 'route', tags: [{text: 'کراچی بندرگاہ', icon: 'anchor', t: wt('L26', 'کراچی')}, {text: 'کوئٹہ', icon: 'map-pin', t: wt('L26', 'کوئٹہ')}, {text: 'چمن', icon: 'map-pin', t: wt('L26', 'چمن')}], a: T26.a - 0.1, b: T26.b + 0.35, top: 1330});
+    dom.infoCard({title: 'جنوبی روٹ', sub: 'کراچی سے چمن تک', icon: 'route', tags: [{text: 'کراچی بندرگاہ', icon: 'anchor', t: wt('L26', 'کراچی')}, {text: 'کوئٹہ', icon: 'map-pin', t: wt('L26', 'کوئٹہ')}, {text: 'چمن', icon: 'map-pin', t: wt('L26', 'چمن')}], a: T26.a - 0.1, b: T26.b + 0.35, top: 1330});
     dom.infoCard({title: 'شمالی روٹ', sub: 'کابل اور بگرام کے لیے', icon: 'waypoints', tagCls: 'blue', tags: [{text: 'کراچی بندرگاہ', icon: 'anchor', t: wt('L27', 'کراچی')}, {text: 'پشاور', icon: 'map-pin', t: wt('L27', 'پشاور')}, {text: 'درہ خیبر', icon: 'mountain', t: wt('L27', 'درہ')}, {text: 'طورخم', icon: 'map-pin', t: wt('L27', 'طورخم')}], a: T27.a - 0.1, b: b - 0.15, top: 1280});
   }
 
@@ -1235,10 +1234,9 @@ export async function buildShots(ctx) {
     });
     scrim(a, b, 0.9);
     dom.infoCard({title: 'وفاقی ٹیکس محتسب', sub: 'پاکستان · سرکاری رپورٹ', icon: 'file-text', tags: [{text: '2005 کا آغاز', icon: 'calendar', t: wt('L28', 'پانچ')}, {text: 'جون 2010 تک', icon: 'calendar', t: wt('L28', 'دس')}], a: T28.a + 0.4, b: T28.b + 0.3, top: 1320});
-    dom.counter({a: T29.a - 0.1, b: T29.b + 0.5, top: 1330, to: 166949, t0: wt('L29', 'ایک') - 0.2, t1: wt('L29', 'انچاس') + 0.3, label: 'امریکی فوجی کنٹینرز', accent: true});
-    dom.counter({a: T30.a - 0.1, b: T30.b + 0.6, top: 1330, to: 52929, t0: wt('L30', 'باون') - 0.2, t1: wt('L30', 'انتیس') + 0.3, label: 'نیٹو کنٹینرز'});
-    dom.counter({a: wt('L31', 'تقریباً') - 0.2, b: b - 0.2, top: 1330, to: 400000, t0: wt('L31', 'چار') - 0.3, t1: wt('L31', 'لاکھ') + 0.7, label: 'نیٹو سپلائی کنٹینرز · 20 سال', prefix: '~', accent: true});
-    dom.chip({html: '<span class="dot"></span>ایک کنٹینر ≈ ایک ہزار کنٹینرز', a: T29.a + 0.6, b: T31.a + 1.5, top: 1720});
+    dom.counter({a: wt('L29', 'ایک') - 0.3, b: T30.a + 0.2, top: 1330, to: 166949, t0: wt('L29', 'ایک') - 0.2, t1: wt('L29', 'انچاس') + 0.3, label: 'امریکی فوجی کنٹینرز', accent: true});
+    dom.counter({a: Math.max(T30.a + 0.2, wt('L30', 'باون') - 0.3), b: T30.b + 0.6, top: 1330, to: 52929, t0: wt('L30', 'باون') - 0.2, t1: wt('L30', 'انتیس') + 0.3, label: 'نیٹو کنٹینرز'});
+    dom.counter({a: wt('L31', 'چار') - 0.3, b: b - 0.2, top: 1330, to: 400000, t0: wt('L31', 'چار') - 0.3, t1: wt('L31', 'لاکھ') + 0.7, label: 'نیٹو سپلائی کنٹینرز · 20 سال', prefix: '~', accent: true});
   }
 
   // ================================================================ 8 · THE QUESTION
@@ -1254,7 +1252,7 @@ export async function buildShots(ctx) {
       scene.add(p);
       return p;
     });
-    const routes = [[[67.0, 24.85], [67.9, 26.4], [66.99, 30.18], [66.45, 30.92], [65.71, 31.61]], [[67.0, 24.85], [68.4, 26.3], [70.6, 29.6], [72.4, 32.6], [71.58, 34.01], [71.09, 34.12], [69.17, 34.53]]].map((r) => {
+    const routes = [[[67.0, 24.85], [67.9, 26.4], [66.99, 30.18], [66.45, 30.92], [66.3, 31.06]], [[67.0, 24.85], [68.4, 26.3], [70.6, 29.6], [72.4, 32.6], [71.58, 34.01], [71.09, 34.12], [69.17, 34.53]]].map((r) => {
       const pts = [];
       for (let i = 0; i < r.length - 1; i++) for (let k = 0; k < 10; k++) pts.push(P(lerp(r[i][0], r[i + 1][0], k / 10), lerp(r[i][1], r[i + 1][1], k / 10), 0.012));
       const tr = trail(pts, ACC, 0.011);
@@ -1281,7 +1279,8 @@ export async function buildShots(ctx) {
     });
     const wall = new THREE.Mesh(wg, wallMat);
     scene.add(wall);
-    const camT = track([[a, [68.6, 28.4, 22, 66, 0]], [T33.a, [68.8, 28.6, 17.5, 52, -6]], [b, [68.9, 28.8, 16.0, 46, -10]]]);
+    // the question scene runs on under the end card: a slow pull-back keeps it alive behind the veil
+    const camT = track([[a, [68.6, 28.4, 22, 66, 0]], [T33.a, [68.8, 28.6, 17.5, 52, -6]], [TL.outro[0], [68.9, 28.8, 16.0, 46, -10]], [b, [68.7, 28.6, 21.0, 52, -22]]], E.io);
     S.question = eng.addShot({
       name: 'question', a, b, scene, camera, opaque: true, hdr: true, exposure: 1.0,
       update(t) {
@@ -1299,14 +1298,14 @@ export async function buildShots(ctx) {
       },
     });
     scrim(a, b, 1);
-    dom.options({a: T32.a + 1.0, b: b - 0.2, top: 1260, left: {text: 'خود مختار ملک؟', icon: 'flag', t: wt('L32', 'خود')}, right: {text: 'فوجی چھاؤنی؟', icon: 'shield', t: wt('L33', 'فوجی')}});
+    dom.options({a: T32.a + 1.0, b: TL.outro[0] + 0.7, top: 1260, left: {text: 'خود مختار ملک؟', icon: 'flag', t: wt('L32', 'خود')}, right: {text: 'فوجی چھاؤنی؟', icon: 'shield', t: wt('L33', 'فوجی')}});
   }
 
-  // ================================================================ 9 · OUTRO (Higgsfield clip → exact logo end card)
-  S.outro = clipShot(eng, 'outro_hf', {a: SH.outro[0], b: SH.outro[1], start: 0, rate: 5 / 5.6, zoom: [1.0, 1.0]});
-  // end card: the outro clip holds under a dark veil; logo, slogan and animated follow / link buttons
+  // ================================================================ 9 · END CARD over the real closing scene
+  // the question map (Pakistan's border raised as a cantonment wall, the four bases, both supply roads)
+  // keeps running behind a half-dark veil; logo, slogan and follow / nahzatmedia.com / share buttons
   {
-    const a = TL.outro[0] + 5.2, e = TL.duration;
+    const a = TL.outro[0] + 0.5, e = TL.duration;
     const ico = (n, c = '#ffffff') => `<img src="${iconURL(n, c)}" style="width:40px;height:40px">`;
     dom.custom(
       `<div class="endcard">
@@ -1315,7 +1314,7 @@ export async function buildShots(ctx) {
         <div class="slogan">میڈیا کے میدان میں <b>جدت اور ابتکار</b> کی نئی آواز</div>
         <div class="btns">
           <div class="btn pri">${ico('bell', '#1a1205')}<span class="lb1">فالو کریں</span><span class="lb2">${ico('check', '#1a1205')}فالو ہو گیا</span><i class="shine"></i></div>
-          <div class="btn sec">${ico('link', '#ffd08a')}<span>لنک</span></div>
+          <div class="btn sec url">${ico('link', '#ffd08a')}<span class="u">nahzatmedia.com</span></div>
           <div class="btn sec">${ico('share-2', '#ffd08a')}<span>شیئر</span></div>
         </div>
         <div class="cursor">${ico('mouse-pointer-2', '#ffffff')}</div>
@@ -1370,7 +1369,6 @@ export async function buildShots(ctx) {
   X(S.globe, S.supply, 'zoom', 0.5);
   X(S.supply, S.boxes, 'push', 0.5);
   X(S.boxes, S.question, 'zoom', 0.6);
-  X(S.question, S.outro, 'flip', 0.5);
 
   return {
     overlay(t) {
@@ -1380,7 +1378,7 @@ export async function buildShots(ctx) {
       return {scrim: s};
     },
     async prepare(t) {
-      for (const sh of [S.intro, S.nyc, S.outro]) await sh.prepare(t);
+      for (const sh of [S.intro, S.nyc]) await sh.prepare(t);
     },
   };
 }
