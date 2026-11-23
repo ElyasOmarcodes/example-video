@@ -95,10 +95,18 @@ dip = np.ones(N)
 dip *= np.clip(np.abs(t - (lekin + 0.35)) / 0.9, 0.06, 1.0) ** 1.5  # near-silence around «لیکن»
 lift = np.ones(N)
 lift[t < TL['intro'][1]] = db(3)
-lift[t > TL['outro'][0]] = db(3)
+lift[t > TL['outro'][0]] = db(1)
 fade = np.clip((DUR - t) / 2.5, 0, 1)
+# slow leveller: the score swells in its later half; hold its 3 s loudness to one level before ducking
+_m = mus.mean(1) ** 2
+_w = int(3 * SR)
+_r = np.sqrt(np.convolve(_m, np.ones(_w) / _w, 'same')) + 1e-6
+_ref = np.median(_r[int(10 * SR):int(120 * SR)])
+_g = np.minimum(1.0, _ref / _r)
+_g = movavg(_g, int(1.5 * SR))
+mus *= _g[:, None]
 mus *= (duck * dip * lift * fade)[:, None]
-mus *= db(-23 - rms_db(mus[int(10 * SR):int(200 * SR)]))
+mus *= db(-26 - rms_db(mus[int(10 * SR):int(200 * SR)]))  # 3 dB under the previous bed
 
 # ------------------------------------------------------------------ effects cue sheet
 S = {f[:-4]: load(f'{ROOT}/audio/sfx/{f}') for f in os.listdir(f'{ROOT}/audio/sfx') if f.endswith('.mp3')}

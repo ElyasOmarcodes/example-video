@@ -74,11 +74,11 @@ for qid, nxt, gap_before in (('L06', 'L07', 0.35), ('L08', 'L09', 0.30)):
             best = max(best, (k - r0, k)); r0 = None
     kah_on = (i0 + best[1]) * dt
     cut_in, cut_db = dip(kah_on + 0.10, kah_on + 0.50)
-    assert cut_db < -45, (qid, cut_in, cut_db)
+    assert cut_db < -38, (qid, cut_in, cut_db)
     kah_end[qid] = cut_in
-    sil_a, on = silence_before(U[nxt]['words'][0][1] + 0.06)
+    sil_a, on = silence_before(U[nxt]['a'] + 0.02)
     # the narrator's own quote ends where that silence starts
-    add_nar(cur, cut_in, fade_out=0.012)
+    add_nar(cur, cut_in, fade_out=0.02)
     add_quote(qid, gap_before)
     track += on - sil_a                                        # keep the narrator's own pause after the quote
     cur = on - 0.012

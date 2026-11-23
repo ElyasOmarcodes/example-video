@@ -1,5 +1,5 @@
 {
- "offset": 6.28,
+ "offset": 6.31,
  "pieces": [
   {
    "src": "voice/user/narration.mp3",
@@ -7,7 +7,7 @@
    "b": 25.37,
    "t": 0.0,
    "fade_in": 0.0,
-   "fade_out": 0.012,
+   "fade_out": 0.02,
    "gain_db": 0.0,
    "room": false
   },
@@ -24,10 +24,10 @@
   {
    "src": "voice/user/narration.mp3",
    "a": 31.058,
-   "b": 33.78,
-   "t": 31.148,
+   "b": 33.79,
+   "t": 31.108,
    "fade_in": 0.0,
-   "fade_out": 0.012,
+   "fade_out": 0.02,
    "gain_db": 0.0,
    "room": false
   },
@@ -35,7 +35,7 @@
    "src": "voice/raw/L08.mp3",
    "a": 0.05,
    "b": 6.64,
-   "t": 34.17,
+   "t": 34.14,
    "fade_in": 0.01,
    "fade_out": 0.04,
    "gain_db": null,
@@ -43,9 +43,9 @@
   },
   {
    "src": "voice/user/narration.mp3",
-   "a": 40.198,
-   "b": 231.2359,
-   "t": 41.128,
+   "a": 40.168,
+   "b": 230.5704,
+   "t": 41.008,
    "fade_in": 0.012,
    "fade_out": 0.0,
    "gain_db": 0.0,
