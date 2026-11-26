@@ -1,0 +1,8 @@
+node_modules/
+audio/voice16.wav
+audio/mix.wav
+audio/mix_raw.wav
+renders/*.mp4
+renders/dl*/
+hf/
+tools/__pycache__/

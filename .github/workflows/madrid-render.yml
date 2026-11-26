@@ -1,0 +1,64 @@
+# Renders the Hindukush 'Islamabad to Madrid' episode in ONE continuous pass: a single runner, a single headless Chromium
+# stepping every frame in order from the first to the last, piped into a single encoder. No parts and
+# no joins, so there is no seam anywhere in the film. Then the mix is muxed in (video stream copied,
+# never re-encoded), a share copy and a HandBrake H.265 small copy are made, and everything is
+# uploaded as an artifact (and a release when the token is allowed to create one).
+# Start it from Actions → madrid-render → Run workflow, or by pushing a change to madrid-ps/render.request.
+name: madrid-render
+on:
+  workflow_dispatch:
+  push:
+    paths: ['madrid-ps/render.request']
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: madrid-render
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    defaults:
+      run:
+        working-directory: madrid-ps
+    env:
+      MD_MODULES: ${{ github.workspace }}/madrid-ps/node_modules
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg handbrake-cli && pip install numpy
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - run: cp data/timeline.json web/assets/timeline.json && node tools/build.mjs
+      - name: mix the soundtrack (narration, score, effects, −14 LUFS)
+        run: python3 tools/sound.py
+      - name: render every frame in one pass
+        run: |
+          python3 -m http.server 8772 --bind 127.0.0.1 --directory web >/dev/null 2>&1 &
+          sleep 2
+          DUR=$(python3 -c "import json; print(json.load(open('data/timeline.json'))['duration'])")
+          node tools/capture.mjs --from 0 --to "$DUR" --fps 30 --crf 16 --out renders/film.mp4
+          ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 renders/film.mp4
+      - name: mux the mix (video copied as is) + share copy
+        run: |
+          ffmpeg -v error -y -i renders/film.mp4 -i audio/mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 256k -ar 48000 -shortest -movflags +faststart renders/madrid-ps.mp4
+          ffmpeg -v error -y -i renders/madrid-ps.mp4 -c:v libx264 -preset slow -b:v 4M -maxrate 5M -bufsize 9M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart renders/madrid-ps-share.mp4
+      - name: compress with HandBrake (H.265, small file, same look)
+        run: bash tools/handbrake.sh renders/madrid-ps.mp4 renders/madrid-ps-small.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: |
+            madrid-ps/renders/madrid-ps.mp4
+            madrid-ps/renders/madrid-ps-share.mp4
+            madrid-ps/renders/madrid-ps-small.mp4
+          retention-days: 30
+          compression-level: 0
+      - name: publish as a release
+        continue-on-error: true
+        run: |
+          tag="madrid-ps-render-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" renders/madrid-ps.mp4 renders/madrid-ps-small.mp4 renders/madrid-ps-share.mp4 --target "$GITHUB_SHA" --title "Hindukush Madrid render #${GITHUB_RUN_NUMBER}" --notes "One continuous render (single pass, no parts) by the madrid-render workflow from ${GITHUB_SHA}." --prerelease
