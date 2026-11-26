@@ -39,7 +39,7 @@ jobs:
         run: |
           python3 -m http.server 8772 --bind 127.0.0.1 --directory web >/dev/null 2>&1 &
           sleep 2
-          DUR=$(python3 -c "import json; print(json.load(open('data/timeline.json'))['duration'])")
+          DUR=$(python3 -c "import json; print(json.load(open('data/cues.json'))['duration'])")  # whole film: logo sting + narration + end card
           node tools/capture.mjs --from 0 --to "$DUR" --fps 30 --crf 16 --out renders/film.mp4
           ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 renders/film.mp4
       - name: mux the mix (video copied as is) + share copy
