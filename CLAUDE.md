@@ -15,3 +15,4 @@
 - Hindukush explainers carry a narration caption bar above the logo at the bottom: a primary-colour panel where
   each sentence is written as it is read, with a speaking/voice icon on the right, with smooth transitions.
 - Backgrounds: no plain floating circles; use soft, low-opacity primary-colour grids with invisible edges.
+- Always speak to the owner in Pashto, including every progress update (see rules.md).
