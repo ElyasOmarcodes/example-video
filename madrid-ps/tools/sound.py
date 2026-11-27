@@ -76,14 +76,14 @@ _g = movavg(np.minimum(1.0, _ref / _r), int(1.5 * SR))
 mus *= _g[:, None]
 env = movavg(np.abs(voice[:, 0]), int(0.25 * SR))
 speech = movavg(np.clip(env / 0.02, 0, 1), int(0.7 * SR))
-duck = db(-8) * speech + (1 - speech)
+duck = db(-10) * speech + (1 - speech)
 lift = np.ones(N)
 lift[T < LEAD] = db(2)
-lift[T > VE + 0.2] = db(2)
+lift[T > VE + 0.2] = db(1)
 lift = movavg(lift, int(0.8 * SR))
 fade = np.clip(T / 1.2, 0, 1) * np.clip((DUR - T) / 3.0, 0, 1)
 mus *= (duck * lift * fade)[:, None]
-mus *= db(-26 - rms_db(mus[int(10 * SR):int(200 * SR)]))
+mus *= db(-30 - rms_db(mus[int(10 * SR):int(200 * SR)]))
 
 # ------------------------------------------------------------------ synthesized UI sounds (clean, soft)
 def tone(f0, f1, dur, decay, noise=0.0, seed=0):
@@ -116,78 +116,86 @@ for k, x in S.items():
 S.update(SY)
 fx = np.zeros((N, 2), np.float32)
 cue = lambda name, at, g, **kw: place(fx, S[name], at, g, **kw)
-# typewriter keys: short filtered clicks, each a little different
-def key(seed):
-    rng = np.random.default_rng(seed); n = int(0.045 * SR); t = np.arange(n) / SR
-    x = rng.standard_normal(n) * np.exp(-t * 160)
-    x = x - movavg(x, 6)
-    body = np.sin(2 * np.pi * rng.uniform(1700, 2600) * t) * np.exp(-t * 220) * 0.5
-    y = x + body; y /= np.max(np.abs(y)) + 1e-9
-    return np.stack([y, y], 1).astype(np.float32) * 0.9
-KEYS = [key(i) for i in range(8)]
-def bell(f, dur=1.6):
-    n = int(dur * SR); t = np.arange(n) / SR
-    y = sum(np.sin(2 * np.pi * f * m * t) * np.exp(-t * d) * g for m, d, g in ((1, 3.2, 1), (2.01, 5, .35), (3.03, 8, .15)))
-    a = int(0.004 * SR); y[:a] *= np.linspace(0, 1, a); y /= np.max(np.abs(y))
-    return np.stack([y, y], 1).astype(np.float32) * 0.8
-S['bell'] = bell(659.3); S['bell2'] = bell(880.0)
-S['woosh'] = swish(0.55, 7); S['wooshS'] = swish(0.3, 9)
+# ---------------- professional library effects (Epidemic Sound via Higgsfield) ----------------
+ES = {f[:-4]: load(f'{ROOT}/audio/es/{f}') for f in os.listdir(f'{ROOT}/audio/es') if f.endswith('.mp3')}
+for k_, x in ES.items():
+    ES[k_] = x / (np.max(np.abs(x)) + 1e-9) * 0.9
+def trim(x, d, fo=0.05):
+    y = x[: int(d * SR)].copy(); n = int(fo * SR); y[-n:] *= np.linspace(1, 0, n)[:, None]; return y
+# real key presses cut from the typing recording (onset detection)
+def cut_keys(x):
+    m = np.abs(x).mean(1); e = movavg(m, int(0.004 * SR)); thr = np.percentile(e, 97) * 0.35
+    on, last = [], -SR
+    for i in np.where((e[1:] > thr) & (e[:-1] <= thr))[0]:
+        if i - last > int(0.09 * SR): on.append(i); last = i
+    out = []
+    for i in on:
+        k_ = x[max(0, i - int(0.005 * SR)): i + int(0.08 * SR)].copy()
+        if len(k_) < int(0.06 * SR): continue
+        n = int(0.02 * SR); k_[-n:] *= np.linspace(1, 0, n)[:, None]
+        out.append(k_ / (np.max(np.abs(k_)) + 1e-9) * 0.9)
+    return out
+KEYS = cut_keys(ES['typing']) + cut_keys(ES['keys'])
+print('keys cut', len(KEYS))
+ES['woody_s'] = trim(ES['woody'], 0.35); ES['lowchord_s'] = trim(ES['lowchord'], 1.2, 0.4)
+ES['wh_tail_s'] = trim(ES['wh_tail'], 2.6, 0.8)
+def es(name, at, g, **kw): place(fx, ES[name], at, g, **kw)
 ki = [0]
 def keyclick(t, g):
     ki[0] += 1
-    place(fx, KEYS[ki[0] % 8], t, g + ((ki[0] * 37) % 5 - 2) * 0.8, pan=((ki[0] * 13) % 7 - 3) * 0.05)
+    place(fx, KEYS[(ki[0] * 7) % len(KEYS)], t, g + ((ki[0] * 37) % 5 - 2) * 0.7, pan=((ki[0] * 13) % 7 - 3) * 0.04)
 last = {}
 def ok(kind, t, gap):
     if t - last.get(kind, -9) < gap:
         return False
     last[kind] = t
     return True
-# headline words type in, one soft key per word
 TL = json.load(open(f'{ROOT}/data/timeline.json'))
 for bt in TL['beats']:
     if not bt.get('head'): continue
     t0 = bt['t'] + LEAD
     n = len(bt['head'].replace('/', ' ').replace('{', '').replace('}', '').split())
-    cue('woosh', t0 - 0.12, -25, fade_out=0.2)          # beat transition
-    for k in range(n):
-        keyclick(t0 + 0.06 + k * 0.055, -23)
+    es('wh_soft', t0 - 0.35, -27, fade_out=0.4)            # headline transition
+    for k_ in range(n):
+        keyclick(t0 + 0.05 + k_ * 0.055, -27)                # the words type in
 for c in sorted(C['cues'], key=lambda c: c['t']):
     k, t = c['kind'], c['t']
-    if k == 'open':
-        cue('swoosh_myst', t - 0.3, -19, fade_out=0.3)
-        cue('impact_deep', t + 0.4, -21)
-        cue('bell', t + 0.7, -25)
+    if k == 'open':                                            # section badge: morph whoosh + deep hit
+        es('wh_tail_s', t - 0.25, -21)
+        es('boom_cine', t + 0.35, -24)
     elif k == 'key':
-        keyclick(t, -24)
-    elif k == 'pop' and ok(k, t, 0.12):
-        cue('pop', t + 0.05, -22); cue('wooshS', t - 0.08, -30)
-    elif k == 'soft' and ok(k, t, 0.25):
-        cue('wooshS', t, -27)
-    elif k == 'tick' and ok(k, t, 0.1):
-        cue('select_ui', t, -23)
-    elif k == 'mark':
-        cue('click_ui', t, -21); cue('pop_hi', t + 0.02, -27)
+        keyclick(t, -26)
+    elif k == 'pop' and ok(k, t, 0.15):                       # clay icon / tile appears
+        es('wh_airy', t - 0.12, -28, length=1.2, fade_out=0.4)
+        es('ui_glass', t + 0.12, -31)
+    elif k == 'soft' and ok(k, t, 0.25):                      # card / chip slides in
+        es('card', t, -26)
+    elif k == 'tick' and ok(k, t, 0.1):                       # a list row arrives
+        es('woody_s', t, -27)
+    elif k == 'mark':                                          # row turns into ✗ / ?
+        es('marker', t - 0.05, -25)
     elif k == 'nope':
-        cue('click_ui', t, -20); cue('thud', t, -24)
+        es('lowchord_s', t, -25)
     elif k == 'strike':
-        cue('paper_slide', t, -21)
+        es('marker', t, -21)
     elif k == 'route' and ok(k, t, 0.3):
-        cue('whoosh_fast', t, -23, fade_out=0.2)
+        es('wh_med', t - 0.1, -27, fade_out=0.3)
     elif k == 'pin' and ok(k, t, 0.2):
-        cue('blip', t, -24)
+        es('ping', t, -29)
     elif k == 'flow':
-        cue('swoosh_myst', t, -21, fade_out=0.4)
-        for j in range(6): cue('blip', t + j * 0.22, -30)
+        es('wh_airy', t, -24)
     elif k == 'swap' and ok(k, t, 0.5):
-        cue('whoosh_fast2', t - 0.1, -25)
-# logo sting before the narration, and the end card
-cue('swoosh_slow', 0.0, -19, fade_out=0.3)
-cue('drum_subtle', 0.72, -16); cue('pop', 0.75, -21)
-cue('impact_deep', 1.12, -19); cue('bell2', 1.15, -20)
-for k in range(6): keyclick(1.5 + k * 0.12, -24)
-cue('swoosh_slow', LEAD - 1.05, -22, fade_out=0.3)
-cue('swoosh_slow', VE + 0.25, -20, fade_out=0.3)
-cue('impact_deep', VE + 1.15, -19); cue('bell2', VE + 1.2, -20)
+        es('card', t, -27)
+    elif k == 'disc':
+        es('wh_hit', t - 0.05, -21)
+    elif k == 'glitch':
+        es('glitch', t - 0.02, -21); es('boom_low', t, -24)
+# logo sting before the narration
+es('wh_soft', 0.0, -22, fade_out=0.3)
+es('boom_low', 0.7, -24)
+es('ui_glass', 1.15, -25)
+for k_ in range(7): keyclick(1.5 + k_ * 0.1, -26)
+es('wh_airy', LEAD - 1.1, -26, length=1.5, fade_out=0.5)
 
 # ------------------------------------------------------------------ master
 mix = voice + mus + fx

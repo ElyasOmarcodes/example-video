@@ -93,7 +93,7 @@ function item(el, o) {
   root.appendChild(el);
   el.style.position = "relative";
   const id = SEQ++;
-  const din = o.din ?? 0.6, dout = o.dout ?? 0.45;
+  const din = o.din ?? 0.75, dout = o.dout ?? 0.55;
   const t0 = o.t0, t1 = o.t1 ?? 1e9;
   if (o.z != null) root.style.zIndex = String(o.z);
   if (o.snd !== false) cue(o.snd || (o.in === "pop" || o.in === "zoom" ? "pop" : "soft"), t0, { id });
@@ -138,7 +138,8 @@ function item(el, o) {
   };
   return self;
 }
-var img = (name, size, o = {}) => {
+var img = (name, size0, o = {}) => {
+  const size = Math.round(size0 * 1.2);
   const e = h("div", "cc");
   css(e, { width: size + "px", height: size + "px" });
   const amb = h("div", "amb");
@@ -200,17 +201,16 @@ var chip = (text, o = {}) => {
 var tag = (text, o = {}) => item(h("div", "tag " + (o.cls || ""), text), { in: "pop", float: 5, ...o });
 var label = (text, o = {}) => item(h("div", "lbl " + (o.cls || ""), text), { in: "up", snd: false, ...o });
 var mark = (kind, o = {}) => item(h("div", "x", ICON[kind]), { in: "pop", snd: kind === "x" ? "nope" : "pop", ...o });
-var listH = (n, rh = 92) => 28 + n * rh + (n - 1) * 2;
+var listH = (n, rh = 104) => 28 + n * rh + (n - 1) * 2;
 function list(w, rows, o) {
   const e = h("div", "card");
-  const rh = o.rh || 92;
+  const rh = o.rh || 104;
+  w = Math.max(w, 960);
   css(e, { width: w + "px", height: listH(rows.length, rh) + "px", padding: "14px 0" });
   const R = rows.map((r) => {
     const el = h("div", "row", `${r.th ? `<div class="th"><img src="assets/img/${r.th}.png"></div>` : `<div class="ic">${ICON[r.icon || "dot"]}</div>`}<span>${r.text}</span>`);
-    if (o.rh) {
-      el.style.height = rh + "px";
-      if (o.fs) el.style.fontSize = o.fs + "px";
-    }
+    el.style.height = rh + "px";
+    if (o.fs) el.style.fontSize = o.fs + "px";
     if (o.th) {
       const th = el.querySelector(".th");
       if (th) css(th, { width: o.th + "px", height: o.th + "px" });
@@ -556,7 +556,7 @@ function buildScenes(stage, beats, LEAD2, VE) {
     return its[0];
   };
   const CY = 1080;
-  const CIRCLE = { x: 540, y: CY, w: 420, h: 420, r: 210 };
+  const CIRCLE = { x: 540, y: CY, w: 540, h: 540, r: 270 };
   const DOT = (x, y) => ({ x, y, w: 40, h: 40, r: 20 });
   function opener(n, name, t0, t1, from, to) {
     const sh = shape([[t0, { ...from, o: 1 }], [t0 + 0.02, { ...CIRCLE, o: 1 }, 0.85], [t1 - 0.2, { ...to, o: 1 }, 0.75], [t1 + 0.5, { ...to, o: 0 }, 0.35]]);
@@ -564,16 +564,16 @@ function buildScenes(stage, beats, LEAD2, VE) {
     add(sh);
     cue("open", t0);
     const ring = h("div", "");
-    css(ring, { width: "520px", height: "520px" });
-    ring.innerHTML = `<svg viewBox="-260 -260 520 520" width="520" height="520"><circle r="250" fill="none" stroke="#ef7d22" stroke-opacity=".55" stroke-width="3" stroke-dasharray="2 16" stroke-linecap="round"/>
+    css(ring, { width: "660px", height: "660px" });
+    ring.innerHTML = `<svg viewBox="-260 -260 520 520" width="660" height="660"><circle r="250" fill="none" stroke="#ef7d22" stroke-opacity=".55" stroke-width="3" stroke-dasharray="2 16" stroke-linecap="round"/>
       <circle r="250" fill="none" stroke="#ef7d22" stroke-width="6" stroke-linecap="round" stroke-dasharray="120 1451"/></svg>`;
     const svg = ring.querySelector("svg");
     add(item(ring, { x: 540, y: CY, t0: t0 + 0.35, t1: t1 - 0.3, in: "zoom", snd: false, tick: (t) => {
       svg.style.transform = `rotate(${(t * 24).toFixed(2)}deg)`;
     } }));
-    add(img(name, 360, { x: 540, y: CY - 6, t0: t0 + 0.4, t1: t1 - 0.3, float: 7, rock: 1.5, snd: false }));
+    add(img(name, 380, { x: 540, y: CY - 6, t0: t0 + 0.4, t1: t1 - 0.3, float: 7, rock: 1.5, snd: false }));
     const badge = h("div", "badge", PS_DIGITS(n, 1));
-    add(item(badge, { x: 540 + 158, y: CY - 158, t0: t0 + 0.65, t1: t1 - 0.3, in: "pop" }));
+    add(item(badge, { x: 540 + 200, y: CY - 200, t0: t0 + 0.65, t1: t1 - 0.3, in: "pop" }));
   }
   const tile = (name, text, sub, o) => {
     const e = h("div", "card tile", `<img src="assets/img/${name}.png"><div class="t">${text}</div>${sub ? `<div class="lbl sm">${sub}</div>` : ""}`);
@@ -583,7 +583,7 @@ function buildScenes(stage, beats, LEAD2, VE) {
   };
   const bubble = (text, o) => {
     const e = h("div", "bubble" + (o.me ? " me" : ""));
-    const W = o.w || 860, FS = 37, inner = W - 68;
+    const W = Math.max(o.w || 860, 960), FS = 41, inner = W - 68;
     css(e, { width: W + "px", textAlign: "right" });
     const lines = [];
     let cur = [];
@@ -675,8 +675,8 @@ function buildScenes(stage, beats, LEAD2, VE) {
   add(arrow({ x: 705, y: 920, t0: B("S1.lon", 0.1), t1: B("S1.again") }));
   cityTile("lon", "\u0644\u0646\u062F\u0646", "\u062F\u0648\u06CC\u0645 \u067E\u0693\u0627\u0648", 540, B("S1.lon"), "lon");
   add(arrow({ x: 375, y: 920, t0: B("S1.mad", 0.1), t1: B("S1.again"), dash: true }));
-  add(img("figs", 420, { x: 540, y: 1370, t0: B("S1.who", 0.1), t1: B("S1.again", -0.1), out: "shrink" }));
-  add(label("\u0645\u062E\u0627\u0644\u0641\u06D0 \u0685\u06D0\u0631\u06D0", { x: 540, y: 1600, t0: B("S1.who", 0.4), t1: B("S1.again", -0.1), cls: "md" }));
+  add(img("figs", 400, { x: 540, y: 1300, t0: B("S1.who", 0.1), t1: B("S1.again", -0.1), out: "shrink" }));
+  add(label("\u0645\u062E\u0627\u0644\u0641\u06D0 \u0685\u06D0\u0631\u06D0", { x: 540, y: 1555, t0: B("S1.who", 0.4), t1: B("S1.again", -0.1), cls: "md" }));
   cityTile("mad", "\u0645\u0627\u062F\u0631\u06CC\u062F", "\u062F\u0627 \u0681\u0644", 210, B("S1.mad"), "mad");
   add(spinner("loop", 330, { x: 540, y: 1110, t0: B("S1.again", 0.4), t1: B("S1.p1", -0.1), speed: 30 }));
   swap([["turned", B("S1.p1"), B("S1.p2")], ["handsplit", B("S1.p2"), B("S1.p3")], ["agenda", B("S1.p3"), S2 - 0.05]], 540, 840, 400);
@@ -699,7 +699,7 @@ function buildScenes(stage, beats, LEAD2, VE) {
   add(img("pedestal", 440, { x: 540, y: 880, t0: B("S2.chal"), t1: B("S2.rep", -0.1), rock: 3 }));
   add(meter("\u0633\u06CC\u0627\u0633\u064A \u0646\u0641\u0648\u0630", 0.34, { x: 540, y: 1300, w: 700, t0: B("S2.chal", 0.5), t1: B("S2.rep", -0.1), wob: 0.12 }));
   add(meter("\u0648\u0644\u0633\u064A \u0645\u0644\u0627\u062A\u0693", 0.26, { x: 540, y: 1450, w: 700, t0: B("S2.chal", 1.1), t1: B("S2.rep", -0.1), wob: 0.1 }));
-  add(tag("\u062C\u062F\u064A \u0646\u0646\u06AB\u0648\u0646\u06D0", { x: 540, y: 1590, t0: B("S2.chal2", 0.2), t1: B("S2.rep", -0.1), cls: "ink" }));
+  add(tag("\u062C\u062F\u064A \u0646\u0646\u06AB\u0648\u0646\u06D0", { x: 540, y: 1560, t0: B("S2.chal2", 0.2), t1: B("S2.rep", -0.1), cls: "ink" }));
   add(img("copies", 640, { x: 540, y: 1020, t0: B("S2.rep"), t1: B("S2.nat", -0.1), float: 6 }));
   add(spinner("loop", 150, { x: 540, y: 1360, t0: B("S2.rep", 0.4), t1: B("S2.nat", -0.1), speed: 60 }));
   const nat = add(tile("hands", "\u067E\u0631\u0627\u062E\u0647 \u0645\u0644\u064A \u0627\u062C\u0645\u0627\u0639", "", { x: 800, y: 1080, t0: B("S2.nat"), t1: S3 - 0.05, w: 420, h: 520, imgSize: 330 }));
@@ -765,10 +765,10 @@ function buildScenes(stage, beats, LEAD2, VE) {
   add(bubble("\u062F \u062A\u06D0\u0631\u06D0 \u062F\u0648\u0631\u06D0 \u062F \u0646\u0627\u06A9\u0627\u0645\u06CC\u0648 \u0627\u0648 \u067E\u0648\u069A\u062A\u0646\u0648 \u0642\u0627\u0646\u0639 \u06A9\u0648\u0648\u0646\u06A9\u06CC \u0681\u0648\u0627\u0628\u061F", { x: 560, y: 1180, w: 860, t0: B("S4.ans", 0.6), t1: S5 - 0.05, dur: 2.4 }));
   add(typing({ x: 260, y: 1380, t0: B("S4.ans", 3.4), t1: S5 - 0.05 }));
   const S6 = B("S6");
-  const L5 = { x: 540, y: 1350, w: 820, h: listH(5) };
+  const L5 = { x: 540, y: 1300, w: 960, h: listH(5) };
   opener(5, "crowns", S5, B("S5.f1"), { x: 540, y: 1180, w: 860, h: 300, r: 40 }, { ...L5, r: 40 });
   K(5, "\u062E\u067E\u0644\u0645\u0646\u0681\u064A \u0627\u062E\u062A\u0644\u0627\u0641\u0627\u062A \u0627\u0648 \u062F \u0645\u0634\u0631\u062A\u0627\u0628\u0647 \u0628\u062D\u0631\u0627\u0646", B("S5.f1"), S6);
-  swap([["tablesplit", B("S5.f1"), B("S5.f2")], ["clash", B("S5.f2"), B("S5.f3")], ["handsplit", B("S5.f3"), B("S5.f4")], ["figs", B("S5.f4"), B("S5.f5")], ["tug", B("S5.f5"), B("S5.each", -0.1)]], 540, 800, 380);
+  swap([["tablesplit", B("S5.f1"), B("S5.f2")], ["clash", B("S5.f2"), B("S5.f3")], ["handsplit", B("S5.f3"), B("S5.f4")], ["figs", B("S5.f4"), B("S5.f5")], ["tug", B("S5.f5"), B("S5.each", -0.1)]], 540, 790, 340);
   add(list(L5.w, [
     { text: "\u062F \u0645\u0634\u0631\u062A\u0627\u0628\u0647 \u067E\u0631 \u0633\u0631 \u0633\u06CC\u0627\u0644\u06CD", t: B("S5.f1", 0.3) },
     { text: "\u062F \u0634\u062E\u0635\u064A \u06AB\u067C\u0648 \u067C\u06A9\u0631", t: B("S5.f2") },
@@ -994,33 +994,18 @@ function background(root) {
   gr.style.backgroundImage = `url(${c.toDataURL()})`;
   const vig = h("div", "vig");
   bg.append(g1, g2, g3, vig);
-  const motes = [];
-  for (let k = 0; k < 26; k++) {
-    const r = (n) => {
-      const v = Math.sin((k * 7.13 + n) * 91.3) * 43758.5453;
-      return v - Math.floor(v);
-    };
-    const m = h("div", "mote");
-    const z = 0.35 + r(1) * 0.9, sz = 6 + z * 16;
-    css(m, {
-      width: sz + "px",
-      height: sz + "px",
-      background: r(2) > 0.55 ? "#ef7d22" : "#ffffff",
-      opacity: String(r(2) > 0.55 ? 0.1 + 0.14 * z : 0.5 + 0.3 * z),
-      filter: z < 0.7 ? "blur(2px)" : "none",
-      boxShadow: r(2) > 0.55 ? "none" : "0 2px 6px rgba(150,100,50,.12)"
-    });
-    bg.appendChild(m);
-    motes.push({ m, x: r(3) * 1080, y: r(4) * 1960, z, ph: r(5) * 6.28 });
-  }
+  const grid = h("div", "grid");
+  const grid2 = h("div", "grid g2");
+  const sweep = h("div", "sweep");
+  bg.append(grid, grid2, sweep);
   bg.appendChild(gr);
   root.appendChild(bg);
   return {
     render(t, focus = 1) {
-      for (const o of motes) {
-        const y = ((o.y - t * 26 * o.z) % 2e3 + 2e3) % 2e3 - 40;
-        o.m.style.transform = `translate(${(o.x + Math.sin(t * 0.45 + o.ph) * 36 * o.z).toFixed(1)}px, ${y.toFixed(1)}px)`;
-      }
+      grid.style.backgroundPosition = `${t * 6 % 96}px ${t * 9 % 96}px`;
+      grid2.style.backgroundPosition = `${-t * 4 % 288}px ${t * 5 % 288}px`;
+      grid.style.opacity = (0.75 + 0.25 * Math.sin(t * 0.3)).toFixed(3);
+      sweep.style.transform = `translate(${(-700 + t * 40 % 2600).toFixed(1)}px, 0) rotate(18deg)`;
       g1.style.transform = `translate(${-300 + 90 * Math.sin(t * 0.05)}px, ${-420 + 60 * Math.cos(t * 0.04)}px)`;
       g2.style.transform = `translate(${160 + 160 * Math.sin(t * 0.07 + 1)}px, ${700 + 140 * Math.cos(t * 0.055)}px) scale(${0.9 + 0.12 * Math.sin(t * 0.09)})`;
       g3.style.transform = `translate(${-200 + 120 * Math.cos(t * 0.045)}px, ${1300 + 90 * Math.sin(t * 0.06)}px)`;
@@ -1134,12 +1119,11 @@ function brand(root, LEAD2, VE, END) {
   wrap.append(full, line, dot);
   root.appendChild(wrap);
   cue("intro", 0);
-  cue("outro", VE + 0.3);
   const WM = { y: 1812, h: 58 };
   return {
     render(t) {
       const kIn = E.io(prog(t, LEAD2 - 1, LEAD2 - 0.15));
-      const kOut = E.io(prog(t, VE + 0.35, VE + 1.4));
+      const kOut = 0;
       const big = 1 - kIn + kOut;
       const sBig = 1, sSmall = WM.h / LH;
       const s = lerp(sSmall, sBig, big);
@@ -1166,16 +1150,151 @@ function brand(root, LEAD2, VE, END) {
       word.style.opacity = t < LEAD2 ? clamp(wk * 3).toFixed(3) : "1";
       const lk = E.out(prog(t, 1.9, 2.5)) * (1 - kIn) + E.out(prog(t, VE + 1.2, VE + 1.9)) * kOut;
       css(line, { transform: `translate(${(540 - 110).toFixed(1)}px, ${(900 + LH / 2 + 46).toFixed(1)}px) scaleX(${lk.toFixed(3)})`, opacity: lk.toFixed(3) });
-      const fin = 1 - E.io(prog(t, END - 0.5, END));
+      const fin = 1 - E.io(prog(t, VE + 0.2, VE + 0.7));
       full.style.opacity = (t < LEAD2 ? 1 : lerp(0.92, 1, big) * fin).toFixed(3);
       wrap.style.opacity = "1";
+    }
+  };
+}
+function endCard(root, t0) {
+  const el = h("div", "abs");
+  css(el, { width: "1080px", height: "1920px", overflow: "hidden", zIndex: "50" });
+  const discs = ["#EAA500", "#ffffff", "#051449"].map((c) => {
+    const d = h("div", "odisc");
+    d.style.background = c;
+    el.appendChild(d);
+    return d;
+  });
+  const LW = 800, LH = LW * 559 / 1699;
+  const box = h("div", "ologo");
+  css(box, { left: 540 - LW / 2 + "px", top: 900 - LH / 2 + "px", width: LW + "px", height: LH + "px" });
+  box.innerHTML = `<img class="lg" src="assets/brand/logo_full_light.png"><img class="gh g1" src="assets/brand/logo_ghost.png"><img class="gh g2" src="assets/brand/logo_ghost.png">`;
+  const handle = h("div", "ohandle", "@hindukush");
+  el.append(box, handle);
+  root.appendChild(el);
+  const lg = box.querySelector(".lg"), g1 = box.querySelector(".g1"), g2 = box.querySelector(".g2");
+  const P3 = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const T = t0 + 1.65;
+  [0.05, 0.5, 0.95].forEach((d) => cue("disc", t0 + d));
+  cue("glitch", T + 0.05);
+  const gx = [0, -14, 9, -6, 12, 0], bx = [0, 12, -10, 7, -12, 0];
+  const clips = ["inset(10% 0% 55% 0%)", "inset(60% 0% 8% 0%)", "inset(30% 0% 40% 0%)"];
+  return {
+    render(t) {
+      if (t < t0) {
+        el.style.display = "none";
+        return;
+      }
+      el.style.display = "";
+      [0.05, 0.5, 0.95].forEach((d, i) => {
+        discs[i].style.transform = `scale(${P3(prog(t, t0 + d, t0 + d + 0.7))})`;
+      });
+      const lk = E.out(prog(t, T, T + 0.6));
+      box.style.opacity = String(lk);
+      box.style.transform = `translateY(${-E.out(prog(t, T + 0.8, t0 + 5)) * 10}px) scale(${lerp(0.9, 1, lk)})`;
+      const g = t >= T + 0.05 && t < T + 0.55;
+      const step = Math.floor((t - T - 0.05) / 0.1);
+      const flick = g && Math.floor((t - T - 0.05) / 0.06) % 2 === 0;
+      const ci = Math.floor((t - T - 0.1) / (0.45 / 4));
+      lg.style.clipPath = t >= T + 0.1 && ci >= 0 && ci < 3 ? clips[ci] : "none";
+      const on = g && step >= 0 && step < 6;
+      g1.style.opacity = on && flick ? "0.55" : "0";
+      g2.style.opacity = on && flick ? "0.55" : "0";
+      g1.style.left = (on ? gx[step] : 0) + "px";
+      g2.style.left = (on ? bx[step] : 0) + "px";
+      const sk = E.out(prog(t, T + 0.7, T + 1.4));
+      handle.style.opacity = String(sk);
+      handle.style.transform = `translateY(${(1 - sk) * 20}px)`;
+    }
+  };
+}
+function captions(root, words, env, LEAD2, t0, t1, Y = 1668) {
+  const bar = h("div", "cap");
+  const sh = h("div", "sh"), ring = h("div", "ring"), ic = h("div", "ic");
+  const bars = [0, 1, 2, 3, 4].map(() => {
+    const i = h("i");
+    ic.appendChild(i);
+    return i;
+  });
+  const tx = h("div", "tx");
+  bar.append(sh, tx, ring, ic);
+  root.appendChild(bar);
+  const FS = 40, MAXW = 790;
+  const chunks = [];
+  let cur = [];
+  const flush = () => {
+    if (cur.length) chunks.push(cur);
+    cur = [];
+  };
+  const WEAK = /* @__PURE__ */ new Set(["\u062F", "\u0627\u0648", "\u067E\u0647", "\u0644\u0647", "\u062A\u0631", "\u0686\u06D0", "\u06CC\u06D0", "\u0647\u0645", "\u06A9\u06D0", "\u067E\u0631", "\u0633\u0631\u0647", "\u062A\u0647", "\u0685\u062E\u0647", "\u0647\u063A\u0647", "\u0647\u063A\u0648", "\u06CC\u0648", "\u06CC\u0648\u0647"]);
+  words.forEach((w, i) => {
+    if (/^[۰-۹0-9]+\.$/.test(w[0])) {
+      flush();
+      return;
+    }
+    if (cur.length && w[3] !== cur[cur.length - 1][3]) flush();
+    const tryW = measure([...cur, w].map((x) => x[0]).join(" "), FS, 700);
+    if (cur.length && tryW > MAXW) {
+      const carry = [];
+      while (cur.length > 2 && WEAK.has(cur[cur.length - 1][0])) carry.unshift(cur.pop());
+      flush();
+      cur = carry;
+    }
+    cur.push(w);
+    if (/[.؟!؛:]$/.test(w[0]) || /،$/.test(w[0]) && cur.length >= 4) flush();
+  });
+  flush();
+  const C = chunks.map((ws) => {
+    const e = h("div", "ch");
+    const sp = ws.map((w, k) => {
+      const s_ = h("span", "", w[0] + (k < ws.length - 1 ? " " : ""));
+      e.appendChild(s_);
+      return s_;
+    });
+    tx.appendChild(e);
+    return { e, sp, ws, a: ws[0][1] + LEAD2, b: ws[ws.length - 1][2] + LEAD2 };
+  });
+  for (let i = 0; i < C.length; i++) C[i].end = i < C.length - 1 ? Math.max(C[i].b + 0.1, C[i + 1].a - 0.25) : C[i].b + 0.6;
+  for (let i = 0; i < C.length; i++) C[i].in = i ? Math.max(C[i].a - 0.3, C[i - 1].end + 0.22) : C[i].a - 0.3;
+  return {
+    render(t) {
+      const k = E.out(prog(t, t0, t0 + 0.8)) * (1 - E.in(prog(t, t1 - 0.4, t1)));
+      bar.style.display = k > 1e-3 ? "" : "none";
+      if (k <= 1e-3) return;
+      bar.style.opacity = k.toFixed(3);
+      bar.style.transform = `translateY(${(Y - 62 + (1 - k) * 60).toFixed(1)}px) scale(${(0.94 + 0.06 * k).toFixed(4)})`;
+      sh.style.transform = `translateX(${(-300 + t * 120 % 1600).toFixed(1)}px) skewX(-20deg)`;
+      const fi = Math.max(0, Math.min(env.length - 1, Math.round((t - LEAD2) * 30)));
+      const lv = t >= LEAD2 ? env[fi] : 0;
+      bars.forEach((b, j) => {
+        const hgt = 10 + 34 * clamp(lv * (0.6 + 0.4 * Math.abs(Math.sin(t * 9 + j * 1.7))) * [0.6, 0.9, 1, 0.85, 0.55][j] * 1.6);
+        b.style.height = hgt.toFixed(1) + "px";
+      });
+      const rp = t * 0.8 % 1;
+      ring.style.transform = `scale(${(1 + rp * 0.35 * lv * 2).toFixed(3)})`;
+      ring.style.opacity = ((1 - rp) * 0.8 * clamp(lv * 2)).toFixed(3);
+      for (const c of C) {
+        const on = t >= c.in - 0.02 && t < c.end + 0.25;
+        c.e.style.display = on ? "" : "none";
+        if (!on) continue;
+        const ki = E.out(prog(t, c.in, c.in + 0.35)), ko = E.in(prog(t, c.end, c.end + 0.22));
+        c.e.style.opacity = (ki * (1 - ko)).toFixed(3);
+        c.e.style.transform = `translateY(${((1 - ki) * 40 - ko * 40).toFixed(1)}px)`;
+        c.e.style.filter = ki < 0.99 || ko > 0.01 ? `blur(${((1 - ki) * 8 + ko * 8).toFixed(1)}px)` : "none";
+        c.sp.forEach((s_, j) => {
+          const w = c.ws[j];
+          const r = E.out(prog(t, w[1] + LEAD2 - 0.05, w[1] + LEAD2 + 0.15));
+          s_.style.opacity = (0.42 + 0.58 * r).toFixed(3);
+          s_.style.transform = `translateY(${((1 - r) * 4).toFixed(1)}px)`;
+        });
+      }
     }
   };
 }
 
 // web/src/main.js
 var LEAD = 3.4;
-var OUTRO = 5.2;
+var OUTRO = 5.6;
 var SIM = window.SIM = { ready: false, error: null };
 (async () => {
   try {
@@ -1198,6 +1317,9 @@ var SIM = window.SIM = { ready: false, error: null };
     const hl = headlines(root, beats, 400, VE + 0.2);
     const kk = kicker(root, S.kick);
     const br = brand(root, LEAD, VE, END);
+    const env = await (await fetch("assets/env.json")).json();
+    const cap = captions(root, TL.words, env, LEAD, LEAD - 0.2, VE + 0.25);
+    const ec = endCard(root, VE + 0.3);
     for (const im of document.images) {
       im.decoding = "sync";
       im.loading = "eager";
@@ -1210,11 +1332,13 @@ var SIM = window.SIM = { ready: false, error: null };
     const render = (t) => {
       bg.render(t);
       const cs = 1 + 0.014 * Math.sin(t * 0.21) + 8e-3 * Math.sin(t * 0.137 + 1.3);
-      stage.style.transform = `translate(${(9 * Math.sin(t * 0.17)).toFixed(2)}px, ${(11 * Math.sin(t * 0.113 + 2)).toFixed(2)}px) scale(${cs.toFixed(4)}) rotate(${(0.25 * Math.sin(t * 0.09)).toFixed(3)}deg)`;
+      stage.style.transform = `translate(${(9 * Math.sin(t * 0.17)).toFixed(2)}px, ${(-34 + 11 * Math.sin(t * 0.113 + 2)).toFixed(2)}px) scale(${cs.toFixed(4)}) rotate(${(0.25 * Math.sin(t * 0.09)).toFixed(3)}deg)`;
       S.render(t);
       hl.render(t);
       kk.render(t);
       br.render(t);
+      cap.render(t);
+      ec.render(t);
     };
     SIM.duration = END;
     SIM.render = render;

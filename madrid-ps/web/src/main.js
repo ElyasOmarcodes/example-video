@@ -1,10 +1,10 @@
 import {loadMap} from './map.js';
 import {buildScenes} from './scenes.js';
-import {background, headlines, kicker, brand} from './film.js';
+import {background, headlines, kicker, brand, endCard, captions} from './film.js';
 import {CUES} from './util.js';
 
 export const LEAD = 3.4; // seconds of logo sting before the narration starts
-export const OUTRO = 5.2; // end card after the narration
+export const OUTRO = 5.6; // end card after the narration
 const SIM = (window.SIM = {ready: false, error: null});
 (async () => {
   try {
@@ -24,6 +24,9 @@ const SIM = (window.SIM = {ready: false, error: null});
     const hl = headlines(root, beats, 400, VE + 0.2);
     const kk = kicker(root, S.kick);
     const br = brand(root, LEAD, VE, END);
+    const env = await (await fetch('assets/env.json')).json();
+    const cap = captions(root, TL.words, env, LEAD, LEAD - 0.2, VE + 0.25);
+    const ec = endCard(root, VE + 0.3);
     for (const im of document.images) { im.decoding = 'sync'; im.loading = 'eager'; }
     await Promise.all([...document.images].map((im) => (im.complete ? im.decode().catch(() => {}) : new Promise((r) => { im.onload = im.onerror = r; }))));
     stage.style.transformOrigin = '540px 1080px';
@@ -31,11 +34,13 @@ const SIM = (window.SIM = {ready: false, error: null});
       bg.render(t);
       // a slow, continuous camera drift: the frame breathes even between beats
       const cs = 1 + 0.014 * Math.sin(t * 0.21) + 0.008 * Math.sin(t * 0.137 + 1.3);
-      stage.style.transform = `translate(${(9 * Math.sin(t * 0.17)).toFixed(2)}px, ${(11 * Math.sin(t * 0.113 + 2)).toFixed(2)}px) scale(${cs.toFixed(4)}) rotate(${(0.25 * Math.sin(t * 0.09)).toFixed(3)}deg)`;
+      stage.style.transform = `translate(${(9 * Math.sin(t * 0.17)).toFixed(2)}px, ${(-34 + 11 * Math.sin(t * 0.113 + 2)).toFixed(2)}px) scale(${cs.toFixed(4)}) rotate(${(0.25 * Math.sin(t * 0.09)).toFixed(3)}deg)`;
       S.render(t);
       hl.render(t);
       kk.render(t);
       br.render(t);
+      cap.render(t);
+      ec.render(t);
     };
     SIM.duration = END;
     SIM.render = render;

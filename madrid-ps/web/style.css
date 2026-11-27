@@ -28,14 +28,14 @@ html, body { width: 1080px; height: 1920px; overflow: hidden; background: #efe6d
 .card { background: var(--card); border-radius: 40px; box-shadow: 0 30px 70px rgba(110, 72, 36, .13), 0 4px 14px rgba(110, 72, 36, .06), inset 0 0 0 1.5px rgba(255, 255, 255, .9); }
 .shape { background: var(--card); box-shadow: 0 30px 70px rgba(110, 72, 36, .13), 0 4px 14px rgba(110, 72, 36, .06); }
 .img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 26px 26px rgba(110, 70, 30, .20)) drop-shadow(0 4px 6px rgba(110, 70, 30, .10)); }
-.chip { display: flex; align-items: center; gap: 16px; padding: 0 30px 0 34px; height: 84px; border-radius: 42px; background: var(--card); white-space: nowrap;
-  box-shadow: 0 18px 40px rgba(110, 72, 36, .12), 0 2px 6px rgba(110, 72, 36, .06); font: 700 41px Quds; color: var(--ink); }
+.chip { display: flex; align-items: center; gap: 16px; padding: 0 30px 0 34px; height: 96px; border-radius: 48px; background: var(--card); white-space: nowrap;
+  box-shadow: 0 18px 40px rgba(110, 72, 36, .12), 0 2px 6px rgba(110, 72, 36, .06); font: 700 45px Quds; color: var(--ink); }
 .chip .d { width: 16px; height: 16px; border-radius: 50%; background: var(--acc); flex: none; }
 .chip.on { background: var(--acc); color: #fff; } .chip.on .d { background: #fff; }
 .chip.soft { background: var(--acc3); color: #9a4a10; } .chip.soft .d { background: var(--acc); }
 .chip.ghost { background: rgba(255, 253, 250, .6); color: var(--mute); box-shadow: none; outline: 2px dashed #d9cbbb; }
-.row { display: flex; align-items: center; gap: 22px; height: 92px; padding: 0 34px; font: 700 41px Quds; color: var(--ink); white-space: nowrap; }
-.row .ic { width: 50px; height: 50px; border-radius: 16px; flex: none; display: grid; place-items: center; background: var(--acc3); }
+.row { display: flex; align-items: center; gap: 22px; height: 92px; padding: 0 38px; font: 700 45px Quds; color: var(--ink); white-space: nowrap; }
+.row .ic { width: 58px; height: 58px; border-radius: 16px; flex: none; display: grid; place-items: center; background: var(--acc3); }
 .row .ic svg { width: 30px; height: 30px; }
 .row .th { width: 72px; height: 72px; flex: none; }
 .row .th img { width: 100%; height: 100%; object-fit: contain; }
@@ -46,7 +46,7 @@ html, body { width: 1080px; height: 1920px; overflow: hidden; background: #efe6d
 .tag { display: inline-flex; align-items: center; height: 58px; padding: 0 26px; border-radius: 29px; background: var(--acc3); color: #a4510f; font: 700 31px Quds; white-space: nowrap; }
 .tag.ink { background: var(--navy); color: #fff; }
 .num { font-family: Quds; font-weight: 900; color: var(--acc); line-height: 1; text-align: center; }
-.bubble { background: var(--card); border-radius: 34px; padding: 26px 34px; font: 700 37px Quds; color: var(--ink); line-height: 1.6; box-shadow: 0 18px 40px rgba(110, 72, 36, .12); }
+.bubble { background: var(--card); border-radius: 34px; padding: 26px 34px; font: 700 41px Quds; color: var(--ink); line-height: 1.6; box-shadow: 0 18px 40px rgba(110, 72, 36, .12); }
 .bubble.me { background: var(--acc); color: #fff; }
 .dots3 { display: flex; gap: 12px; } .dots3 i { width: 16px; height: 16px; border-radius: 50%; background: #c9b8a6; display: block; }
 .mapc { border-radius: 40px; overflow: hidden; }
@@ -77,3 +77,31 @@ html, body { width: 1080px; height: 1920px; overflow: hidden; background: #efe6d
 .amb .rg { position: absolute; left: 50%; top: 58%; border-radius: 50%; border: 3px solid rgba(239, 125, 34, .35); }
 .ind { position: absolute; right: 0; width: 8px; border-radius: 4px; background: var(--acc); }
 .rowhl { position: absolute; left: 10px; right: 10px; border-radius: 26px; background: linear-gradient(270deg, rgba(253, 230, 210, .9), rgba(253, 230, 210, 0)); }
+
+.grid { position: absolute; inset: -100px; opacity: .9;
+  background-image: linear-gradient(rgba(239,125,34,.11) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(239,125,34,.11) 1.5px, transparent 1.5px);
+  background-size: 96px 96px;
+  -webkit-mask-image: radial-gradient(70% 55% at 50% 48%, #000 15%, rgba(0,0,0,.35) 60%, transparent 100%);
+          mask-image: radial-gradient(70% 55% at 50% 48%, #000 15%, rgba(0,0,0,.35) 60%, transparent 100%); }
+.grid.g2 { background-image: radial-gradient(circle, rgba(239,125,34,.22) 2.5px, transparent 3px); background-size: 288px 288px; opacity: .8; }
+.sweep { position: absolute; top: -400px; left: 0; width: 420px; height: 2800px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,248,240,.45), rgba(255,255,255,0)); filter: blur(30px); }
+/* narration caption bar */
+.cap { position: absolute; left: 50px; width: 980px; height: 124px; border-radius: 38px; overflow: hidden;
+  background: linear-gradient(100deg, #f29338 0%, #ef7d22 45%, #e8691a 100%);
+  box-shadow: 0 22px 50px rgba(220, 105, 20, .30), inset 0 0 0 2px rgba(255,255,255,.18); }
+.cap .sh { position: absolute; top: 0; bottom: 0; width: 260px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0)); }
+.cap .ic { position: absolute; right: 18px; top: 18px; width: 88px; height: 88px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; gap: 5px;
+  box-shadow: 0 6px 16px rgba(160, 70, 10, .25); }
+.cap .ic i { display: block; width: 7px; border-radius: 4px; background: #ef7d22; }
+.cap .ring { position: absolute; right: 18px; top: 18px; width: 88px; height: 88px; border-radius: 50%; border: 3px solid rgba(255,255,255,.7); }
+.cap .tx { position: absolute; right: 130px; left: 34px; top: 0; height: 124px; }
+.cap .ch { position: absolute; right: 0; left: 0; top: 0; height: 124px; display: flex; align-items: center; justify-content: flex-start;
+  font: 700 40px Quds; color: #fff; white-space: nowrap; -webkit-text-stroke: 1.2px #ef7d22; paint-order: stroke fill; }
+.cap .ch span { display: inline-block; white-space: pre; }
+/* Hindukush end card */
+.odisc { position: absolute; left: -660px; top: -240px; width: 2400px; height: 2400px; border-radius: 50%; transform: scale(0); }
+.ologo { position: absolute; } .ologo img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.ologo .g1 { mix-blend-mode: screen; filter: hue-rotate(300deg) saturate(3); opacity: 0; }
+.ologo .g2 { mix-blend-mode: screen; filter: hue-rotate(160deg) saturate(3); opacity: 0; }
+.ohandle { position: absolute; left: 0; top: 1090px; width: 1080px; text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 44px; font-weight: 700; color: #a7a9c2; direction: ltr; }

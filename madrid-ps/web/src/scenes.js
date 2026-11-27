@@ -22,7 +22,7 @@ export function buildScenes(stage, beats, LEAD, VE) {
     return its[0];
   };
   const CY = 1080;
-  const CIRCLE = {x: 540, y: CY, w: 420, h: 420, r: 210};
+  const CIRCLE = {x: 540, y: CY, w: 540, h: 540, r: 270};
   const DOT = (x, y) => ({x, y, w: 40, h: 40, r: 20});
 
   // ---------- section opener: card → circle badge → next card ----------
@@ -32,14 +32,14 @@ export function buildScenes(stage, beats, LEAD, VE) {
     add(sh);
     cue('open', t0);
     const ring = h('div', '');
-    css(ring, {width: '520px', height: '520px'});
-    ring.innerHTML = `<svg viewBox="-260 -260 520 520" width="520" height="520"><circle r="250" fill="none" stroke="#ef7d22" stroke-opacity=".55" stroke-width="3" stroke-dasharray="2 16" stroke-linecap="round"/>
+    css(ring, {width: '660px', height: '660px'});
+    ring.innerHTML = `<svg viewBox="-260 -260 520 520" width="660" height="660"><circle r="250" fill="none" stroke="#ef7d22" stroke-opacity=".55" stroke-width="3" stroke-dasharray="2 16" stroke-linecap="round"/>
       <circle r="250" fill="none" stroke="#ef7d22" stroke-width="6" stroke-linecap="round" stroke-dasharray="120 1451"/></svg>`;
     const svg = ring.querySelector('svg');
     add(item(ring, {x: 540, y: CY, t0: t0 + 0.35, t1: t1 - 0.3, in: 'zoom', snd: false, tick: (t) => { svg.style.transform = `rotate(${(t * 24).toFixed(2)}deg)`; }}));
-    add(img(name, 360, {x: 540, y: CY - 6, t0: t0 + 0.4, t1: t1 - 0.3, float: 7, rock: 1.5, snd: false}));
+    add(img(name, 380, {x: 540, y: CY - 6, t0: t0 + 0.4, t1: t1 - 0.3, float: 7, rock: 1.5, snd: false}));
     const badge = h('div', 'badge', PS_DIGITS(n, 1));
-    add(item(badge, {x: 540 + 158, y: CY - 158, t0: t0 + 0.65, t1: t1 - 0.3, in: 'pop'}));
+    add(item(badge, {x: 540 + 200, y: CY - 200, t0: t0 + 0.65, t1: t1 - 0.3, in: 'pop'}));
   }
 
   // ---------- small builders ----------
@@ -53,7 +53,7 @@ export function buildScenes(stage, beats, LEAD, VE) {
   // question/statement bubble: lines broken to the box and kashida-justified (last line ragged), words appear one by one
   const bubble = (text, o) => {
     const e = h('div', 'bubble' + (o.me ? ' me' : ''));
-    const W = o.w || 860, FS = 37, inner = W - 68;
+    const W = Math.max(o.w || 860, 960), FS = 41, inner = W - 68;
     css(e, {width: W + 'px', textAlign: 'right'});
     const lines = [];
     let cur = [];
@@ -127,8 +127,8 @@ export function buildScenes(stage, beats, LEAD, VE) {
   add(arrow({x: 705, y: 920, t0: B('S1.lon', 0.1), t1: B('S1.again')}));
   cityTile('lon', 'لندن', 'دویم پړاو', 540, B('S1.lon'), 'lon');
   add(arrow({x: 375, y: 920, t0: B('S1.mad', 0.1), t1: B('S1.again'), dash: true}));
-  add(img('figs', 420, {x: 540, y: 1370, t0: B('S1.who', 0.1), t1: B('S1.again', -0.1), out: 'shrink'}));
-  add(label('مخالفې څېرې', {x: 540, y: 1600, t0: B('S1.who', 0.4), t1: B('S1.again', -0.1), cls: 'md'}));
+  add(img('figs', 400, {x: 540, y: 1300, t0: B('S1.who', 0.1), t1: B('S1.again', -0.1), out: 'shrink'}));
+  add(label('مخالفې څېرې', {x: 540, y: 1555, t0: B('S1.who', 0.4), t1: B('S1.again', -0.1), cls: 'md'}));
   cityTile('mad', 'مادرید', 'دا ځل', 210, B('S1.mad'), 'mad');
   add(spinner('loop', 330, {x: 540, y: 1110, t0: B('S1.again', 0.4), t1: B('S1.p1', -0.1), speed: 30}));
   // the three problems: a big swapping icon + a list that grows
@@ -156,7 +156,7 @@ export function buildScenes(stage, beats, LEAD, VE) {
   add(img('pedestal', 440, {x: 540, y: 880, t0: B('S2.chal'), t1: B('S2.rep', -0.1), rock: 3}));
   add(meter('سیاسي نفوذ', 0.34, {x: 540, y: 1300, w: 700, t0: B('S2.chal', 0.5), t1: B('S2.rep', -0.1), wob: 0.12}));
   add(meter('ولسي ملاتړ', 0.26, {x: 540, y: 1450, w: 700, t0: B('S2.chal', 1.1), t1: B('S2.rep', -0.1), wob: 0.1}));
-  add(tag('جدي ننګونې', {x: 540, y: 1590, t0: B('S2.chal2', 0.2), t1: B('S2.rep', -0.1), cls: 'ink'}));
+  add(tag('جدي ننګونې', {x: 540, y: 1560, t0: B('S2.chal2', 0.2), t1: B('S2.rep', -0.1), cls: 'ink'}));
   add(img('copies', 640, {x: 540, y: 1020, t0: B('S2.rep'), t1: B('S2.nat', -0.1), float: 6}));
   add(spinner('loop', 150, {x: 540, y: 1360, t0: B('S2.rep', 0.4), t1: B('S2.nat', -0.1), speed: 60}));
   // wide national consensus (right) vs limited political circles (left)
@@ -219,10 +219,10 @@ export function buildScenes(stage, beats, LEAD, VE) {
   // 5 — infighting and the crisis of leadership
   // =====================================================================
   const S6 = B('S6');
-  const L5 = {x: 540, y: 1350, w: 820, h: listH(5)};
+  const L5 = {x: 540, y: 1300, w: 960, h: listH(5)};
   opener(5, 'crowns', S5, B('S5.f1'), {x: 540, y: 1180, w: 860, h: 300, r: 40}, {...L5, r: 40});
   K(5, 'خپلمنځي اختلافات او د مشرتابه بحران', B('S5.f1'), S6);
-  swap([['tablesplit', B('S5.f1'), B('S5.f2')], ['clash', B('S5.f2'), B('S5.f3')], ['handsplit', B('S5.f3'), B('S5.f4')], ['figs', B('S5.f4'), B('S5.f5')], ['tug', B('S5.f5'), B('S5.each', -0.1)]], 540, 800, 380);
+  swap([['tablesplit', B('S5.f1'), B('S5.f2')], ['clash', B('S5.f2'), B('S5.f3')], ['handsplit', B('S5.f3'), B('S5.f4')], ['figs', B('S5.f4'), B('S5.f5')], ['tug', B('S5.f5'), B('S5.each', -0.1)]], 540, 790, 340);
   add(list(L5.w, [
     {text: 'د مشرتابه پر سر سیالۍ', t: B('S5.f1', 0.3)},
     {text: 'د شخصي ګټو ټکر', t: B('S5.f2')},

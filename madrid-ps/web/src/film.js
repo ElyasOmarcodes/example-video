@@ -32,25 +32,19 @@ export function background(root) {
   gr.style.backgroundImage = `url(${c.toDataURL()})`;
   const vig = h('div', 'vig');
   bg.append(g1, g2, g3, vig);
-  // drifting motes at three depths: the backdrop is never still
-  const motes = [];
-  for (let k = 0; k < 26; k++) {
-    const r = (n) => { const v = Math.sin((k * 7.13 + n) * 91.3) * 43758.5453; return v - Math.floor(v); };
-    const m = h('div', 'mote');
-    const z = 0.35 + r(1) * 0.9, sz = 6 + z * 16;
-    css(m, {width: sz + 'px', height: sz + 'px', background: r(2) > 0.55 ? '#ef7d22' : '#ffffff', opacity: String(r(2) > 0.55 ? 0.10 + 0.14 * z : 0.5 + 0.3 * z),
-      filter: z < 0.7 ? 'blur(2px)' : 'none', boxShadow: r(2) > 0.55 ? 'none' : '0 2px 6px rgba(150,100,50,.12)'});
-    bg.appendChild(m);
-    motes.push({m, x: r(3) * 1080, y: r(4) * 1960, z, ph: r(5) * 6.28});
-  }
+  // a soft primary-colour grid with invisible edges (masked), slowly gliding; two drifting light sweeps
+  const grid = h('div', 'grid');
+  const grid2 = h('div', 'grid g2');
+  const sweep = h('div', 'sweep');
+  bg.append(grid, grid2, sweep);
   bg.appendChild(gr);
   root.appendChild(bg);
   return {
     render(t, focus = 1) {
-      for (const o of motes) {
-        const y = ((o.y - t * 26 * o.z) % 2000 + 2000) % 2000 - 40;
-        o.m.style.transform = `translate(${(o.x + Math.sin(t * 0.45 + o.ph) * 36 * o.z).toFixed(1)}px, ${y.toFixed(1)}px)`;
-      }
+      grid.style.backgroundPosition = `${(t * 6) % 96}px ${(t * 9) % 96}px`;
+      grid2.style.backgroundPosition = `${(-t * 4) % 288}px ${(t * 5) % 288}px`;
+      grid.style.opacity = (0.75 + 0.25 * Math.sin(t * 0.3)).toFixed(3);
+      sweep.style.transform = `translate(${(-700 + ((t * 40) % 2600)).toFixed(1)}px, 0) rotate(18deg)`;
       g1.style.transform = `translate(${-300 + 90 * Math.sin(t * 0.05)}px, ${-420 + 60 * Math.cos(t * 0.04)}px)`;
       g2.style.transform = `translate(${160 + 160 * Math.sin(t * 0.07 + 1)}px, ${700 + 140 * Math.cos(t * 0.055)}px) scale(${0.9 + 0.12 * Math.sin(t * 0.09)})`;
       g3.style.transform = `translate(${-200 + 120 * Math.cos(t * 0.045)}px, ${1300 + 90 * Math.sin(t * 0.06)}px)`;
@@ -170,13 +164,12 @@ export function brand(root, LEAD, VE, END) {
   wrap.append(full, line, dot);
   root.appendChild(wrap);
   cue('intro', 0);
-  cue('outro', VE + 0.3);
   const WM = {y: 1812, h: 58};
   return {
     render(t) {
       // logo scale/position: big centre during intro and end card, small watermark otherwise
       const kIn = E.io(prog(t, LEAD - 1.0, LEAD - 0.15)); // shrink to watermark
-      const kOut = E.io(prog(t, VE + 0.35, VE + 1.4)); // grow back for the end card
+      const kOut = 0; // the Hindukush disc end card takes over after the narration
       const big = 1 - kIn + kOut;
       const sBig = 1, sSmall = WM.h / LH;
       const s = lerp(sSmall, sBig, big);
@@ -204,9 +197,125 @@ export function brand(root, LEAD, VE, END) {
       const lk = E.out(prog(t, 1.9, 2.5)) * (1 - kIn) + E.out(prog(t, VE + 1.2, VE + 1.9)) * kOut;
       css(line, {transform: `translate(${(540 - 110).toFixed(1)}px, ${(900 + LH / 2 + 46).toFixed(1)}px) scaleX(${lk.toFixed(3)})`, opacity: lk.toFixed(3)});
       // brand fades at the very end
-      const fin = 1 - E.io(prog(t, END - 0.5, END));
+      const fin = 1 - E.io(prog(t, VE + 0.2, VE + 0.7));
       full.style.opacity = (t < LEAD ? 1 : lerp(0.92, 1, big) * fin).toFixed(3);
       wrap.style.opacity = '1';
+    },
+  };
+}
+
+// ---------- the Hindukush end card: three discs cover the frame, the light logo glitches in, the handle ----------
+export function endCard(root, t0) {
+  const el = h('div', 'abs');
+  css(el, {width: '1080px', height: '1920px', overflow: 'hidden', zIndex: '50'});
+  const discs = ['#EAA500', '#ffffff', '#051449'].map((c) => { const d = h('div', 'odisc'); d.style.background = c; el.appendChild(d); return d; });
+  const LW = 800, LH = (LW * 559) / 1699;
+  const box = h('div', 'ologo');
+  css(box, {left: 540 - LW / 2 + 'px', top: 900 - LH / 2 + 'px', width: LW + 'px', height: LH + 'px'});
+  box.innerHTML = `<img class="lg" src="assets/brand/logo_full_light.png"><img class="gh g1" src="assets/brand/logo_ghost.png"><img class="gh g2" src="assets/brand/logo_ghost.png">`;
+  const handle = h('div', 'ohandle', '@hindukush');
+  el.append(box, handle);
+  root.appendChild(el);
+  const lg = box.querySelector('.lg'), g1 = box.querySelector('.g1'), g2 = box.querySelector('.g2');
+  const P3 = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const T = t0 + 1.65;
+  [0.05, 0.5, 0.95].forEach((d) => cue('disc', t0 + d));
+  cue('glitch', T + 0.05);
+  const gx = [0, -14, 9, -6, 12, 0], bx = [0, 12, -10, 7, -12, 0];
+  const clips = ['inset(10% 0% 55% 0%)', 'inset(60% 0% 8% 0%)', 'inset(30% 0% 40% 0%)'];
+  return {
+    render(t) {
+      if (t < t0) { el.style.display = 'none'; return; }
+      el.style.display = '';
+      [0.05, 0.5, 0.95].forEach((d, i) => { discs[i].style.transform = `scale(${P3(prog(t, t0 + d, t0 + d + 0.7))})`; });
+      const lk = E.out(prog(t, T, T + 0.6));
+      box.style.opacity = String(lk);
+      box.style.transform = `translateY(${-E.out(prog(t, T + 0.8, t0 + 5.0)) * 10}px) scale(${lerp(0.9, 1, lk)})`;
+      const g = t >= T + 0.05 && t < T + 0.55;
+      const step = Math.floor((t - T - 0.05) / 0.1);
+      const flick = g && Math.floor((t - T - 0.05) / 0.06) % 2 === 0;
+      const ci = Math.floor((t - T - 0.1) / (0.45 / 4));
+      lg.style.clipPath = t >= T + 0.1 && ci >= 0 && ci < 3 ? clips[ci] : 'none';
+      const on = g && step >= 0 && step < 6;
+      g1.style.opacity = on && flick ? '0.55' : '0';
+      g2.style.opacity = on && flick ? '0.55' : '0';
+      g1.style.left = (on ? gx[step] : 0) + 'px'; g2.style.left = (on ? bx[step] : 0) + 'px';
+      const sk = E.out(prog(t, T + 0.7, T + 1.4));
+      handle.style.opacity = String(sk);
+      handle.style.transform = `translateY(${(1 - sk) * 20}px)`;
+    },
+  };
+}
+
+// ---------- narration caption bar: each phrase is written as it is read, with a live voice icon ----------
+export function captions(root, words, env, LEAD, t0, t1, Y = 1668) {
+  const bar = h('div', 'cap');
+  const sh = h('div', 'sh'), ring = h('div', 'ring'), ic = h('div', 'ic');
+  const bars = [0, 1, 2, 3, 4].map(() => { const i = h('i'); ic.appendChild(i); return i; });
+  const tx = h('div', 'tx');
+  bar.append(sh, tx, ring, ic);
+  root.appendChild(bar);
+  // phrases: sentence pieces that fit one line (break at punctuation first, then by width)
+  const FS = 40, MAXW = 790;
+  const chunks = [];
+  let cur = [];
+  const flush = () => { if (cur.length) chunks.push(cur); cur = []; };
+  const WEAK = new Set(['د', 'او', 'په', 'له', 'تر', 'چې', 'یې', 'هم', 'کې', 'پر', 'سره', 'ته', 'څخه', 'هغه', 'هغو', 'یو', 'یوه']);
+  words.forEach((w, i) => {
+    if (/^[۰-۹0-9]+\.$/.test(w[0])) { flush(); return; } // section numbers are not shown; a new section starts a new phrase
+    if (cur.length && w[3] !== cur[cur.length - 1][3]) flush(); // never run two paragraphs together
+    const tryW = measure([...cur, w].map((x) => x[0]).join(' '), FS, 700);
+    if (cur.length && tryW > MAXW) {
+      // don't leave a dangling particle at the end of a line: carry it over
+      const carry = [];
+      while (cur.length > 2 && WEAK.has(cur[cur.length - 1][0])) carry.unshift(cur.pop());
+      flush(); cur = carry;
+    }
+    cur.push(w);
+    if (/[.؟!؛:]$/.test(w[0]) || (/،$/.test(w[0]) && cur.length >= 4)) flush();
+  });
+  flush();
+  const C = chunks.map((ws) => {
+    const e = h('div', 'ch');
+    const sp = ws.map((w, k) => { const s_ = h('span', '', w[0] + (k < ws.length - 1 ? ' ' : '')); e.appendChild(s_); return s_; });
+    tx.appendChild(e);
+    return {e, sp, ws, a: ws[0][1] + LEAD, b: ws[ws.length - 1][2] + LEAD};
+  });
+  for (let i = 0; i < C.length; i++) C[i].end = i < C.length - 1 ? Math.max(C[i].b + 0.1, C[i + 1].a - 0.25) : C[i].b + 0.6;
+  // phrases follow one another without overlapping: each enters only after the previous has left
+  for (let i = 0; i < C.length; i++) C[i].in = i ? Math.max(C[i].a - 0.3, C[i - 1].end + 0.22) : C[i].a - 0.3;
+  return {
+    render(t) {
+      const k = E.out(prog(t, t0, t0 + 0.8)) * (1 - E.in(prog(t, t1 - 0.4, t1)));
+      bar.style.display = k > 0.001 ? '' : 'none';
+      if (k <= 0.001) return;
+      bar.style.opacity = k.toFixed(3);
+      bar.style.transform = `translateY(${(Y - 62 + (1 - k) * 60).toFixed(1)}px) scale(${(0.94 + 0.06 * k).toFixed(4)})`;
+      sh.style.transform = `translateX(${(-300 + ((t * 120) % 1600)).toFixed(1)}px) skewX(-20deg)`;
+      const fi = Math.max(0, Math.min(env.length - 1, Math.round((t - LEAD) * 30)));
+      const lv = t >= LEAD ? env[fi] : 0;
+      bars.forEach((b, j) => {
+        const hgt = 10 + 34 * clamp(lv * (0.6 + 0.4 * Math.abs(Math.sin(t * 9 + j * 1.7))) * [0.6, 0.9, 1, 0.85, 0.55][j] * 1.6);
+        b.style.height = hgt.toFixed(1) + 'px';
+      });
+      const rp = (t * 0.8) % 1;
+      ring.style.transform = `scale(${(1 + rp * 0.35 * lv * 2).toFixed(3)})`;
+      ring.style.opacity = ((1 - rp) * 0.8 * clamp(lv * 2)).toFixed(3);
+      for (const c of C) {
+        const on = t >= c.in - 0.02 && t < c.end + 0.25;
+        c.e.style.display = on ? '' : 'none';
+        if (!on) continue;
+        const ki = E.out(prog(t, c.in, c.in + 0.35)), ko = E.in(prog(t, c.end, c.end + 0.22));
+        c.e.style.opacity = (ki * (1 - ko)).toFixed(3);
+        c.e.style.transform = `translateY(${((1 - ki) * 40 - ko * 40).toFixed(1)}px)`;
+        c.e.style.filter = ki < 0.99 || ko > 0.01 ? `blur(${((1 - ki) * 8 + ko * 8).toFixed(1)}px)` : 'none';
+        c.sp.forEach((s_, j) => {
+          const w = c.ws[j];
+          const r = E.out(prog(t, w[1] + LEAD - 0.05, w[1] + LEAD + 0.15));
+          s_.style.opacity = (0.42 + 0.58 * r).toFixed(3);
+          s_.style.transform = `translateY(${((1 - r) * 4).toFixed(1)}px)`;
+        });
+      }
     },
   };
 }

@@ -42,7 +42,7 @@ export function item(el, o) {
   root.appendChild(el);
   el.style.position = 'relative';
   const id = SEQ++;
-  const din = o.din ?? 0.6, dout = o.dout ?? 0.45;
+  const din = o.din ?? 0.75, dout = o.dout ?? 0.55;
   const t0 = o.t0, t1 = o.t1 ?? 1e9;
   if (o.z != null) root.style.zIndex = String(o.z);
   if (o.snd !== false) cue(o.snd || (o.in === 'pop' || o.in === 'zoom' ? 'pop' : 'soft'), t0, {id});
@@ -83,7 +83,8 @@ export function item(el, o) {
 // ---------- concrete blocks ----------
 // clay icon with its own ambient life: a breathing glow behind it, small satellites orbiting it and,
 // now and then, a soft ring rippling out from its base
-export const img = (name, size, o = {}) => {
+export const img = (name, size0, o = {}) => {
+  const size = Math.round(size0 * 1.2); // icons fill the frame
   const e = h('div', 'cc');
   css(e, {width: size + 'px', height: size + 'px'});
   const amb = h('div', 'amb');
@@ -142,14 +143,15 @@ export const mark = (kind, o = {}) => item(h('div', 'x', ICON[kind]), {in: 'pop'
 
 // a list card whose rows arrive one by one at their own times; a row can later change state (dot → x / ok / q)
 // rows: [{text, t, icon:'dot'|'x'|..., th:'imgname', state:[[t,'x']], dim:t}]
-export const listH = (n, rh = 92) => 28 + n * rh + (n - 1) * 2;
+export const listH = (n, rh = 104) => 28 + n * rh + (n - 1) * 2;
 export function list(w, rows, o) {
   const e = h('div', 'card');
-  const rh = o.rh || 92;
+  const rh = o.rh || 104;
+  w = Math.max(w, 960);
   css(e, {width: w + 'px', height: listH(rows.length, rh) + 'px', padding: '14px 0'});
   const R = rows.map((r) => {
     const el = h('div', 'row', `${r.th ? `<div class="th"><img src="assets/img/${r.th}.png"></div>` : `<div class="ic">${ICON[r.icon || 'dot']}</div>`}<span>${r.text}</span>`);
-    if (o.rh) { el.style.height = rh + 'px'; if (o.fs) el.style.fontSize = o.fs + 'px'; }
+    el.style.height = rh + 'px'; if (o.fs) el.style.fontSize = o.fs + 'px';
     if (o.th) { const th = el.querySelector('.th'); if (th) css(th, {width: o.th + 'px', height: o.th + 'px'}); }
     e.appendChild(el);
     if (r.t > o.t0 + 0.05) cue('tick', r.t);
