@@ -71,6 +71,7 @@ export function buildScenes(stage, beats, LEAD, VE) {
       e.appendChild(ln);
     });
     const dur = o.dur || ws.length * 0.16;
+    ws.forEach((_, i) => cue('key', o.t0 + 0.15 + (i / ws.length) * dur));
     return item(e, {in: 'up', float: 4, ...o, tick: (t) => {
       ws.forEach((s_, i) => { s_.style.opacity = E.out(prog(t, o.t0 + 0.15 + (i / ws.length) * dur, o.t0 + 0.45 + (i / ws.length) * dur)).toFixed(3); });
     }});

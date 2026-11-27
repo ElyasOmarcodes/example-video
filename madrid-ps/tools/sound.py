@@ -116,47 +116,78 @@ for k, x in S.items():
 S.update(SY)
 fx = np.zeros((N, 2), np.float32)
 cue = lambda name, at, g, **kw: place(fx, S[name], at, g, **kw)
+# typewriter keys: short filtered clicks, each a little different
+def key(seed):
+    rng = np.random.default_rng(seed); n = int(0.045 * SR); t = np.arange(n) / SR
+    x = rng.standard_normal(n) * np.exp(-t * 160)
+    x = x - movavg(x, 6)
+    body = np.sin(2 * np.pi * rng.uniform(1700, 2600) * t) * np.exp(-t * 220) * 0.5
+    y = x + body; y /= np.max(np.abs(y)) + 1e-9
+    return np.stack([y, y], 1).astype(np.float32) * 0.9
+KEYS = [key(i) for i in range(8)]
+def bell(f, dur=1.6):
+    n = int(dur * SR); t = np.arange(n) / SR
+    y = sum(np.sin(2 * np.pi * f * m * t) * np.exp(-t * d) * g for m, d, g in ((1, 3.2, 1), (2.01, 5, .35), (3.03, 8, .15)))
+    a = int(0.004 * SR); y[:a] *= np.linspace(0, 1, a); y /= np.max(np.abs(y))
+    return np.stack([y, y], 1).astype(np.float32) * 0.8
+S['bell'] = bell(659.3); S['bell2'] = bell(880.0)
+S['woosh'] = swish(0.55, 7); S['wooshS'] = swish(0.3, 9)
+ki = [0]
+def keyclick(t, g):
+    ki[0] += 1
+    place(fx, KEYS[ki[0] % 8], t, g + ((ki[0] * 37) % 5 - 2) * 0.8, pan=((ki[0] * 13) % 7 - 3) * 0.05)
 last = {}
 def ok(kind, t, gap):
     if t - last.get(kind, -9) < gap:
         return False
     last[kind] = t
     return True
+# headline words type in, one soft key per word
+TL = json.load(open(f'{ROOT}/data/timeline.json'))
+for bt in TL['beats']:
+    if not bt.get('head'): continue
+    t0 = bt['t'] + LEAD
+    n = len(bt['head'].replace('/', ' ').replace('{', '').replace('}', '').split())
+    cue('woosh', t0 - 0.12, -25, fade_out=0.2)          # beat transition
+    for k in range(n):
+        keyclick(t0 + 0.06 + k * 0.055, -23)
 for c in sorted(C['cues'], key=lambda c: c['t']):
     k, t = c['kind'], c['t']
     if k == 'open':
-        cue('swoosh_myst', t - 0.25, -25, fade_out=0.3)
-        cue('drum_subtle', t + 0.45, -26)
-    elif k == 'head' and t > LEAD - 0.2 and ok(k, t, 0.6):
-        cue('swish', t - 0.05, -33)
-    elif k == 'pop' and ok(k, t, 0.14):
-        cue('pop', t + 0.06, -29)
-    elif k == 'soft' and ok(k, t, 0.3):
-        cue('swish', t, -35)
+        cue('swoosh_myst', t - 0.3, -19, fade_out=0.3)
+        cue('impact_deep', t + 0.4, -21)
+        cue('bell', t + 0.7, -25)
+    elif k == 'key':
+        keyclick(t, -24)
+    elif k == 'pop' and ok(k, t, 0.12):
+        cue('pop', t + 0.05, -22); cue('wooshS', t - 0.08, -30)
+    elif k == 'soft' and ok(k, t, 0.25):
+        cue('wooshS', t, -27)
     elif k == 'tick' and ok(k, t, 0.1):
-        cue('tick', t, -31)
+        cue('select_ui', t, -23)
     elif k == 'mark':
-        cue('select_ui', t, -28)
+        cue('click_ui', t, -21); cue('pop_hi', t + 0.02, -27)
     elif k == 'nope':
-        cue('click_ui', t, -25); cue('thud', t, -31)
+        cue('click_ui', t, -20); cue('thud', t, -24)
     elif k == 'strike':
-        cue('paper_slide', t, -27)
-    elif k == 'route' and ok(k, t, 0.4):
-        cue('whoosh_fast', t, -31, fade_out=0.2)
-    elif k == 'pin' and ok(k, t, 0.25):
-        cue('blip', t, -30)
+        cue('paper_slide', t, -21)
+    elif k == 'route' and ok(k, t, 0.3):
+        cue('whoosh_fast', t, -23, fade_out=0.2)
+    elif k == 'pin' and ok(k, t, 0.2):
+        cue('blip', t, -24)
     elif k == 'flow':
-        cue('swoosh_myst', t, -27, fade_out=0.4)
+        cue('swoosh_myst', t, -21, fade_out=0.4)
+        for j in range(6): cue('blip', t + j * 0.22, -30)
     elif k == 'swap' and ok(k, t, 0.5):
-        cue('whoosh_fast2', t - 0.1, -33)
+        cue('whoosh_fast2', t - 0.1, -25)
 # logo sting before the narration, and the end card
-cue('swoosh_slow', 0.0, -24, fade_out=0.3)
-cue('drum_subtle', 0.72, -20); cue('pop', 0.75, -25)
-cue('impact_deep', 1.12, -25); cue('ping', 1.15, -25)
-cue('whoosh_fast2', 1.42, -28)
-cue('swoosh_slow', LEAD - 1.05, -29, fade_out=0.3)
-cue('swoosh_slow', VE + 0.25, -25, fade_out=0.3)
-cue('impact_deep', VE + 1.15, -25); cue('ping', VE + 1.2, -25)
+cue('swoosh_slow', 0.0, -19, fade_out=0.3)
+cue('drum_subtle', 0.72, -16); cue('pop', 0.75, -21)
+cue('impact_deep', 1.12, -19); cue('bell2', 1.15, -20)
+for k in range(6): keyclick(1.5 + k * 0.12, -24)
+cue('swoosh_slow', LEAD - 1.05, -22, fade_out=0.3)
+cue('swoosh_slow', VE + 0.25, -20, fade_out=0.3)
+cue('impact_deep', VE + 1.15, -19); cue('bell2', VE + 1.2, -20)
 
 # ------------------------------------------------------------------ master
 mix = voice + mus + fx
